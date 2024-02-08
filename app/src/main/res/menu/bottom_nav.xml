@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/homeFragment"
-        android:title="Find friends"
+        android:title="Hitta vänner"
         android:icon="@drawable/baseline_home_24"/>
     <item android:id="@+id/myPlacesFragment"
-        android:title="My Places"
+        android:title="Aktiviteter"
         android:icon="@drawable/baseline_attractions_24"/>
     <item android:id="@+id/mapFragment"
-        android:title="Map"
+        android:title="Chatt"
         android:icon="@drawable/baseline_chat_bubble_outline_24"/>
 
 </menu>
