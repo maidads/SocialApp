@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <menu xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <item
+            android:id="@+id/favorite"
+            android:icon="@drawable/baseline_favorite_border_24"
+            android:title="Fav"
+            android:contentDescription="Fav"
+            app:showAsAction="ifRoom" />
+
+        <item
+            android:id="@+id/filter"
+            android:title="Filter"
+            android:icon="@drawable/baseline_filter_list_24"
+            android:contentDescription="Filter"
+            app:showAsAction="ifRoom" />
+
+    </menu>
+
+    <!-- Top bar presses in code:
+
+    topAppBar.setNavigationOnClickListener {
+    // Handle navigation icon press
+}
+
+topAppBar.setOnMenuItemClickListener { menuItem ->
+    when (menuItem.itemId) {
+        R.id.edit -> {
+            // Handle edit text press
+            true
+        }
+        R.id.favorite -> {
+            // Handle favorite icon press
+            true
+        }
+        R.id.more -> {
+            // Handle more item (inside overflow menu) press
+            true
+        }
+        else -> false
+    }
+}
+
+
+    -->
