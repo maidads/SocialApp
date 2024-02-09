@@ -32,7 +32,6 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <!-- Intressen innehåll TextView -->
         <TextView
             android:id="@+id/interestsContentTextView"
             android:layout_width="wrap_content"
