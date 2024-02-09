@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- App theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/onPrimaryContainer</item>
+        <item name="colorAccent">@color/primaryContainer</item>
+    </style>
+
+    <!-- Style for the background -->
+    <style name="AppBackground">
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <!-- Surface color usage -->
+    <style name="AppCard">
+        <item name="android:background">@color/surface</item>
+    </style>
+
     <!-- Style for headlines. -->
     <style name="HeadlineText" parent="Theme.AppCompat">
         <item name="android:textSize">30sp</item>
         <item name="android:fontFamily">@font/roboto_bold</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary</item>
     </style>
 
     <!-- Style for subheadlines -->
@@ -13,5 +31,6 @@
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/onPrimaryContainer</item>
     </style>
 </resources>
