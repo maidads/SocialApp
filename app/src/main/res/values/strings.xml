@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AndroidProjectMA23</string>
+    <string name="profile_creation_title_text">Lägg till profilbild och namn</string>
 </resources>
