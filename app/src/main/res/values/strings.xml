@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">AndroidProjectMA23</string>
-    <string name="profile_creation_title_text">Lägg till profilbild och namn</string>
+    <string name="profile_creation_title_text">Lägg till profilbild &amp; namn</string>
+    <string name="profile_creation_subtitle">Namn är obligatoriskt</string>
+    <string name="display_name_input_hint">Visningsnamn</string>
+    <string name="profile_creation_display_text_forOtherUsers">Visas för andra användare</string>
+    <string name="button_text_profile_creation_nextStep">Gå Vidare</string>
 </resources>
