@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
-class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>() {
-    private var profiles: List<Profile> = listOf()
+class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+    ItemMoveCallback.ItemTouchHelperAdapter {
+    private var profiles: MutableList<Profile> = mutableListOf()
 
-    fun setProfiles(profiles: List<Profile>) {
+    fun setProfiles(profiles: MutableList<Profile>) {
         this.profiles = profiles
         notifyDataSetChanged()
     }
@@ -39,7 +41,21 @@ class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHo
         fun bind(profile: Profile) {
             // Fill with data from profile to views
             // profileImageView.setImageResource(profile.image)
-            // interestsContentTextView.text = profile.interests
+            //
+            interestsContentTextView.text = profile.interests
         }
     }
+
+    override fun onItemMove(fromPosition: Int, toPosition: Int) {
+        Collections.swap(profiles, fromPosition, toPosition)
+        notifyItemMoved(fromPosition, toPosition)
+    }
+
+    override fun onItemDismiss(position: Int) {
+        profiles.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+
 }
+
