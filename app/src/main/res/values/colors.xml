@@ -7,5 +7,6 @@
     <color name="primaryContainer">#FFD3CC</color>
     <color name="onPrimaryContainer">#8E1A14</color>
     <color name="background">#FFFF0EC</color>
+    <color name="onBackground">#B07A67</color>
     <color name="surface">#F5F5F5</color>
 </resources>
