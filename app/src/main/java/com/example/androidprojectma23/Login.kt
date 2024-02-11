@@ -1,14 +1,30 @@
 package com.example.androidprojectma23
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
+
 
 class Login : AppCompatActivity() {
 
@@ -17,6 +33,9 @@ class Login : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerTextView : TextView
+    private lateinit var googleSignInButton : ImageView
+    private lateinit var googleSignInClient: GoogleSignInClient
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,14 +57,27 @@ class Login : AppCompatActivity() {
             startActivity(intent1)
             finish()
         }
+        googleSignInButton = findViewById(R.id.google_icon)
+
+        googleSignInButton.setOnClickListener {
+            signInWithGoogle()
+        }
+
+
         /*
-                if (auth.currentUser != null) {
+                if (auth.currentUser != null) {         // kommer ihåg användaren, slipper logga in igen
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
 
          */
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.app_name))
+            .requestEmail()
+            .build()
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
     }
 
     private fun logIn() {
@@ -53,6 +85,7 @@ class Login : AppCompatActivity() {
         val password = passwordEditText.text.toString()
 
         if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Snälla skriv både användarnamn och lösenord.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -62,7 +95,82 @@ class Login : AppCompatActivity() {
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                     finish()
+                } else {
+                    handleLoginFailure(task.exception)
                 }
             }
+    }
+
+    private fun signInWithGoogle() {
+        val signInIntent = googleSignInClient.signInIntent
+        startActivityForResult(signInIntent, 1000)
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 1000) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            handleSignInResult(task)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account = completedTask.getResult(ApiException::class.java)
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            Toast.makeText(this, "Inloggningen misslyckades, försök igen.", Toast.LENGTH_SHORT).show()
+        }
+    }
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val isNewUser = task.result?.additionalUserInfo?.isNewUser ?: false
+
+                    if (isNewUser) {
+                        saveNewUserInfo()
+                    }
+
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+    }
+    private fun saveNewUserInfo() {
+        val user = hashMapOf(
+            "Username" to auth.currentUser?.email
+        )
+
+        val db = Firebase.firestore
+        auth.currentUser?.uid?.let { userId ->
+            db.collection("users").document(userId)
+                .set(user)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Användarinformationen har sparats.", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Det gick inte att spara ny användarinformation.", Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
+
+    private fun handleLoginFailure(exception: Exception?) {
+        when (exception) {
+            is FirebaseAuthInvalidCredentialsException -> {
+                Toast.makeText(this, "Fel email eller lösenord.", Toast.LENGTH_SHORT).show()
+            }
+            is FirebaseAuthInvalidUserException -> {
+                val errorCode = (exception as FirebaseAuthInvalidUserException).errorCode
+                if (errorCode == "ERROR_USER_NOT_FOUND") {
+                    Toast.makeText(this, "Email är inte registrerad.", Toast.LENGTH_SHORT).show()
+                }
+            } else -> {
+            Toast.makeText(this, "Login failed. Please try again later.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
