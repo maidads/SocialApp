@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -64,7 +65,7 @@ class ProfileCreationStep1Fragment : Fragment() {
         }
 
         userImagePlaceholder.setOnClickListener {
-            // TODO: Open dialog to choose image option, camera or gallery
+            showImageSelectionDialog()
         }
     }
 
@@ -80,8 +81,33 @@ class ProfileCreationStep1Fragment : Fragment() {
     }
 
     private fun showImageSelectionDialog() {
+        val context = requireContext() // Använder 'requireContext()' för att få context inom ett Fragment
+        val builder = AlertDialog.Builder(context)
+        // Infoga anpassad layout
+        val view = LayoutInflater.from(context).inflate(R.layout.custom_dialog_appearance_profile_creation_image_selection, null)
+        builder.setView(view)
 
+
+        val dialog = builder.create()
+
+        val galleryImageView = view.findViewById<ImageView>(R.id.galleryImageView)
+        galleryImageView.setOnClickListener {
+            // openGalleryForImage()
+
+            dialog.dismiss()
+        }
+
+        val cameraImageView = view.findViewById<ImageView>(R.id.cameraImageView)
+        cameraImageView.setOnClickListener {
+            // openCameraForImage()
+
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
+
+
 
     private fun saveProfileDisplayName(userId: String, displayName: String) {
 //        userProfileManager.saveDisplayName(userId, displayName, {
