@@ -1,6 +1,7 @@
 package com.example.androidprojectma23
 
 import android.Manifest
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
@@ -76,11 +77,27 @@ class ProfileCreationStep1Fragment : Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            // Use image thats been taken
+
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_IMAGE_CAPTURE -> {
+                    val imageBitmap = data?.extras?.get("data") as? Bitmap
+
+                    imageBitmap?.let {
+                        userImagePlaceholder.setImageBitmap(it)
+                    }
+                }
+                REQUEST_GALLERY_IMAGE -> {
+                    val imageUri = data?.data
+
+                    imageUri?.let {
+                        userImagePlaceholder.setImageURI(it)
+                    }
+                }
+            }
         }
     }
+
 
 
     private fun initUI(view: View) {
@@ -93,7 +110,7 @@ class ProfileCreationStep1Fragment : Fragment() {
             val userId = "someUserId" // TODO: Replace with a users actual ID
             val displayName = displayNameEditText.text.toString()
 
-            saveProfileDisplayName(userId, displayName)
+            // saveProfileDisplayName(userId, displayName)
             navigateToProfileCreationStep2()
         }
 
@@ -123,7 +140,7 @@ class ProfileCreationStep1Fragment : Fragment() {
 
         val galleryImageView = view.findViewById<ImageView>(R.id.galleryImageView)
         galleryImageView.setOnClickListener {
-            // openGalleryForImage()
+            openGalleryForImage()
 
             dialog.dismiss()
         }
@@ -141,7 +158,6 @@ class ProfileCreationStep1Fragment : Fragment() {
         dialog.show()
     }
 
-
     private fun openCameraForImage() {
         // Check for the camera permission
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -158,6 +174,11 @@ class ProfileCreationStep1Fragment : Fragment() {
         }
     }
 
+    private fun openGalleryForImage() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
+    }
     private fun requestCameraPermission() {
         // Explanation of why the permission is needed
         if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
@@ -173,6 +194,7 @@ class ProfileCreationStep1Fragment : Fragment() {
 
         private const val REQUEST_CAMERA_PERMISSION = 1
         private const val REQUEST_IMAGE_CAPTURE = 2
+        private const val REQUEST_GALLERY_IMAGE = 3
         fun newInstance(userId: String): ProfileCreationStep1Fragment {
             val fragment = ProfileCreationStep1Fragment()
             val args = Bundle().apply {
