@@ -1,9 +1,15 @@
 package com.example.androidprojectma23
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,6 +57,30 @@ class ProfileCreationStep1Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initUI(view)
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_CAMERA_PERMISSION -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // Access granted
+                   // openCameraForImage()
+                } else {
+                    // Access denied
+                }
+                return
+            }
+            // handle other permission requests
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            // Use image thats been taken
+        }
+    }
+
 
     private fun initUI(view: View) {
         displayNameEditText = view.findViewById(R.id.displayName_textInputEditText)
@@ -119,11 +149,20 @@ class ProfileCreationStep1Fragment : Fragment() {
 //        })
     }
 
+    private fun openCameraForImage() {
+        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePicture, REQUEST_CAMERA_PERMISSION)
+        } catch (e: ActivityNotFoundException) {
+            // TODO: Show error message
+        }
+    }
+
     private fun requestCameraPermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
 
         } else {
-            
+
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         }
     }
@@ -131,6 +170,7 @@ class ProfileCreationStep1Fragment : Fragment() {
     companion object {
 
         private const val REQUEST_CAMERA_PERMISSION = 1
+        private const val REQUEST_IMAGE_CAPTURE = 2
         fun newInstance(userId: String): ProfileCreationStep1Fragment {
             val fragment = ProfileCreationStep1Fragment()
             val args = Bundle().apply {
