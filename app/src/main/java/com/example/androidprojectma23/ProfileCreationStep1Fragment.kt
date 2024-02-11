@@ -18,6 +18,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -63,7 +64,7 @@ class ProfileCreationStep1Fragment : Fragment() {
             REQUEST_CAMERA_PERMISSION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Access granted
-                   // openCameraForImage()
+                   openCameraForImage()
                 } else {
                     // Access denied
                 }
@@ -129,8 +130,11 @@ class ProfileCreationStep1Fragment : Fragment() {
 
         val cameraImageView = view.findViewById<ImageView>(R.id.cameraImageView)
         cameraImageView.setOnClickListener {
-            // openCameraForImage()
-
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                requestCameraPermission()
+            } else {
+                openCameraForImage()
+            }
             dialog.dismiss()
         }
 
@@ -138,31 +142,29 @@ class ProfileCreationStep1Fragment : Fragment() {
     }
 
 
-
-    private fun saveProfileDisplayName(userId: String, displayName: String) {
-//        userProfileManager.saveDisplayName(userId, displayName, {
-//            // Update success
-//            Toast.makeText(context, "Display name updated successfully.", Toast.LENGTH_SHORT).show()
-//        }, { exception ->
-//            // Update failed
-//            Toast.makeText(context, "Failed to update display name: ${exception.message}", Toast.LENGTH_LONG).show()
-//        })
-    }
-
     private fun openCameraForImage() {
-        val takePicture = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        try {
-            startActivityForResult(takePicture, REQUEST_CAMERA_PERMISSION)
-        } catch (e: ActivityNotFoundException) {
-            // TODO: Show error message
+        // Check for the camera permission
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // Permission is granted, open the camera
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            try {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            } catch (e: ActivityNotFoundException) {
+                // Handle the error
+            }
+        } else {
+            // Permission is not granted, request the permission
+            requestCameraPermission()
         }
     }
 
     private fun requestCameraPermission() {
+        // Explanation of why the permission is needed
         if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
-
+            // Show an explanation asynchronously
+            // TODO: Show a dialog or a toast explaining why camera access is needed
         } else {
-
+            // No explanation needed; request the permission
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         }
     }
