@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.Manifest
 import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.firebase.firestore.FirebaseFirestore
@@ -81,12 +83,10 @@ class ProfileCreationStep1Fragment : Fragment() {
     }
 
     private fun showImageSelectionDialog() {
-        val context = requireContext() // Använder 'requireContext()' för att få context inom ett Fragment
+        val context = requireContext()
         val builder = AlertDialog.Builder(context)
-        // Infoga anpassad layout
         val view = LayoutInflater.from(context).inflate(R.layout.custom_dialog_appearance_profile_creation_image_selection, null)
         builder.setView(view)
-
 
         val dialog = builder.create()
 
@@ -119,7 +119,18 @@ class ProfileCreationStep1Fragment : Fragment() {
 //        })
     }
 
+    private fun requestCameraPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
+
+        } else {
+            
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        }
+    }
+
     companion object {
+
+        private const val REQUEST_CAMERA_PERMISSION = 1
         fun newInstance(userId: String): ProfileCreationStep1Fragment {
             val fragment = ProfileCreationStep1Fragment()
             val args = Bundle().apply {
