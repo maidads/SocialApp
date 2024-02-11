@@ -7,21 +7,35 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
 class ProfileCreationStep1Fragment : Fragment() {
 
-    // private val database = FirebaseFirestore.getInstance()
     private lateinit var displayNameEditText: EditText
     private lateinit var nextStepButton: Button
+    private lateinit var userImagePlaceholder: ImageView
+
+    private lateinit var userProfileManager: UserProfileManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // Initialize UserProfileManager
+//        userProfileManager = UserProfileManager(
+//            FirebaseStorage.getInstance().reference,
+//            FirebaseFirestore.getInstance()
+//        )
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         return inflater.inflate(R.layout.fragment_profile_creation_step1, container, false)
     }
 
@@ -33,49 +47,55 @@ class ProfileCreationStep1Fragment : Fragment() {
     private fun initUI(view: View) {
         displayNameEditText = view.findViewById(R.id.displayName_textInputEditText)
         nextStepButton = view.findViewById(R.id.button_profile_creation_nextStep)
+        userImagePlaceholder = view.findViewById(R.id.profile_image_placeholder)
 
         nextStepButton.setOnClickListener {
-            val displayName = displayNameEditText.text.toString().trim()
-            if (displayName.isNotEmpty()) {
-               // saveDisplayNameToFirestore(displayName)
-            } else {
-                // Visa felmeddelande om displaynamnet är tomt
-            }
+
+            val userId = "someUserId" // TODO: Replace with a users actual ID
+            val displayName = displayNameEditText.text.toString()
+
+            saveProfileDisplayName(userId, displayName)
+            navigateToProfileCreationStep2()
+        }
+
+        userImagePlaceholder.setOnClickListener {
+            // TODO: Open dialog to choose image option, camera or gallery
         }
     }
 
-    private fun saveProfileImage(userId: String?, imageUri: Uri) {
-        // Check so we have a user-ID and a image Uri
-        if (userId == null || imageUri == null) return
+    fun FragmentManager.navigateTo(fragment: Fragment, containerId: Int) {
+        this.beginTransaction()
+            .replace(containerId, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 
-        // reference to firebase storage
-        val storageRef = FirebaseStorage.getInstance().reference.child("userImages/$userId/profileImage.jpg")
+    private fun navigateToProfileCreationStep2() {
+        parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
+    }
 
-        // Upload the image
-        storageRef.putFile(imageUri)
-            .addOnSuccessListener {
-                // Save the url from firebase
-            }
-            .addOnFailureListener {
-                // Handle exception
-            }
+    private fun showImageSelectionDialog() {
 
     }
 
-    private fun saveProfileDisplayName(userId: String?, displayName: String) {
-        // Check so we have a user-ID
-        if (userId == null) return
+    private fun saveProfileDisplayName(userId: String, displayName: String) {
+//        userProfileManager.saveDisplayName(userId, displayName, {
+//            // Update success
+//            Toast.makeText(context, "Display name updated successfully.", Toast.LENGTH_SHORT).show()
+//        }, { exception ->
+//            // Update failed
+//            Toast.makeText(context, "Failed to update display name: ${exception.message}", Toast.LENGTH_LONG).show()
+//        })
+    }
 
-        val userDocumentRef = FirebaseFirestore.getInstance().collection("users").document(userId)
-
-        // Update user display name
-        userDocumentRef.update("displayName", displayName)
-            .addOnSuccessListener {
-                // Update successful
+    companion object {
+        fun newInstance(userId: String): ProfileCreationStep1Fragment {
+            val fragment = ProfileCreationStep1Fragment()
+            val args = Bundle().apply {
+                putString("USER_ID", userId)
             }
-            .addOnFailureListener {
-                // Handle exception
-            }
-
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
