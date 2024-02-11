@@ -37,4 +37,19 @@
         <item name="android:textStyle">normal</item>
         <item name="android:textColor">@color/onPrimaryContainer</item>
     </style>
+
+    <!-- Style for the custom dialog popup window -->
+    <style name="CustomAlertDialogStyle" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:textColorPrimary">@color/onPrimary</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:background">@color/background</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomDialogButtonStyle</item>
+    </style>
+
+    <!-- Style for the buttons in the custom dialog popup window -->
+    <style name="CustomDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/onPrimaryContainer</item>
+    </style>
 </resources>
