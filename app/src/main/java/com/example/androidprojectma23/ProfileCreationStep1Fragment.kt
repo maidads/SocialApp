@@ -21,9 +21,14 @@ class ProfileCreationStep1Fragment : Fragment() {
     private lateinit var userImagePlaceholder: ImageView
 
     private lateinit var userProfileManager: UserProfileManager
+    private var userId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Extract userId from the fragment argument
+        arguments?.let {
+            userId = it.getString("USER_ID")
+        }
         // Initialize UserProfileManager
 //        userProfileManager = UserProfileManager(
 //            FirebaseStorage.getInstance().reference,
