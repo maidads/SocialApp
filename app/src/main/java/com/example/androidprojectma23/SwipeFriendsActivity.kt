@@ -2,34 +2,44 @@ package com.example.androidprojectma23
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class SwipeFriendsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_swipe_friends)
 
-        val profiles = mutableListOf<Profile>(
-            Profile("https://example.com/image1.jpg", "Fotboll, Musik, Matlagning"),
-            Profile("https://example.com/image2.jpg", "Resor, Läsning, Träning"),
-            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik"),
-            Profile("https://example.com/image1.jpg", "Fotboll, Musik, Matlagning"),
-            Profile("https://example.com/image2.jpg", "Resor, Läsning, Träning"),
-            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik")
-        )
 
-        val adapter = ProfileCardAdapter()
-        adapter.setProfiles(profiles)
+        val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.profilesRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
+        navBar.selectedItemId = R.id.activityFragment
 
-        val callback = ItemMoveCallback(adapter)
-        val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerView)
+        navBar.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.findFriendsFragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentHolder, FindFriendsFragment())
+                        .commit()
+                    true
+                }
+
+//                R.id.activityFragment -> {
+//                    supportFragmentManager.beginTransaction()
+//                        .replace(R.id.fragmentHolder, ActivityFragment())
+//                        .commit()
+//                    true
+//                }
+//
+//                R.id.chatFragment -> {
+//                    supportFragmentManager.beginTransaction()
+//                        .replace(R.id.fragmentHolder, ChatFragment())
+//                        .commit()
+//                    true
+//                }
+
+                else -> false
+            }
+        }
 
     }
 

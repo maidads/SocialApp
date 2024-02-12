@@ -1,32 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/homeFragment"
+    <item android:id="@+id/findFriendsFragment"
         android:title="Hitta vänner"
         android:icon="@drawable/baseline_home_24"/>
-    <item android:id="@+id/myPlacesFragment"
+    <item android:id="@+id/activityFragment"
         android:title="Aktiviteter"
         android:icon="@drawable/baseline_attractions_24"/>
-    <item android:id="@+id/mapFragment"
+    <item android:id="@+id/chatFragment"
         android:title="Chatt"
         android:icon="@drawable/baseline_chat_bubble_outline_24"/>
 
 </menu>
-
-    <!-- Bottom nav presses in code:
-
-NavigationBarView.OnItemSelectedListener { item ->
-    when(item.itemId) {
-        R.id.item_1 -> {
-            // Respond to navigation item 1 click
-            true
-        }
-        R.id.item_2 -> {
-            // Respond to navigation item 2 click
-            true
-        }
-        else -> false
-    }
-}
-
-    -->
