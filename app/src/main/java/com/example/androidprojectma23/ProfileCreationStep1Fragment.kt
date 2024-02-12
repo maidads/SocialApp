@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,9 +38,9 @@ class ProfileCreationStep1Fragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Extract userId from the fragment argument
-        arguments?.let {
-            userId = it.getString("USER_ID")
-        }
+//        arguments?.let {
+//            userId = it.getString("USER_ID")
+//        }
         // Initialize UserProfileManager
 //        userProfileManager = UserProfileManager(
 //            FirebaseStorage.getInstance().reference,
@@ -106,12 +107,16 @@ class ProfileCreationStep1Fragment : Fragment() {
         userImagePlaceholder = view.findViewById(R.id.profile_image_placeholder)
 
         nextStepButton.setOnClickListener {
+            val displayName = displayNameEditText.text.toString().trim()
 
-            val userId = "someUserId" // TODO: Replace with a users actual ID
-            val displayName = displayNameEditText.text.toString()
-
-            // saveProfileDisplayName(userId, displayName)
-            navigateToProfileCreationStep2()
+            if (displayName.isEmpty()) {
+                // Show a toast if display name is empty
+                Toast.makeText(requireContext(), "Du måste ange ett visningsnamn", Toast.LENGTH_SHORT).show()
+            } else {
+                val userId = userId ?: "changeThisLater"
+               // saveProfileDisplayName(userId, displayName)
+                navigateToProfileCreationStep2()
+            }
         }
 
         userImagePlaceholder.setOnClickListener {
@@ -119,12 +124,28 @@ class ProfileCreationStep1Fragment : Fragment() {
         }
     }
 
-    fun FragmentManager.navigateTo(fragment: Fragment, containerId: Int) {
+    private fun FragmentManager.navigateTo(fragment: Fragment, containerId: Int) {
         this.beginTransaction()
             .replace(containerId, fragment)
             .addToBackStack(null)
             .commit()
     }
+
+//    private fun saveProfileDisplayName(userId: String, displayName: String) {
+//
+//        userProfileManager.saveDisplayName(userId, displayName,
+//            onSuccess = {
+//                // Handle success
+//                Toast.makeText(context, "Display name saved successfully", Toast.LENGTH_SHORT).show()
+//            },
+//            onFailure = { exception ->
+//                // Handle failure
+//                Log.e("!!!", "Failed to save display name", exception)
+//                Toast.makeText(context, "Failed to save display name", Toast.LENGTH_SHORT).show()
+//            }
+//        )
+//    }
+
 
     private fun navigateToProfileCreationStep2() {
         parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
