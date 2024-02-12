@@ -9,11 +9,6 @@ class LandingPageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_swipe_friends)
 
-        supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentHolder, FindFriendsFragment())
-            .commit()
-
-
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         navBar.selectedItemId = R.id.findFriendsFragment
