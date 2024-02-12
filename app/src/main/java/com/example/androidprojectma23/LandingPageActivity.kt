@@ -21,6 +21,7 @@ class LandingPageActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
+// TODO: Add fragments for activity and chat
 
 //                R.id.activityFragment -> {
 //                    supportFragmentManager.beginTransaction()
