@@ -4,15 +4,19 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-class SwipeFriendsActivity : AppCompatActivity() {
+class LandingPageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_swipe_friends)
 
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragmentHolder, FindFriendsFragment())
+            .commit()
+
 
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        navBar.selectedItemId = R.id.activityFragment
+        navBar.selectedItemId = R.id.findFriendsFragment
 
         navBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
