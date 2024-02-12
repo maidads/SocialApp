@@ -38,10 +38,20 @@
         <item name="android:textColor">@color/onPrimaryContainer</item>
     </style>
 
+    <!-- Style for user interest text in profile creation -->
+    <style name="userInterestsText" parent="Theme.AppCompat">
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">12sp</item>
+        <item name="autoSizeMaxTextSize">18sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+        <item name="android:fontFamily">@font/roboto_light</item>
+        <item name="android:textColor">@color/onPrimaryContainer</item>
+    </style>
+
     <!-- Style for the custom dialog popup window -->
     <style name="CustomAlertDialogStyle" parent="Theme.MaterialComponents.Dialog.Alert">
         <item name="colorPrimary">@color/primary</item>
-        <item name="android:textColorPrimary">@color/onPrimary</item>
+        <item name="android:textColorPrimary">@color/onBackground</item>
         <item name="colorAccent">@color/primary</item>
         <item name="android:background">@color/background</item>
         <item name="buttonBarPositiveButtonStyle">@style/CustomDialogButtonStyle</item>
