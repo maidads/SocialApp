@@ -2,6 +2,7 @@ package com.example.androidprojectma23
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -116,7 +117,8 @@ class LogInToAppActivity : AppCompatActivity() {
             val account = completedTask.getResult(ApiException::class.java)
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
-            Toast.makeText(this, "Inloggningen misslyckades, försök igen.", Toast.LENGTH_SHORT).show()
+            Log.e("!!!", "signInResult:failed code=" + e.statusCode)
+            Toast.makeText(this, "Inloggningen misslyckades, försök igen. Felkod: ${e.statusCode}", Toast.LENGTH_SHORT).show()
         }
     }
     private fun firebaseAuthWithGoogle(idToken: String) {
@@ -124,18 +126,37 @@ class LogInToAppActivity : AppCompatActivity() {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    val isNewUser = task.result?.additionalUserInfo?.isNewUser ?: false
+
+                    val isNewUser = task.result?.additionalUserInfo?.isNewUser == true
 
                     if (isNewUser) {
                         saveNewUserInfo()
+                        auth.currentUser?.uid?.let { userId ->
+                            navigateToProfileCreationStep1(userId)
+                        }
+                    } else {
+                        navigateToLandingPage()
                     }
-
-                    val intent = Intent(this, LandingPageActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                } else {
+                    Toast.makeText(this, "Autentisering misslyckades.", Toast.LENGTH_SHORT).show()
                 }
             }
     }
+
+    private fun navigateToProfileCreationStep1(userId: String) {
+        val fragment = ProfileCreationStep1Fragment.newInstance(userId)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun navigateToLandingPage() {
+        val intent = Intent(this, LandingPageActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
     private fun saveNewUserInfo() {
 
         val currentUser = auth.currentUser
