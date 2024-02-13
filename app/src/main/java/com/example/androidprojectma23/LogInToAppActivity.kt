@@ -137,8 +137,12 @@ class LogInToAppActivity : AppCompatActivity() {
             }
     }
     private fun saveNewUserInfo() {
+
+        val currentUser = auth.currentUser
         val user = hashMapOf(
-            "Username" to auth.currentUser?.email
+            "Username" to auth.currentUser?.email,
+            "userID" to currentUser?.uid
+
         )
 
         val db = Firebase.firestore

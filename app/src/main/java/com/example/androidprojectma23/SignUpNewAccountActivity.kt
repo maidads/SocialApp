@@ -62,15 +62,16 @@ class SignUpNewAccountActivity : AppCompatActivity() {
     }
 
     private fun saveUserData() {
-        val user = hashMapOf(
-            "Username" to newUsernameEditText.text.toString()
-        )
 
-        val db = Firebase.firestore
         val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val userData = hashMapOf(
+                "userID" to user.uid,
+                "Username" to newUsernameEditText.text.toString()
+            )
 
-        currentUser?.let {
-            db.collection("users").document(it.uid).set(user)
+            val db = Firebase.firestore
+            db.collection("users").document(user.uid).set(userData)
                 .addOnSuccessListener {
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
