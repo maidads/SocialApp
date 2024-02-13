@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.ktx.firestore
@@ -46,6 +48,15 @@ class Signup : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     saveUserData()
+                } else {
+                    Toast.makeText(this, "Registrering misslyckades.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener { exception ->
+                when (exception) {
+                    is FirebaseAuthWeakPasswordException -> Toast.makeText(this, "Lösenordet är för svagt.", Toast.LENGTH_SHORT).show()
+                    is FirebaseAuthUserCollisionException -> Toast.makeText(this, "Ett konto med denna email finns redan.", Toast.LENGTH_SHORT).show()
+                    else -> Toast.makeText(this, "Ett oväntat fel inträffade: ${exception.localizedMessage}", Toast.LENGTH_SHORT).show()
                 }
             }
     }

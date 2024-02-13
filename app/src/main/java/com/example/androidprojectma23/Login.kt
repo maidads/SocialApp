@@ -1,9 +1,7 @@
 package com.example.androidprojectma23
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -22,7 +20,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 
 
@@ -73,7 +70,7 @@ class Login : AppCompatActivity() {
 
          */
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.app_name))
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
 
@@ -119,7 +116,6 @@ class Login : AppCompatActivity() {
             val account = completedTask.getResult(ApiException::class.java)
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
-            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
             Toast.makeText(this, "Inloggningen misslyckades, försök igen.", Toast.LENGTH_SHORT).show()
         }
     }
@@ -164,7 +160,7 @@ class Login : AppCompatActivity() {
                 Toast.makeText(this, "Fel email eller lösenord.", Toast.LENGTH_SHORT).show()
             }
             is FirebaseAuthInvalidUserException -> {
-                val errorCode = (exception as FirebaseAuthInvalidUserException).errorCode
+                val errorCode = exception.errorCode
                 if (errorCode == "ERROR_USER_NOT_FOUND") {
                     Toast.makeText(this, "Email är inte registrerad.", Toast.LENGTH_SHORT).show()
                 }
