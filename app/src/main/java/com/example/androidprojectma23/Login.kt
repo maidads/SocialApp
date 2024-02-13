@@ -89,7 +89,7 @@ class Login : AppCompatActivity() {
         auth.signInWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, LandingPageActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else {
@@ -130,7 +130,7 @@ class Login : AppCompatActivity() {
                         saveNewUserInfo()
                     }
 
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, LandingPageActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
