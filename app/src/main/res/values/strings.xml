@@ -1,6 +1,39 @@
 <resources>
     <string name="app_name">AndroidProjectMA23</string>
 
+    <string name="profile_creation_title_text">Lägg till profilbild &amp; namn</string>
+    <string name="profile_creation_subtitle">Namn är obligatoriskt</string>
+    <string name="display_name_input_hint">Visningsnamn</string>
+    <string name="profile_creation_display_text_forOtherUsers">Visas för andra användare</string>
+    <string name="button_text_profile_creation_nextStep">Gå Vidare</string>
+    <string name="profile_creation_select_interest_text">Vad har du för intressen?</string>
+    <string name="profile_creation_image_dialog_gallery_icon">Välj bild från galleriet</string>
+    <string name="profile_creation_image_dialog_camera_icon">Använd kameran för att ta bild</string>
+    <string name="profile_creation_image_dialog_choose_option_text">Välj åtgärd</string>
+    <string name="button_profile_creation_done">Klar</string>
+    <string name="profile_creation_step2_go_back_textView"><u>Tillbaka</u></string>
+    <string name="music_interest_textView">Musik</string>
+    <string name="sports_interest_textView">Sport</string>
+    <string name="movies_interest_textView">Filmer</string>
+    <string name="arts_interest_textViews">Konst</string>
+    <string name="books_interest_textView">Böcker</string>
+    <string name="wine_interest_textView">Vin</string>
+    <string name="cooking_interest_textView">Matlagning</string>
+    <string name="trave_interest_textView">Resa</string>
+    <string name="festival_interest_textView">Festival</string>
+    <string name="fashion_interest_textView">Mode</string>
+    <string name="dance_interest_textView">Dans</string>
+    <string name="games_interest_textView">Spel</string>
+    <string name="yoga_interest_textView">Yoga</string>
+    <string name="camping_interest_textView">Campa</string>
+    <string name="fika_interest_textView">Fika</string>
+    <string name="training_interest_textView">Träning</string>
+    <string name="animal_interest_textView">Djur</string>
+    <string name="garden_interest_textView">Trädgård</string>
+    <string name="photograph_interest_textView">Fotografering</string>
+    <string name="technology_interest_textView">Teknik</string>
+    <string name="pick_atleast_one_interest_textView">Välj minst 1 alternativ</string>
+
     <string name="default_web_client_id">34100932509-6mpmhkped3p205pumov8n1g48b7nb3on.apps.googleusercontent.com</string>
 
 </resources>

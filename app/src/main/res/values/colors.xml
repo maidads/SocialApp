@@ -2,6 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="primary">#FF968C</color>
+    <color name="onPrimary">#F5F5F5</color>
+    <color name="primaryContainer">#FFD3CC</color>
+    <color name="onPrimaryContainer">#8E1A14</color>
+    <color name="background">#FFFFF0EC</color>
+    <color name="onBackground">#B07A67</color>
+    <color name="surface">#F5F5F5</color>
+    <color name="onSurface">#442B2D</color>
+  
     <color name="md_theme_primary">#FFA39A</color>
     <color name="md_theme_onPrimary">#FFFFFF</color>
     <color name="md_theme_primaryContainer">#FFA39A</color>
