@@ -10,9 +10,9 @@ import java.util.Collections
 
 class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
     ItemMoveCallback.ItemTouchHelperAdapter {
-    private var profiles: MutableList<Profile> = mutableListOf()
+    private var profiles: MutableList<User> = mutableListOf()
 
-    fun setProfiles(profiles: MutableList<Profile>) {
+    fun setProfiles(profiles: MutableList<User>) {
         this.profiles = profiles
         notifyDataSetChanged()
     }
@@ -38,7 +38,7 @@ class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHo
         val interestsTextView: TextView = view.findViewById(R.id.interestsTextView)
         val interestsContentTextView: TextView = view.findViewById(R.id.interestsContentTextView)
 
-        fun bind(profile: Profile) {
+        fun bind(profile: User) {
             // Fill with data from profile to views
             // profileImageView.setImageResource(profile.image)
             //
