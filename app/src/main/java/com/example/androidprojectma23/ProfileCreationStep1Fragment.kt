@@ -69,7 +69,7 @@ class ProfileCreationStep1Fragment : Fragment() {
             REQUEST_CAMERA_PERMISSION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Access granted
-                   openCameraForImage()
+                    openCameraForImage()
                 } else {
                     // Access denied
                 }
@@ -123,8 +123,8 @@ class ProfileCreationStep1Fragment : Fragment() {
                             Toast.makeText(context, "Misslyckades med att ladda upp bilden: ${exception.message}", Toast.LENGTH_SHORT).show()
                         })
                     } ?: run {
-                        // Om ingen bild är vald, spara bara visningsnamnet
                         saveProfileDisplayName(userId, displayName, null)
+                        navigateToProfileCreationStep2()
                     }
                 }
             }
@@ -177,7 +177,7 @@ class ProfileCreationStep1Fragment : Fragment() {
 
 
     private fun navigateToProfileCreationStep2() {
-        //parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
+        parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
     }
 
     private fun showImageSelectionDialog() {
