@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryDark">@color/onPrimaryContainer</item>
+        <item name="colorAccent">@color/primaryContainer</item>
+    </style>
+
+    <!-- Style for the background -->
+    <style name="AppBackground">
+        <item name="android:background">@color/background</item>
+    </style>
+
+    <style name="onBackgroundText">
+        <item name="android:textColor">@color/onBackground</item>
+    </style>
+
+    <!-- Surface color usage -->
+    <style name="AppCard">
+        <item name="android:background">@color/surface</item>
+    </style>
+
+    <!-- Style for headlines. -->
+    <style name="HeadlineText" parent="Theme.AppCompat">
+        <item name="android:textSize">30sp</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <!-- Style for subheadlines -->
+    <style name="SubheadlineText" parent="Theme.AppCompat">
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/onPrimaryContainer</item>
+    </style>
+
+    <!-- Style for user interest text in profile creation -->
+    <style name="userInterestsText" parent="Theme.AppCompat">
+        <item name="autoSizeTextType">uniform</item>
+        <item name="autoSizeMinTextSize">12sp</item>
+        <item name="autoSizeMaxTextSize">18sp</item>
+        <item name="autoSizeStepGranularity">1sp</item>
+        <item name="android:fontFamily">@font/roboto_light</item>
+        <item name="android:textColor">@color/onPrimaryContainer</item>
+    </style>
+
+    <!-- Style for the custom dialog popup window -->
+    <style name="CustomAlertDialogStyle" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="android:textColorPrimary">@color/onBackground</item>
+        <item name="colorAccent">@color/primary</item>
+        <item name="android:background">@color/background</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomDialogButtonStyle</item>
+    </style>
+
+    <!-- Style for the buttons in the custom dialog popup window -->
+    <style name="CustomDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/onPrimaryContainer</item>
+    </style>
+</resources>
