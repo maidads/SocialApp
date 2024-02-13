@@ -89,7 +89,7 @@ class LogInToAppActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, LandingPageActivity::class.java)
                     startActivity(intent)
                     finish()
                 } else {
@@ -130,17 +130,19 @@ class LogInToAppActivity : AppCompatActivity() {
                         saveNewUserInfo()
                     }
 
-                    val intent = Intent(this, MainActivity::class.java)
+                    val intent = Intent(this, LandingPageActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
             }
     }
     private fun saveNewUserInfo() {
+
         val currentUser = auth.currentUser
         val user = hashMapOf(
             "Username" to auth.currentUser?.email,
             "userID" to currentUser?.uid
+
         )
 
         val db = Firebase.firestore

@@ -62,6 +62,7 @@ class SignUpNewAccountActivity : AppCompatActivity() {
     }
 
     private fun saveUserData() {
+
         val currentUser = auth.currentUser
         currentUser?.let { user ->
             val userData = hashMapOf(
