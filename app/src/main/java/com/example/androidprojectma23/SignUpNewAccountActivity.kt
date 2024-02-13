@@ -14,7 +14,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.ktx.firestore
 
 
-class Signup : AppCompatActivity() {
+class SignUpNewAccountActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var newUsernameEditText: EditText

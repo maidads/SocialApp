@@ -23,7 +23,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.ktx.firestore
 
 
-class Login : AppCompatActivity() {
+class LogInToAppActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var usernameEditText: EditText
@@ -50,7 +50,7 @@ class Login : AppCompatActivity() {
         }
 
         registerTextView.setOnClickListener {
-            val intent1 = Intent(this, Signup::class.java)
+            val intent1 = Intent(this, SignUpNewAccountActivity::class.java)
             startActivity(intent1)
             finish()
         }
