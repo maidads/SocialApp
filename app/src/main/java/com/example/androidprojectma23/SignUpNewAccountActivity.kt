@@ -14,7 +14,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.firestore.ktx.firestore
 
 
-class Signup : AppCompatActivity() {
+class SignUpNewAccountActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var newUsernameEditText: EditText
@@ -62,15 +62,15 @@ class Signup : AppCompatActivity() {
     }
 
     private fun saveUserData() {
-        val user = hashMapOf(
-            "Username" to newUsernameEditText.text.toString()
-        )
-
-        val db = Firebase.firestore
         val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            val userData = hashMapOf(
+                "userID" to user.uid,
+                "Username" to newUsernameEditText.text.toString()
+            )
 
-        currentUser?.let {
-            db.collection("users").document(it.uid).set(user)
+            val db = Firebase.firestore
+            db.collection("users").document(user.uid).set(userData)
                 .addOnSuccessListener {
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
