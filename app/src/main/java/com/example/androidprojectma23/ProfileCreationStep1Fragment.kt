@@ -148,7 +148,7 @@ class ProfileCreationStep1Fragment : Fragment() {
 
 
     private fun navigateToProfileCreationStep2() {
-        parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
+        //parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
     }
 
     private fun showImageSelectionDialog() {
