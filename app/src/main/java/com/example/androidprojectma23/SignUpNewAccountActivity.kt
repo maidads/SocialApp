@@ -62,7 +62,6 @@ class SignUpNewAccountActivity : AppCompatActivity() {
     }
 
     private fun saveUserData() {
-
         val currentUser = auth.currentUser
         currentUser?.let { user ->
             val userData = hashMapOf(
@@ -73,9 +72,16 @@ class SignUpNewAccountActivity : AppCompatActivity() {
             val db = Firebase.firestore
             db.collection("users").document(user.uid).set(userData)
                 .addOnSuccessListener {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    navigateToProfileCreationStep1(user.uid)
                 }
         }
+    }
+
+    private fun navigateToProfileCreationStep1(userId: String) {
+        val fragment = ProfileCreationStep1Fragment.newInstance(userId)
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
