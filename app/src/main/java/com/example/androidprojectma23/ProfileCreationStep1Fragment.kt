@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
 
 class ProfileCreationStep1Fragment : Fragment() {
@@ -34,18 +35,20 @@ class ProfileCreationStep1Fragment : Fragment() {
 
     private lateinit var userProfileManager: UserProfileManager
     private var userId: String? = null
+    private var selectedImageUri: Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Extract userId from the fragment argument
-//        arguments?.let {
-//            userId = it.getString("USER_ID")
-//        }
+        arguments?.let {
+            userId = it.getString("USER_ID")
+        }
         // Initialize UserProfileManager
-//        userProfileManager = UserProfileManager(
-//            FirebaseStorage.getInstance().reference,
-//            FirebaseFirestore.getInstance()
-//        )
+        userProfileManager = UserProfileManager(
+            FirebaseStorage.getInstance().reference,
+            FirebaseFirestore.getInstance()
+        )
     }
 
     override fun onCreateView(
@@ -110,14 +113,23 @@ class ProfileCreationStep1Fragment : Fragment() {
             val displayName = displayNameEditText.text.toString().trim()
 
             if (displayName.isEmpty()) {
-                // Show a toast if display name is empty
                 Toast.makeText(requireContext(), "Du måste ange ett visningsnamn", Toast.LENGTH_SHORT).show()
             } else {
-                val userId = userId ?: "changeThisLater"
-               // saveProfileDisplayName(userId, displayName)
-                navigateToProfileCreationStep2()
+                userId?.let { userId ->
+                    selectedImageUri?.let { imageUri ->
+                        uploadProfileImage(userId, imageUri, onSuccess = { imageUrl ->
+                            saveProfileDisplayName(userId, displayName, imageUrl)
+                        }, onFailure = { exception ->
+                            Toast.makeText(context, "Misslyckades med att ladda upp bilden: ${exception.message}", Toast.LENGTH_SHORT).show()
+                        })
+                    } ?: run {
+                        // Om ingen bild är vald, spara bara visningsnamnet
+                        saveProfileDisplayName(userId, displayName, null)
+                    }
+                }
             }
         }
+
 
         userImagePlaceholder.setOnClickListener {
             showImageSelectionDialog()
@@ -131,20 +143,37 @@ class ProfileCreationStep1Fragment : Fragment() {
             .commit()
     }
 
-//    private fun saveProfileDisplayName(userId: String, displayName: String) {
-//
-//        userProfileManager.saveDisplayName(userId, displayName,
-//            onSuccess = {
-//                // Handle success
-//                Toast.makeText(context, "Display name saved successfully", Toast.LENGTH_SHORT).show()
-//            },
-//            onFailure = { exception ->
-//                // Handle failure
-//                Log.e("!!!", "Failed to save display name", exception)
-//                Toast.makeText(context, "Failed to save display name", Toast.LENGTH_SHORT).show()
-//            }
-//        )
-//    }
+    private fun saveProfileDisplayName(userId: String, displayName: String, profileImageUrl: String?) {
+        val userMap = HashMap<String, Any>().apply {
+            put("displayName", displayName)
+            profileImageUrl?.let { put("profileImageUrl", it) }
+        }
+
+        FirebaseFirestore.getInstance().collection("users").document(userId)
+            .set(userMap, SetOptions.merge())
+            .addOnSuccessListener {
+                Toast.makeText(context, "Profilen sparades framgångsrikt.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Det gick inte att spara profilen: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+
+    private fun uploadProfileImage(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+        val storageRef = FirebaseStorage.getInstance().reference.child("profileImages/$userId.jpg")
+        storageRef.putFile(imageUri)
+            .addOnSuccessListener {
+                storageRef.downloadUrl.addOnSuccessListener { uri ->
+                    val imageUrl = uri.toString()
+                    onSuccess(imageUrl)
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
 
 
     private fun navigateToProfileCreationStep2() {
