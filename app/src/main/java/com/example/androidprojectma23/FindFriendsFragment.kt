@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class FindFriendsFragment : Fragment() {
@@ -17,6 +18,11 @@ class FindFriendsFragment : Fragment() {
         arguments?.let {
 
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getDataFirestore()
     }
 
     override fun onCreateView(
@@ -30,7 +36,8 @@ class FindFriendsFragment : Fragment() {
             Profile("https://example.com/image3.jpg", "Konst, Film, Teknik"),
             Profile("https://example.com/image1.jpg", "Fotboll, Musik, Matlagning"),
             Profile("https://example.com/image2.jpg", "Resor, Läsning, Träning"),
-            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik")
+            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik"),
+                    Profile("https://example.com/image3.jpg", "Konst, Film, Teknik")
         )
 
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
@@ -47,5 +54,15 @@ class FindFriendsFragment : Fragment() {
         touchHelper.attachToRecyclerView(recyclerView)
 
         return view
+    }
+
+    fun getDataFirestore(){
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users")
+            .get()
+            .addOnSuccessListener {
+                val matchingFriendsList = ArrayList<User>()
+                
+            }
     }
 }
