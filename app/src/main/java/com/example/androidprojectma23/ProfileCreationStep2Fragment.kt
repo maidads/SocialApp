@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -112,6 +113,12 @@ class ProfileCreationStep2Fragment : Fragment() {
             userDocRef.update("selectedInterests", selectedDocIds)
                 .addOnSuccessListener {
                     Log.d("ProfileCreationStep2Fragment", "Intressen uppdaterade.")
+                    // Close current fragment
+                    requireActivity().supportFragmentManager.popBackStack()
+                    // Start landing page activity 
+                    val intent = Intent(requireContext(), LandingPageActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
                 }
                 .addOnFailureListener { e ->
                     Log.e("ProfileCreationStep2Fragment", "Fel vid uppdatering av intressen", e)
