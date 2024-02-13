@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">AndroidProjectMA23</string>
+
     <string name="profile_creation_title_text">Lägg till profilbild &amp; namn</string>
     <string name="profile_creation_subtitle">Namn är obligatoriskt</string>
     <string name="display_name_input_hint">Visningsnamn</string>
@@ -32,4 +33,7 @@
     <string name="photograph_interest_textView">Fotografering</string>
     <string name="technology_interest_textView">Teknik</string>
     <string name="pick_atleast_one_interest_textView">Välj minst 1 alternativ</string>
+
+    <string name="default_web_client_id">34100932509-6mpmhkped3p205pumov8n1g48b7nb3on.apps.googleusercontent.com</string>
+
 </resources>

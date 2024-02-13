@@ -3,5 +3,8 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/roboto_bold</item>
         <item>@font/roboto_medium</item>
+        <item>@font/alegreya_sc_black_italic</item>
+        <item>@font/amarante</item>
+        <item>@font/annie_use_your_telescope</item>
     </array>
 </resources>
