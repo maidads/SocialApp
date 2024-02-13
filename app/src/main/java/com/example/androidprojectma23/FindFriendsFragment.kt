@@ -8,35 +8,27 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class FindFriendsFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
+    private lateinit var adapter: ProfileCardAdapter
+    private val users = mutableListOf<User>()
 
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getDataFirestore()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val profiles = mutableListOf<Profile>(
-            Profile("https://example.com/image1.jpg", "Fotboll, Musik, Matlagning"),
-            Profile("https://example.com/image2.jpg", "Resor, Läsning, Träning"),
-            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik"),
-            Profile("https://example.com/image1.jpg", "Fotboll, Musik, Matlagning"),
-            Profile("https://example.com/image2.jpg", "Resor, Läsning, Träning"),
-            Profile("https://example.com/image3.jpg", "Konst, Film, Teknik")
-        )
-
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        val adapter = ProfileCardAdapter()
-        adapter.setProfiles(profiles)
+        adapter = ProfileCardAdapter()
+        adapter.setProfiles(users)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -47,5 +39,29 @@ class FindFriendsFragment : Fragment() {
         touchHelper.attachToRecyclerView(recyclerView)
 
         return view
+    }
+
+    private fun getDataFirestore(){
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result->
+                val matchingFriendsList = ArrayList<User>()
+                for (document in result) {
+                    val displayName = document.getString("displayName")
+                    val profileImage = document.getString("profileImage")
+                    val interest = document.getString("interests")
+                    val age = document.getString("age")
+
+                    if (displayName != null && profileImage != null && interest != null && age != null) {
+                        val user = User(displayName, profileImage, interest, age)
+                        matchingFriendsList.add(user)
+                    }
+                }
+
+                activity?.runOnUiThread {
+                    adapter.setProfiles(matchingFriendsList)
+                }
+            }
     }
 }
