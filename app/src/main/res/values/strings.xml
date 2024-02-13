@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">AndroidProjectMA23</string>
-
     <string name="profile_creation_title_text">Lägg till profilbild &amp; namn</string>
     <string name="profile_creation_subtitle">Namn är obligatoriskt</string>
     <string name="display_name_input_hint">Visningsnamn</string>
