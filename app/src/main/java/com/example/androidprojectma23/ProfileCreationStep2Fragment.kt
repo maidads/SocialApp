@@ -14,31 +14,40 @@ import java.util.Locale
 
 class ProfileCreationStep2Fragment : Fragment() {
 
-    private lateinit var database: FirebaseFirestore
+    private val database by lazy { FirebaseFirestore.getInstance() }
+    private var interests = mutableListOf<Interest>()
+    private lateinit var userId: String
 
-    private val imageViewIdToDocIdMap = mutableMapOf<Int, String>()
-    private val interestNameToImageViewId = mapOf(
-        "music" to R.id.icon_music,
-        "sport" to R.id.icon_sports,
-        "movies" to R.id.icon_movies,
-        "art" to R.id.icon_art,
-        "books" to R.id.icon_books,
-        "wine" to R.id.icon_wine,
-        "cooking" to R.id.icon_cooking,
-        "travel" to R.id.icon_travel,
-        "festival" to R.id.icon_festival,
-        "fashion" to R.id.icon_fashion,
-        "dance" to R.id.icon_dance,
-        "game" to R.id.icon_games,
-        "yoga" to R.id.icon_yoga,
-        "camping" to R.id.icon_camping,
-        "fika" to R.id.icon_fika,
-        "training" to R.id.icon_training,
-        "animal" to R.id.icon_animals,
-        "garden" to R.id.icon_garden,
-        "photography" to R.id.icon_photography,
-        "technology" to R.id.icon_technology
+    private val imageViewIdToFirestoreDocumentIdMap = mapOf(
+
+        R.id.icon_music to "qWAkLQAUlXIuJCn45ChZ",
+        R.id.icon_sports to "9NPO76LYaq9hl5KOCtC4",
+        R.id.icon_movies to "AYpDbrWtQOUOt7rBDXDH",
+        R.id.icon_art to "iglkcuMPG8egGg4scETR",
+        R.id.icon_books to "YmMikFDeggctuiqSYrmw",
+        R.id.icon_wine to "YvVGXixVaQSsMhAZaCy2",
+        R.id.icon_cooking to "HPQHhJeFC7wQaHyAFSnU",
+        R.id.icon_travel to "M9RqxG3Caa0JNT9h6ZTX",
+        R.id.icon_festival to "EymGn10U227Gf5xmducS",
+        R.id.icon_fashion to "vs5sifFqzkrCyVILxya6",
+        R.id.icon_dance to "zcz594bv81UYIWjhWgTy",
+        R.id.icon_games to "SM8Oh6Hnba6Gzjpn77RJ",
+        R.id.icon_yoga to "6O7GXIC0DWKz6T8wXCJa",
+        R.id.icon_camping to "HvJnJ1QKuS2l9IAzYkGa",
+        R.id.icon_fika to "0YB3cpO2ducwVQeuCmHC",
+        R.id.icon_training to "xZ4sv4Th1Rx3xmUWPr7C",
+        R.id.icon_animals to "YeByZ6w5see5N6GfBPYI",
+        R.id.icon_garden to "zBgJksLJY1Fa0s3oUSvg",
+        R.id.icon_photography to "ftWLcl8ag7pabyuSSJih",
+        R.id.icon_technology to "GTPROJYniNOrFBivL7wE"
     )
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            userId = it.getString("USER_ID") ?: throw IllegalArgumentException("User ID is required")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,19 +60,7 @@ class ProfileCreationStep2Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val database = FirebaseFirestore.getInstance()
-
-        database.collection("interest").get().addOnSuccessListener { documents ->
-            for (document in documents) {
-                val interestName = document.getString("name")?.toLowerCase(Locale.ROOT) ?: continue
-                val documentId = document.id
-                interestNameToImageViewId[interestName]?.let { imageViewId ->
-                    imageViewIdToDocIdMap[imageViewId] = documentId
-                }
-            }
-        }
         initUI(view)
-
     }
 
     private fun initUI(view: View) {
@@ -79,9 +76,12 @@ class ProfileCreationStep2Fragment : Fragment() {
 
         val selectedInterest = mutableListOf<Int>()
 
-        val interestClickListener = View.OnClickListener { imageView ->
-            imageView as ImageView // Cast view to imageView
+        val interestClickListener = View.OnClickListener { view ->
+            val imageView = view as ImageView
             val isSelected = selectedInterest.contains(imageView.id)
+
+            // Hämta Firestore-dokument-ID baserat på ImageView ID
+            val documentId = imageViewIdToFirestoreDocumentIdMap[imageView.id]
 
             if (isSelected) {
                 imageView.alpha = 1f
@@ -90,6 +90,7 @@ class ProfileCreationStep2Fragment : Fragment() {
                 imageView.alpha = 0.5f
                 selectedInterest.add(imageView.id)
             }
+            Log.d("!!!", "Valt intresse: $documentId")
         }
 
         // Put OnClickListener on each ImageView
@@ -102,28 +103,38 @@ class ProfileCreationStep2Fragment : Fragment() {
 
         view.findViewById<Button>(R.id.button_profile_creation_done).setOnClickListener {
 
-            val selectedDocIds = selectedInterest.mapNotNull { imageViewId ->
-                imageViewIdToDocIdMap[imageViewId]
-            }
+            val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
+                imageViewIdToFirestoreDocumentIdMap[imageViewId]
+            }.toSet().toList()
 
-            val userId = "användarens ID här"
+
             val userDocRef = database.collection("users").document(userId)
-
-            // Update user docoument with the id of the interests
-            userDocRef.update("selectedInterests", selectedDocIds)
+            userDocRef.update("interests", selectedDocIdsList)
                 .addOnSuccessListener {
-                    Log.d("ProfileCreationStep2Fragment", "Intressen uppdaterade.")
-                    // Close current fragment
-                    requireActivity().supportFragmentManager.popBackStack()
-                    // Start landing page activity 
-                    val intent = Intent(requireContext(), LandingPageActivity::class.java)
+                    Log.d("!!!", "Användarens intressen har uppdaterats.")
+
+                    val intent = Intent(activity, LandingPageActivity::class.java)
                     startActivity(intent)
-                    requireActivity().finish()
+                    activity?.finish()
+
                 }
                 .addOnFailureListener { e ->
-                    Log.e("ProfileCreationStep2Fragment", "Fel vid uppdatering av intressen", e)
+                    Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+
                 }
         }
 
+
+    }
+
+    companion object {
+        fun newInstance(userId: String): ProfileCreationStep2Fragment {
+            val fragment = ProfileCreationStep2Fragment()
+            val args = Bundle().apply {
+                putString("USER_ID", userId)
+            }
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
