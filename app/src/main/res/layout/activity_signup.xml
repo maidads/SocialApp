@@ -53,13 +53,13 @@
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="116dp"
+            android:layout_marginTop="76dp"
             android:fontFamily="@font/roboto_medium"
             android:text="Kompis Kompassen"
             android:textAlignment="center"
             android:textColor="@color/md_theme_primaryContainer_mediumContrast"
             android:textSize="60sp"
-            android:textStyle="normal"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -68,11 +68,22 @@
             android:id="@+id/signUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="25dp"
             android:text="Skapa konto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/outlinedTextField2" />
+
+        <TextView
+            android:id="@+id/registerTextVieww"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="56dp"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="sans-serif"
+            android:text="Registrera dig här"
+            app:layout_constraintBottom_toTopOf="@+id/outlinedTextField"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
