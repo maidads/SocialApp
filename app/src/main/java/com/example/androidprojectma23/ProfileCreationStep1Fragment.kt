@@ -124,7 +124,7 @@ class ProfileCreationStep1Fragment : Fragment() {
                         })
                     } ?: run {
                         saveProfileDisplayName(userId, displayName, null)
-                        navigateToProfileCreationStep2()
+                        navigateToProfileCreationStep2(userId)
                     }
                 }
             }
@@ -176,8 +176,9 @@ class ProfileCreationStep1Fragment : Fragment() {
 
 
 
-    private fun navigateToProfileCreationStep2() {
-        parentFragmentManager.navigateTo(ProfileCreationStep2Fragment(), R.id.fragment_container)
+    private fun navigateToProfileCreationStep2(userId: String) {
+        val profileCreationStep2Fragment = ProfileCreationStep2Fragment.newInstance(userId)
+        parentFragmentManager.navigateTo(profileCreationStep2Fragment, R.id.fragment_container)
     }
 
     private fun showImageSelectionDialog() {
