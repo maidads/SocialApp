@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
@@ -15,9 +17,10 @@ import java.util.Locale
 class ProfileCreationStep2Fragment : Fragment() {
 
     private val database by lazy { FirebaseFirestore.getInstance() }
-    private var interests = mutableListOf<Interest>()
+    private lateinit var backButton: TextView
     private lateinit var userId: String
 
+    private var selectedInterest = mutableListOf<Int>()
     private val imageViewIdToFirestoreDocumentIdMap = mapOf(
 
         R.id.icon_music to "qWAkLQAUlXIuJCn45ChZ",
@@ -65,7 +68,9 @@ class ProfileCreationStep2Fragment : Fragment() {
 
     private fun initUI(view: View) {
 
-        // list of all imageViews for the interest icons
+        backButton = view.findViewById(R.id.go_back_textView)
+
+        // List of all imageViews for the interest icons
         val userInterests = listOf(
             R.id.icon_music, R.id.icon_sports, R.id.icon_movies, R.id.icon_art,
             R.id.icon_books, R.id.icon_wine, R.id.icon_cooking, R.id.icon_travel,
@@ -74,13 +79,11 @@ class ProfileCreationStep2Fragment : Fragment() {
             R.id.icon_animals, R.id.icon_garden, R.id.icon_photography, R.id.icon_technology
         )
 
-        val selectedInterest = mutableListOf<Int>()
-
         val interestClickListener = View.OnClickListener { view ->
             val imageView = view as ImageView
             val isSelected = selectedInterest.contains(imageView.id)
 
-            // Hämta Firestore-dokument-ID baserat på ImageView ID
+            // Get document-ID based on ImageView ID
             val documentId = imageViewIdToFirestoreDocumentIdMap[imageView.id]
 
             if (isSelected) {
@@ -101,30 +104,74 @@ class ProfileCreationStep2Fragment : Fragment() {
             }
         }
 
+//        view.findViewById<Button>(R.id.button_profile_creation_done).setOnClickListener {
+//            if (selectedInterest.isEmpty()) {
+//
+//                Toast.makeText(context, "Välj minst ett intresse för att fortsätta.", Toast.LENGTH_LONG).show()
+//            } else {
+//
+//                val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
+//                    imageViewIdToFirestoreDocumentIdMap[imageViewId]
+//                }.toSet().toList()
+//
+//                val userDocRef = database.collection("users").document(userId)
+//                userDocRef.update("interests", selectedDocIdsList)
+//                    .addOnSuccessListener {
+//                        Log.d("!!!", "Användarens intressen har uppdaterats.")
+//
+//                        val intent = Intent(activity, LandingPageActivity::class.java)
+//                        startActivity(intent)
+//                        activity?.finish()
+//                    }
+//                    .addOnFailureListener { e ->
+//                        Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+//                    }
+//            }
+//        }
+
         view.findViewById<Button>(R.id.button_profile_creation_done).setOnClickListener {
-
-            val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
-                imageViewIdToFirestoreDocumentIdMap[imageViewId]
-            }.toSet().toList()
-
-
-            val userDocRef = database.collection("users").document(userId)
-            userDocRef.update("interests", selectedDocIdsList)
-                .addOnSuccessListener {
-                    Log.d("!!!", "Användarens intressen har uppdaterats.")
-
-                    val intent = Intent(activity, LandingPageActivity::class.java)
-                    startActivity(intent)
-                    activity?.finish()
-
-                }
-                .addOnFailureListener { e ->
-                    Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
-
-                }
+            handleProfileCompletion()
         }
 
+        backButton.setOnClickListener {
+            parentFragmentManager.popBackStack()
 
+        }
+
+    }
+
+    private fun handleProfileCompletion() {
+        if (selectedInterest.isEmpty()) {
+            Toast.makeText(context, "Välj minst ett intresse för att fortsätta.", Toast.LENGTH_LONG).show()
+        } else {
+            saveSelectedInterestsAndNavigate()
+        }
+    }
+
+    private fun saveSelectedInterestsAndNavigate() {
+        val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
+            imageViewIdToFirestoreDocumentIdMap[imageViewId]
+        }.toSet().toList()
+
+        updateInterestsInFirestore(selectedDocIdsList)
+    }
+
+    private fun updateInterestsInFirestore(selectedDocIdsList: List<String>) {
+        val userDocRef = database.collection("users").document(userId)
+        userDocRef.update("interests", selectedDocIdsList)
+            .addOnSuccessListener {
+                Log.d("!!!", "Användarens intressen har uppdaterats.")
+                navigateToLandingPage()
+            }
+            .addOnFailureListener { e ->
+                Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+            }
+    }
+
+    private fun navigateToLandingPage() {
+        val intent = Intent(activity, LandingPageActivity::class.java)
+        startActivity(intent)
+        activity?.finish()
     }
 
     companion object {

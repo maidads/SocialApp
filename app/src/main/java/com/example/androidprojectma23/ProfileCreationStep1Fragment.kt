@@ -21,11 +21,15 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.storage.FirebaseStorage
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 
 class ProfileCreationStep1Fragment : Fragment() {
 
@@ -86,21 +90,28 @@ class ProfileCreationStep1Fragment : Fragment() {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     val imageBitmap = data?.extras?.get("data") as? Bitmap
-
                     imageBitmap?.let {
                         userImagePlaceholder.setImageBitmap(it)
+                        val imageUri = saveImageToUri(it)
+                        if (imageUri != null) {
+                            selectedImageUri = imageUri
+                        } else {
+                            Toast.makeText(context, "Problem att spara bilden", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
                 REQUEST_GALLERY_IMAGE -> {
                     val imageUri = data?.data
-
                     imageUri?.let {
                         userImagePlaceholder.setImageURI(it)
+                        selectedImageUri = it
                     }
                 }
             }
         }
     }
+
+
 
 
 
@@ -110,29 +121,43 @@ class ProfileCreationStep1Fragment : Fragment() {
         userImagePlaceholder = view.findViewById(R.id.profile_image_placeholder)
 
         nextStepButton.setOnClickListener {
-            val displayName = displayNameEditText.text.toString().trim()
-
-            if (displayName.isEmpty()) {
-                Toast.makeText(requireContext(), "Du måste ange ett visningsnamn", Toast.LENGTH_SHORT).show()
-            } else {
-                userId?.let { userId ->
-                    selectedImageUri?.let { imageUri ->
-                        uploadProfileImage(userId, imageUri, onSuccess = { imageUrl ->
-                            saveProfileDisplayName(userId, displayName, imageUrl)
-                        }, onFailure = { exception ->
-                            Toast.makeText(context, "Misslyckades med att ladda upp bilden: ${exception.message}", Toast.LENGTH_SHORT).show()
-                        })
-                    } ?: run {
-                        saveProfileDisplayName(userId, displayName, null)
-                        navigateToProfileCreationStep2(userId)
-                    }
-                }
-            }
+            handleNextStep()
         }
-
 
         userImagePlaceholder.setOnClickListener {
             showImageSelectionDialog()
+        }
+    }
+
+    private fun handleNextStep() {
+        val displayName = displayNameEditText.text.toString().trim()
+        if (displayName.isEmpty()) {
+            Toast.makeText(context, "Du måste ange ett visningsnamn för att fortsätta", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        userId?.let { uid ->
+            saveDisplayNameAndContinue(uid, displayName)
+        }
+    }
+
+    private fun saveDisplayNameAndContinue(userId: String, displayName: String) {
+        userProfileManager.saveDisplayName(userId, displayName, onSuccess = {
+            uploadImageIfSelected(userId)
+        }, onFailure = { exception ->
+            Toast.makeText(context, "Kunde inte spara visningsnamnet: ${exception.message}", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun uploadImageIfSelected(userId: String) {
+        if (selectedImageUri != null) {
+            userProfileManager.uploadProfileImage(userId, selectedImageUri!!, onSuccess = {
+              navigateToProfileCreationStep2(userId)
+            }, onFailure = { exception ->
+                Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_SHORT).show()
+            })
+        } else {
+            navigateToProfileCreationStep2(userId)
         }
     }
 
@@ -142,39 +167,6 @@ class ProfileCreationStep1Fragment : Fragment() {
             .addToBackStack(null)
             .commit()
     }
-
-    private fun saveProfileDisplayName(userId: String, displayName: String, profileImageUrl: String?) {
-        val userMap = HashMap<String, Any>().apply {
-            put("displayName", displayName)
-            profileImageUrl?.let { put("profileImageUrl", it) }
-        }
-
-        FirebaseFirestore.getInstance().collection("users").document(userId)
-            .set(userMap, SetOptions.merge())
-            .addOnSuccessListener {
-                Toast.makeText(context, "Profilen sparades framgångsrikt.", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(context, "Det gick inte att spara profilen: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-
-    private fun uploadProfileImage(userId: String, imageUri: Uri, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("profileImages/$userId.jpg")
-        storageRef.putFile(imageUri)
-            .addOnSuccessListener {
-                storageRef.downloadUrl.addOnSuccessListener { uri ->
-                    val imageUrl = uri.toString()
-                    onSuccess(imageUrl)
-                }
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
-    }
-
-
 
     private fun navigateToProfileCreationStep2(userId: String) {
         val profileCreationStep2Fragment = ProfileCreationStep2Fragment.newInstance(userId)
@@ -240,6 +232,25 @@ class ProfileCreationStep1Fragment : Fragment() {
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
         }
     }
+
+    private fun saveImageToUri(bitmap: Bitmap): Uri? {
+        val context = context ?: return null
+        val imagesFolder = File(context.cacheDir, "images")
+        if (!imagesFolder.exists()) imagesFolder.mkdirs()
+        val file = File(imagesFolder, "profile_image_${System.currentTimeMillis()}.jpg")
+
+        try {
+            val stream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            stream.flush()
+            stream.close()
+            return FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
 
     companion object {
 

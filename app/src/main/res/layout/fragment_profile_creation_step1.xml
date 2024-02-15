@@ -51,8 +51,9 @@
         android:id="@+id/profile_image_placeholder"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintHeight_percent="0.4"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_creation_subtitle_textView"
@@ -63,19 +64,18 @@
         android:id="@+id/displayName_textInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintWidth_percent="0.7"
+        android:layout_marginTop="30dp"
+        app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profile_image_placeholder"
-        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+        app:layout_constraintWidth_percent="0.7">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/displayName_textInputEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/display_name_input_hint"
-            android:inputType="textPersonName"
-            android:imeOptions="actionDone" />
+            android:hint="@string/display_name_input_hint" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
