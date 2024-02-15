@@ -121,34 +121,43 @@ class ProfileCreationStep1Fragment : Fragment() {
         userImagePlaceholder = view.findViewById(R.id.profile_image_placeholder)
 
         nextStepButton.setOnClickListener {
-            val displayName = displayNameEditText.text.toString().trim()
-            if (displayName.isEmpty()) {
-
-                Toast.makeText(context, "Du måste ange ett visningsnamn för att fortsätta.", Toast.LENGTH_LONG).show()
-            } else {
-
-                userId?.let { uid ->
-                    if (selectedImageUri != null) {
-
-                        userProfileManager.uploadProfileImage(uid, selectedImageUri!!, {
-
-                            navigateToProfileCreationStep2(uid)
-                        }, { exception ->
-
-                            Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_LONG).show()
-                        })
-                    } else {
-
-                        navigateToProfileCreationStep2(uid)
-                    }
-                }
-            }
+            handleNextStep()
         }
-
-
 
         userImagePlaceholder.setOnClickListener {
             showImageSelectionDialog()
+        }
+    }
+
+    private fun handleNextStep() {
+        val displayName = displayNameEditText.text.toString().trim()
+        if (displayName.isEmpty()) {
+            Toast.makeText(context, "Du måste ange ett visningsnamn för att fortsätta", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        userId?.let { uid ->
+            saveDisplayNameAndContinue(uid, displayName)
+        }
+    }
+
+    private fun saveDisplayNameAndContinue(userId: String, displayName: String) {
+        userProfileManager.saveDisplayName(userId, displayName, onSuccess = {
+            uploadImageIfSelected(userId)
+        }, onFailure = { exception ->
+            Toast.makeText(context, "Kunde inte spara visningsnamnet: ${exception.message}", Toast.LENGTH_LONG).show()
+        })
+    }
+
+    private fun uploadImageIfSelected(userId: String) {
+        if (selectedImageUri != null) {
+            userProfileManager.uploadProfileImage(userId, selectedImageUri!!, onSuccess = {
+              navigateToProfileCreationStep2(userId)
+            }, onFailure = { exception ->
+                Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_SHORT).show()
+            })
+        } else {
+            navigateToProfileCreationStep2(userId)
         }
     }
 
@@ -158,7 +167,6 @@ class ProfileCreationStep1Fragment : Fragment() {
             .addToBackStack(null)
             .commit()
     }
-
 
     private fun navigateToProfileCreationStep2(userId: String) {
         val profileCreationStep2Fragment = ProfileCreationStep2Fragment.newInstance(userId)
