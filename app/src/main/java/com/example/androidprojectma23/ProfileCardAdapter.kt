@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.util.Collections
 
-class ProfileCardAdapter (private val user: MutableList<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
     ItemMoveCallback.ItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(
@@ -49,6 +49,10 @@ class ProfileCardAdapter (private val user: MutableList<User>) : RecyclerView.Ad
         notifyItemRemoved(position)
     }
 
+    fun updateData(newUsers: List<User>) {
+        user = newUsers.toMutableList()
+        notifyDataSetChanged()
+    }
 
 }
 
