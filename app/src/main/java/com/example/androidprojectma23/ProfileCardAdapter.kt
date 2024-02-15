@@ -1,6 +1,5 @@
 package com.example.androidprojectma23
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,7 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
 
-class ProfileCardAdapter (private val matchingFriendsList: List<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+class ProfileCardAdapter (private val user: List<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
     ItemMoveCallback.ItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(
@@ -21,12 +20,12 @@ class ProfileCardAdapter (private val matchingFriendsList: List<User>) : Recycle
     }
 
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
-        val user = this.matchingFriendsList[position]
+        val user = this.user[position]
         holder.bind(user)
     }
 
     override fun getItemCount(): Int {
-        return this.matchingFriendsList.size
+        return this.user.size
     }
 
     inner class ProfileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -43,7 +42,7 @@ class ProfileCardAdapter (private val matchingFriendsList: List<User>) : Recycle
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        Collections.swap(this.matchingFriendsList, fromPosition, toPosition)
+        Collections.swap(this.user, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
     }
 

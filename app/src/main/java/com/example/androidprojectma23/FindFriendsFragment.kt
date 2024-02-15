@@ -19,6 +19,10 @@ class FindFriendsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getDataFirestore()
+
+        matchingFriendsList.add(User("Alice", "alice.jpg", "Böcker, Musikk", "25"))
+        matchingFriendsList.add(User("Bob", "bob.jpg", "Sport, Matlagning", "30"))
+        matchingFriendsList.add(User("Charlie", "charlie.jpg", "Resor, Fotografering", "35"))
     }
 
     override fun onCreateView(
@@ -56,10 +60,6 @@ class FindFriendsFragment : Fragment() {
                         val user = User(displayName, profileImage, interests, age)
                         matchingFriendsList.add(user)
                     }
-
-                    matchingFriendsList.add(User("Alice", "alice.jpg", "Böcker, Musikk", "25"))
-                    matchingFriendsList.add(User("Bob", "bob.jpg", "Sport, Matlagning", "30"))
-                    matchingFriendsList.add(User("Charlie", "charlie.jpg", "Resor, Fotografering", "35"))
                 }
 
                 activity?.runOnUiThread {
