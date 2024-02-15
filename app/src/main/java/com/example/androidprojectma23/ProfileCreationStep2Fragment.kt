@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
@@ -15,7 +17,7 @@ import java.util.Locale
 class ProfileCreationStep2Fragment : Fragment() {
 
     private val database by lazy { FirebaseFirestore.getInstance() }
-    private var interests = mutableListOf<Interest>()
+    private lateinit var backButton: TextView
     private lateinit var userId: String
 
     private val imageViewIdToFirestoreDocumentIdMap = mapOf(
@@ -65,6 +67,8 @@ class ProfileCreationStep2Fragment : Fragment() {
 
     private fun initUI(view: View) {
 
+        backButton = view.findViewById(R.id.go_back_textView)
+
         // list of all imageViews for the interest icons
         val userInterests = listOf(
             R.id.icon_music, R.id.icon_sports, R.id.icon_movies, R.id.icon_art,
@@ -102,26 +106,33 @@ class ProfileCreationStep2Fragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.button_profile_creation_done).setOnClickListener {
+            if (selectedInterest.isEmpty()) {
 
-            val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
-                imageViewIdToFirestoreDocumentIdMap[imageViewId]
-            }.toSet().toList()
+                Toast.makeText(context, "Välj minst ett intresse för att fortsätta.", Toast.LENGTH_LONG).show()
+            } else {
 
+                val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
+                    imageViewIdToFirestoreDocumentIdMap[imageViewId]
+                }.toSet().toList()
 
-            val userDocRef = database.collection("users").document(userId)
-            userDocRef.update("interests", selectedDocIdsList)
-                .addOnSuccessListener {
-                    Log.d("!!!", "Användarens intressen har uppdaterats.")
+                val userDocRef = database.collection("users").document(userId)
+                userDocRef.update("interests", selectedDocIdsList)
+                    .addOnSuccessListener {
+                        Log.d("!!!", "Användarens intressen har uppdaterats.")
 
-                    val intent = Intent(activity, LandingPageActivity::class.java)
-                    startActivity(intent)
-                    activity?.finish()
+                        val intent = Intent(activity, LandingPageActivity::class.java)
+                        startActivity(intent)
+                        activity?.finish()
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+                    }
+            }
+        }
 
-                }
-                .addOnFailureListener { e ->
-                    Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+        backButton.setOnClickListener {
+            parentFragmentManager.popBackStack()
 
-                }
         }
 
 
