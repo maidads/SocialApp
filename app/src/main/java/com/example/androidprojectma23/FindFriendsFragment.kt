@@ -27,8 +27,7 @@ class FindFriendsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter()
-        adapter.setProfiles(matchingFriendsList)
+        adapter = ProfileCardAdapter(matchingFriendsList)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -50,13 +49,17 @@ class FindFriendsFragment : Fragment() {
                 for (document in result) {
                     val displayName = document.getString("displayName")
                     val profileImage = document.getString("profileImage")
-                    val interests = "hej"
+                    val interests = document.getString("interests")
                     val age = document.getString("age")
 
                     if (displayName != null && profileImage != null && interests != null && age != null) {
                         val user = User(displayName, profileImage, interests, age)
                         matchingFriendsList.add(user)
                     }
+
+                    matchingFriendsList.add(User("Alice", "alice.jpg", "Böcker, Musikk", "25"))
+                    matchingFriendsList.add(User("Bob", "bob.jpg", "Sport, Matlagning", "30"))
+                    matchingFriendsList.add(User("Charlie", "charlie.jpg", "Resor, Fotografering", "35"))
                 }
 
                 activity?.runOnUiThread {
