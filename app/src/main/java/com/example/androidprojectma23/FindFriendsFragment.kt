@@ -1,6 +1,7 @@
 package com.example.androidprojectma23
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -19,10 +20,6 @@ class FindFriendsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getDataFirestore()
-
-        matchingFriendsList.add(User("Alice", "alice.jpg", "Böcker, Musikk", "25"))
-        matchingFriendsList.add(User("Bob", "bob.jpg", "Sport, Matlagning", "30"))
-        matchingFriendsList.add(User("Charlie", "charlie.jpg", "Resor, Fotografering", "35"))
     }
 
     override fun onCreateView(
@@ -52,19 +49,18 @@ class FindFriendsFragment : Fragment() {
                 matchingFriendsList.clear()
                 for (document in result) {
                     val displayName = document.getString("displayName")
-                    val profileImage = document.getString("profileImage")
-                    val interests = document.getString("interests")
-                    val age = document.getString("age")
+                    val profileImage = document.getString("profileImageUrl")
+                    val interestsList = document.get("interests") as? List<String>
 
-                    if (displayName != null && profileImage != null && interests != null && age != null) {
-                        val user = User(displayName, profileImage, interests, age)
+
+                    if (displayName != null && profileImage != null && interestsList != null) {
+                        val interests = interestsList.joinToString(", ")
+                        val user = User(displayName, profileImage, interests)
                         matchingFriendsList.add(user)
                     }
                 }
-
-                activity?.runOnUiThread {
-                    adapter.notifyDataSetChanged()
-                }
+                adapter.updateData(matchingFriendsList)
+                adapter.notifyDataSetChanged()
             }
     }
 }
