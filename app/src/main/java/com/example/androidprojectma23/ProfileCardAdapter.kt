@@ -28,16 +28,16 @@ class ProfileCardAdapter (private val user: List<User>) : RecyclerView.Adapter<P
         return this.user.size
     }
 
-    inner class ProfileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val profileImageView: ImageView = view.findViewById(R.id.profileImageView)
-        val interestsTextView: TextView = view.findViewById(R.id.interestsTextView)
-        val interestsContentTextView: TextView = view.findViewById(R.id.interestsContentTextView)
+    inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val interestsTextView: TextView =
 
         fun bind(user: User) {
-            // Fill with data from profile to views
-            // profileImageView.setImageResource(profile.image)
-            //
-            interestsContentTextView.text = user.interests ?: ""
+            Glide.with(view.context)
+                .load(user.profileImage)
+                .into(view.findViewById(R.id.profileImageView))
+
+            view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
+            view.findViewById<TextView>(R.id.interestsContentTextView).text = user.interests
         }
     }
 
