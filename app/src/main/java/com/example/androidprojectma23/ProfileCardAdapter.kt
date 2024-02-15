@@ -3,19 +3,14 @@ package com.example.androidprojectma23
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.util.Collections
 
-class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+class ProfileCardAdapter (private val user: List<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
     ItemMoveCallback.ItemTouchHelperAdapter {
-    private var profiles: MutableList<User> = mutableListOf()
 
-    fun setProfiles(profiles: MutableList<User>) {
-        this.profiles = profiles
-        notifyDataSetChanged()
-    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -25,34 +20,32 @@ class ProfileCardAdapter : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHo
     }
 
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
-        val profile = profiles[position]
-        holder.bind(profile)
+        val user = this.user[position]
+        holder.bind(user)
     }
 
     override fun getItemCount(): Int {
-        return profiles.size
+        return this.user.size
     }
 
-    inner class ProfileViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val profileImageView: ImageView = view.findViewById(R.id.profileImageView)
-        val interestsTextView: TextView = view.findViewById(R.id.interestsTextView)
-        val interestsContentTextView: TextView = view.findViewById(R.id.interestsContentTextView)
+    inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(user: User) {
+            Glide.with(view.context)
+                .load(user.profileImage)
+                .into(view.findViewById(R.id.profileImageView))
 
-        fun bind(profile: User) {
-            // Fill with data from profile to views
-            // profileImageView.setImageResource(profile.image)
-            //
-            interestsContentTextView.text = profile.interests
+            view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
+            view.findViewById<TextView>(R.id.interestsContentTextView).text = user.interests
         }
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
-        Collections.swap(profiles, fromPosition, toPosition)
+        Collections.swap(this.user, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
     }
 
     override fun onItemDismiss(position: Int) {
-        profiles.removeAt(position)
+        //this.matchingFriendsList.removeAt(position)
         notifyItemRemoved(position)
     }
 

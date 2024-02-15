@@ -14,11 +14,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 class FindFriendsFragment : Fragment() {
 
     private lateinit var adapter: ProfileCardAdapter
-    private val users = mutableListOf<User>()
+    private val matchingFriendsList = mutableListOf<User>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getDataFirestore()
+
+        matchingFriendsList.add(User("Alice", "alice.jpg", "Böcker, Musikk", "25"))
+        matchingFriendsList.add(User("Bob", "bob.jpg", "Sport, Matlagning", "30"))
+        matchingFriendsList.add(User("Charlie", "charlie.jpg", "Resor, Fotografering", "35"))
     }
 
     override fun onCreateView(
@@ -27,8 +31,7 @@ class FindFriendsFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter()
-        adapter.setProfiles(users)
+        adapter = ProfileCardAdapter(matchingFriendsList)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
@@ -41,26 +44,26 @@ class FindFriendsFragment : Fragment() {
         return view
     }
 
-    private fun getDataFirestore(){
+    private fun getDataFirestore() {
         val db = FirebaseFirestore.getInstance()
         db.collection("users")
             .get()
-            .addOnSuccessListener { result->
-                val matchingFriendsList = ArrayList<User>()
+            .addOnSuccessListener { result ->
+                matchingFriendsList.clear()
                 for (document in result) {
                     val displayName = document.getString("displayName")
                     val profileImage = document.getString("profileImage")
-                    val interest = document.getString("interests")
+                    val interests = document.getString("interests")
                     val age = document.getString("age")
 
-                    if (displayName != null && profileImage != null && interest != null && age != null) {
-                       val user = User(displayName, profileImage, interest, age)
-                       matchingFriendsList.add(user)
+                    if (displayName != null && profileImage != null && interests != null && age != null) {
+                        val user = User(displayName, profileImage, interests, age)
+                        matchingFriendsList.add(user)
                     }
                 }
 
                 activity?.runOnUiThread {
-                    adapter.setProfiles(matchingFriendsList)
+                    adapter.notifyDataSetChanged()
                 }
             }
     }
