@@ -54,10 +54,9 @@ class FindFriendsFragment : Fragment() {
                     val displayName = document.getString("displayName")
                     val profileImage = document.getString("profileImage")
                     val interests = document.getString("interests")
-                    val age = document.getString("age")
 
-                    if (displayName != null && profileImage != null && interests != null && age != null) {
-                        val user = User(displayName, profileImage, interests, age)
+                    if (displayName != null && profileImage != null && interests != null) {
+                        val user = User(displayName, profileImage, interests, "0")
                         matchingFriendsList.add(user)
                     }
                 }
