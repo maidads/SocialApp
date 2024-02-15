@@ -3,9 +3,9 @@ package com.example.androidprojectma23
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.util.Collections
 
 class ProfileCardAdapter (private val user: List<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
@@ -29,8 +29,6 @@ class ProfileCardAdapter (private val user: List<User>) : RecyclerView.Adapter<P
     }
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val interestsTextView: TextView =
-
         fun bind(user: User) {
             Glide.with(view.context)
                 .load(user.profileImage)
