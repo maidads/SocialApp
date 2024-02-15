@@ -34,5 +34,6 @@
     <string name="pick_atleast_one_interest_textView">Välj minst 1 alternativ</string>
 
     <string name="default_web_client_id">34100932509-6mpmhkped3p205pumov8n1g48b7nb3on.apps.googleusercontent.com</string>
+    <string name="display_name">Display name</string>
 
 </resources>
