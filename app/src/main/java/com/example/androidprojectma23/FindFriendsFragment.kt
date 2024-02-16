@@ -27,18 +27,20 @@ class FindFriendsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
-
         adapter = ProfileCardAdapter(matchingFriendsList)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this.context)
         recyclerView.adapter = adapter
+        val touchHelper = setUpItemTouchHelper(adapter)
+        touchHelper.attachToRecyclerView(recyclerView)
+        return view
+    }
 
+    private fun setUpItemTouchHelper(adapter: ProfileCardAdapter): ItemTouchHelper {
         val callback = ItemMoveCallback(adapter)
         val touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recyclerView)
-
-        return view
+        return touchHelper
     }
 
     private fun getDataFirestore() {
