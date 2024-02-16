@@ -29,4 +29,9 @@ object IconMapping {
     fun getIconName(id:Int): String? {
         return iconIdToDocIdMap[id]
     }
+
+    fun getIconId(docId: String): Int? {
+        return docIdToIconIdMap[docId]
+    }
+
 }
