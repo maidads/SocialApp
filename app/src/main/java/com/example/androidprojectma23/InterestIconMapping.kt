@@ -24,6 +24,8 @@ object IconMapping {
         R.id.icon_technology to "GTPROJYniNOrFBivL7wE"
     )
 
+    val docIdToIconIdMap = iconIdToDocIdMap.entries.associateBy({ it.value }) { it.key }
+
     fun getIconName(id:Int): String? {
         return iconIdToDocIdMap[id]
     }
