@@ -61,6 +61,8 @@ class FindFriendsFragment : Fragment() {
                     val interestsList = document.get("interests") as? List<String>
 
 
+
+
                     if (displayName != null && profileImage != null && interestsList != null) {
                         val interests = interestsList.joinToString(", ")
                         val user = User(displayName, profileImage, interests)

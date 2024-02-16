@@ -1,6 +1,14 @@
 package com.example.androidprojectma23
 
 object IconMapping {
+
+    val userInterests = listOf(
+        R.id.icon_music, R.id.icon_sports, R.id.icon_movies, R.id.icon_art,
+        R.id.icon_books, R.id.icon_wine, R.id.icon_cooking, R.id.icon_travel,
+        R.id.icon_festival, R.id.icon_fashion, R.id.icon_dance, R.id.icon_games,
+        R.id.icon_yoga, R.id.icon_camping, R.id.icon_fika, R.id.icon_training,
+        R.id.icon_animals, R.id.icon_garden, R.id.icon_photography, R.id.icon_technology
+    )
     val iconIdToDocIdMap = mapOf(
         R.id.icon_music to "qWAkLQAUlXIuJCn45ChZ",
         R.id.icon_sports to "9NPO76LYaq9hl5KOCtC4",
