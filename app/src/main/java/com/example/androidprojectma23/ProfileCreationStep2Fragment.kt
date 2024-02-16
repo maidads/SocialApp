@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.androidprojectma23.IconMapping.iconIdToDocIdMap
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
@@ -150,7 +151,7 @@ class ProfileCreationStep2Fragment : Fragment() {
 
     private fun saveSelectedInterestsAndNavigate() {
         val selectedDocIdsList = selectedInterest.mapNotNull { imageViewId ->
-            imageViewIdToFirestoreDocumentIdMap[imageViewId]
+            iconIdToDocIdMap[imageViewId]
         }.toSet().toList()
 
         updateInterestsInFirestore(selectedDocIdsList)
