@@ -1,5 +1,8 @@
 package com.example.androidprojectma23
 
+import android.view.View
+import android.widget.ImageView
+
 object IconMapping {
 
     val userInterests = listOf(
@@ -34,12 +37,17 @@ object IconMapping {
 
     val docIdToIconIdMap = iconIdToDocIdMap.entries.associateBy({ it.value }) { it.key }
 
-    fun getIconName(id:Int): String? {
-        return iconIdToDocIdMap[id]
+    val imageViewIdProfileCard = listOf(
+        R.id.interestImageView, R.id.interestImageView2,
+        R.id.interestImageView3, R.id.interestImageView4,
+        R.id.interestImageView5
+    )
+
+    fun getIconName(id:String): String {
+        return docIdToIconIdMap[id].toString()
     }
 
     fun getIconId(docId: String): Int? {
         return docIdToIconIdMap[docId]
     }
-
 }
