@@ -1,8 +1,5 @@
 package com.example.androidprojectma23
 
-import android.view.View
-import android.widget.ImageView
-
 object IconMapping {
 
     val userInterests = listOf(
@@ -35,7 +32,28 @@ object IconMapping {
         R.id.icon_technology to "GTPROJYniNOrFBivL7wE"
     )
 
-    val docIdToIconIdMap = iconIdToDocIdMap.entries.associateBy({ it.value }) { it.key }
+    val docIdToIconResMap = mapOf(
+        "qWAkLQAUlXIuJCn45ChZ" to R.drawable.icon_music,
+        "9NPO76LYaq9hl5KOCtC4" to R.drawable.icon_sports,
+        "AYpDbrWtQOUOt7rBDXDH" to R.drawable.icon_movies,
+        "iglkcuMPG8egGg4scETR" to R.drawable.icon_art,
+        "YmMikFDeggctuiqSYrmw" to R.drawable.icon_books,
+        "YvVGXixVaQSsMhAZaCy2" to R.drawable.icon_wine,
+        "HPQHhJeFC7wQaHyAFSnU" to R.drawable.icon_cooking,
+        "M9RqxG3Caa0JNT9h6ZTX" to R.drawable.icon_travel,
+        "EymGn10U227Gf5xmducS" to R.drawable.icon_festival,
+        "vs5sifFqzkrCyVILxya6" to R.drawable.icon_fashion,
+        "zcz594bv81UYIWjhWgTy" to R.drawable.icon_dance,
+        "SM8Oh6Hnba6Gzjpn77RJ" to R.drawable.icon_games,
+        "6O7GXIC0DWKz6T8wXCJa" to R.drawable.icon_yoga,
+        "HvJnJ1QKuS2l9IAzYkGa" to R.drawable.icon_camping,
+        "0YB3cpO2ducwVQeuCmHC" to R.drawable.icon_fika,
+        "xZ4sv4Th1Rx3xmUWPr7C" to R.drawable.icon_training,
+        "YeByZ6w5see5N6GfBPYI" to R.drawable.icon_animals,
+        "zBgJksLJY1Fa0s3oUSvg" to R.drawable.icon_garden,
+        "ftWLcl8ag7pabyuSSJih" to R.drawable.icon_photography,
+        "GTPROJYniNOrFBivL7wE" to R.drawable.icon_technology
+    )
 
     val imageViewIdProfileCard = listOf(
         R.id.interestImageView, R.id.interestImageView2,
@@ -44,10 +62,11 @@ object IconMapping {
     )
 
     fun getIconName(id:String): String {
-        return docIdToIconIdMap[id].toString()
+        return docIdToIconResMap[id].toString()
     }
 
-    fun getIconId(docId: String): Int? {
-        return docIdToIconIdMap[docId]
-    }
+//    fun getIconId(docId: String): Int? {
+//        return docIdToIconResMap[docId]
+//    }
+
 }
