@@ -10,7 +10,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.androidprojectma23.IconMapping.docIdToIconIdMap
+import com.example.androidprojectma23.IconMapping.docIdToIconResMap
 import com.example.androidprojectma23.IconMapping.imageViewIdProfileCard
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -30,6 +30,7 @@ class FindFriendsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
+
         adapter = ProfileCardAdapter(matchingFriendsList)
 
         val recyclerView = setUpRecyclerView(view)
