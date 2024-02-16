@@ -16,11 +16,6 @@ private const val ARG_PARAM2 = "param2"
  * Use the [EventPageFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-data class Event(
-    val name: String = "",
-    val description: String = "",
-    val date: String = ""
-)
 
 class EventPageFragment : Fragment() {
     // TODO: Rename and change types of parameters
