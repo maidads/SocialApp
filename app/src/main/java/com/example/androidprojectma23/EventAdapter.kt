@@ -25,4 +25,9 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         holder.bind(events[position])
     }
+
+    fun updateEvents(newEvents: List<Event>) {
+        events = newEvents
+        notifyDataSetChanged()
+    }
 }
