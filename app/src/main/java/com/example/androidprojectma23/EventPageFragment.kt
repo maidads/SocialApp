@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 class EventPageFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: EventAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
