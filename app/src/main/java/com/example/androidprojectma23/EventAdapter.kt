@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -15,7 +16,8 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-        TODO("Not yet implemented")
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.event_more_info, parent, false)
+        return EventViewHolder(view)
     }
 
     override fun getItemCount() = events.size
