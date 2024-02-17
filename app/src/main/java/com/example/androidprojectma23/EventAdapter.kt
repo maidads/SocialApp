@@ -12,9 +12,7 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
         TODO("Not yet implemented")
     }
 
-    override fun getItemCount(): Int {
-        TODO("Not yet implemented")
-    }
+    override fun getItemCount() = events.size
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
         TODO("Not yet implemented")
