@@ -6,6 +6,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(event: Event) {
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
