@@ -29,6 +29,8 @@ class EventPageFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = EventAdapter(emptyList())
 
+        recyclerView.adapter = adapter
+
     }
 
 }
