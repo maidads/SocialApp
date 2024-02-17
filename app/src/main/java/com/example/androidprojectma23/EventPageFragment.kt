@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 class EventPageFragment : Fragment() {
@@ -14,6 +15,7 @@ class EventPageFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EventAdapter
     private lateinit var events: List<Event>
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
