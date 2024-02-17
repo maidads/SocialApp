@@ -35,6 +35,8 @@ class EventPageFragment : Fragment() {
         recyclerView.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
 
+        fetchEvents()
+
     }
 
     private fun fetchEvents() {
