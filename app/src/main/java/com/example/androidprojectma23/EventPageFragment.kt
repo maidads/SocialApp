@@ -25,7 +25,7 @@ class EventPageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = view.findViewById(R.id.eventsRecyclerView)
-
+        adapter = EventAdapter(emptyList())
 
     }
 
