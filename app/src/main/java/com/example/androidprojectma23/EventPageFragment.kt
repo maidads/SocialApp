@@ -40,14 +40,20 @@ class EventPageFragment : Fragment() {
     }
 
     private fun fetchEvents() {
-        firestore.collection("Events Collection")
+        firestore.collection("Events")
             .get()
-            .addOnSuccessListener { snapshot ->
-                val eventsList = snapshot.toObjects(Event::class.java)
+            .addOnSuccessListener { documents ->
+                val eventsList = mutableListOf<Event>()
+                for (document in documents) {
+                    val name = document.getString("name") ?: ""
+                    val description = document.getString("description") ?: ""
+                    val date = document.getString("date") ?: ""
+                    eventsList.add(Event(name, description, date))
+                }
                 adapter.updateEvents(eventsList)
             }
             .addOnFailureListener { exception ->
-                Log.d("EventPageFragment", "Error getting documents: ", exception)
+                Log.d("!!!", "Error getting documents: ", exception)
             }
     }
 
