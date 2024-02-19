@@ -3,9 +3,12 @@ package com.example.androidprojectma23
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.androidprojectma23.IconMapping.docIdToIconResMap
+import com.example.androidprojectma23.IconMapping.imageViewIdProfileCard
 import java.util.Collections
 
 class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
@@ -35,7 +38,18 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
                 .into(view.findViewById(R.id.profileImageView))
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
-            view.findViewById<TextView>(R.id.interestsContentTextView).text = user.interests
+
+            user.interests?.let { interests ->
+                for (i in 0 until minOf(interests.size, imageViewIdProfileCard.size)) {
+                    val imageView = view.findViewById<ImageView>(imageViewIdProfileCard[i])
+                    val interestId = interests[i]
+                    val iconString = docIdToIconResMap[interestId]
+                    val imageResourceId = iconString?.let {
+                        view.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                    }
+                    imageView.setImageResource(imageResourceId ?: R.drawable.icon_empty)
+                }
+            }
         }
     }
 

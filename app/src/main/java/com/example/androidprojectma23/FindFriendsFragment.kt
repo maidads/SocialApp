@@ -6,9 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.androidprojectma23.IconMapping.docIdToIconResMap
+import com.example.androidprojectma23.IconMapping.imageViewIdProfileCard
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -30,15 +33,24 @@ class FindFriendsFragment : Fragment() {
 
         adapter = ProfileCardAdapter(matchingFriendsList)
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
-        recyclerView.adapter = adapter
-
-        val callback = ItemMoveCallback(adapter)
-        val touchHelper = ItemTouchHelper(callback)
+        val recyclerView = setUpRecyclerView(view)
+        val touchHelper = setUpItemTouchHelper(adapter)
         touchHelper.attachToRecyclerView(recyclerView)
 
         return view
+    }
+
+    private fun setUpRecyclerView(view: View): RecyclerView {
+        val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView.adapter = adapter
+        return recyclerView
+    }
+
+    private fun setUpItemTouchHelper(adapter: ProfileCardAdapter): ItemTouchHelper {
+        val callback = ItemMoveCallback(adapter)
+        val touchHelper = ItemTouchHelper(callback)
+        return touchHelper
     }
 
     private fun getDataFirestore() {
@@ -52,10 +64,8 @@ class FindFriendsFragment : Fragment() {
                     val profileImage = document.getString("profileImageUrl")
                     val interestsList = document.get("interests") as? List<String>
 
-
                     if (displayName != null && profileImage != null && interestsList != null) {
-                        val interests = interestsList.joinToString(", ")
-                        val user = User(displayName, profileImage, interests)
+                        val user = User(displayName, profileImage, interestsList)
                         matchingFriendsList.add(user)
                     }
                 }
