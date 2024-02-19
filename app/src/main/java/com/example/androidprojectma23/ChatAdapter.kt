@@ -7,10 +7,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class ChatAdapter(private val chatMessages: List<ChatMessage>) :
+class ChatAdapter(private val chatMessages: List<ChatMessage>,
+                  private val clickListener: ChatCardListener) :
     RecyclerView.Adapter<ChatAdapter.ChatCardViewHolder>() {
 
-    class ChatCardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    interface ChatCardListener {
+        fun onChatCardClicked(position: Int)
+    }
+
+    class ChatCardViewHolder(view: View, private val clickListener: ChatCardListener) : RecyclerView.ViewHolder(view) {
+        init {
+            view.setOnClickListener {
+                clickListener.onChatCardClicked(adapterPosition)
+            }
+        }
+
         val profileImage: ImageView = view.findViewById(R.id.profile_image)
         val messageName: TextView = view.findViewById(R.id.text_message_name)
         val messageBody: TextView = view.findViewById(R.id.text_message_body)
@@ -20,7 +31,7 @@ class ChatAdapter(private val chatMessages: List<ChatMessage>) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatCardViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.chat_card_layout, parent, false)
-        return ChatCardViewHolder(view)
+        return ChatCardViewHolder(view, clickListener)
     }
 
     override fun onBindViewHolder(holder: ChatCardViewHolder, position: Int) {
