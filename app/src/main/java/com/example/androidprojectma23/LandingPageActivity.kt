@@ -30,12 +30,12 @@ class LandingPageActivity : AppCompatActivity() {
 //                    true
 //                }
 //
-//                R.id.chatFragment -> {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.fragmentHolder, ChatFragment())
-//                        .commit()
-//                    true
-//                }
+                R.id.chatFragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentHolder, ChatFragment())
+                        .commit()
+                    true
+                }
 
                 else -> false
             }

@@ -62,4 +62,8 @@
     <style name="CustomDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/onPrimaryContainer</item>
     </style>
+
+    <style name="CircularShapeAppearance" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
