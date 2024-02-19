@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
@@ -21,6 +23,8 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
         recyclerView = view.findViewById(R.id.chat_recycler_view)
 
+        getConversations()
+
         // Creating hardcoded examples
         chatMessages.add(ChatMessage("Användare 1", "Hej där!", "10:00", false))
         chatMessages.add(ChatMessage("Användare 2", "Hallå!", "10:01", false))
@@ -31,6 +35,33 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
         return view
     }
+
+    private fun getConversations() {
+        val db = FirebaseFirestore.getInstance()
+        val auth = FirebaseAuth.getInstance()
+        val currentUser = auth.currentUser.toString()
+
+        db.collection("users").document(currentUser)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document != null) {
+                    // Get list of conversationIds from current user
+                    val conversationIds = document.get("conversations") as List<String>
+
+                    // For every conversationId...
+                    for (conversationId in conversationIds) {
+                        // Get conversation document
+                        db.collection("conversations").document(conversationId)
+                            .get()
+                            .addOnSuccessListener { conversationDocument ->
+                                // Add things from conversation document to recycler view.
+                            }
+                    }
+                }
+
+            }
+    }
+
 
     override fun onChatCardClicked(position: Int) {
         val chatMessage = chatMessages[position]
