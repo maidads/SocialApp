@@ -1,6 +1,7 @@
 package com.example.androidprojectma23
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,15 +24,11 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
         val view = inflater.inflate(R.layout.fragment_chat, container, false)
         recyclerView = view.findViewById(R.id.chat_recycler_view)
 
-        getConversations()
-
-        // Creating hardcoded examples
-        chatMessages.add(ChatMessage("Användare 1", "Hej där!", "10:00", false))
-        chatMessages.add(ChatMessage("Användare 2", "Hallå!", "10:01", false))
-
         chatAdapter = ChatAdapter(chatMessages, this)
         recyclerView.adapter = chatAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
+
+        getConversations()
 
         return view
     }
@@ -39,27 +36,45 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
     private fun getConversations() {
         val db = FirebaseFirestore.getInstance()
         val auth = FirebaseAuth.getInstance()
-        val currentUser = auth.currentUser.toString()
+        val currentUser = auth.currentUser
 
-        db.collection("users").document(currentUser)
-            .get()
-            .addOnSuccessListener { document ->
-                if (document != null) {
-                    // Get list of conversationIds from current user
-                    val conversationIds = document.get("conversations") as List<String>
+        if (currentUser != null) {
+            val currentUserId = currentUser.uid
 
-                    // For every conversationId...
-                    for (conversationId in conversationIds) {
-                        // Get conversation document
-                        db.collection("conversations").document(conversationId)
-                            .get()
-                            .addOnSuccessListener { conversationDocument ->
-                                // Add things from conversation document to recycler view.
-                            }
+            db.collection("users").document(currentUserId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null) {
+                        // Get list of conversationIds from current user
+                        val conversationIds = document.get("userConversations") as? List<String> ?: listOf()
+                        Log.d("MyApp", "Document: $document")
+                        // For every conversationId...
+                        for (conversationId in conversationIds) {
+                            // Get conversation document
+                            db.collection("conversations").document(conversationId)
+                                .get()
+                                .addOnSuccessListener { conversationDocument ->
+                                        val lastMessageText = conversationDocument.getString("lastmessageText")
+                                        val lastMessageTime = conversationDocument.getString("lastmessageTime")
+
+                                        if (lastMessageTime != null && lastMessageText != null) {
+
+                                            val chatMessage = ChatMessage("Conversation", lastMessageText, lastMessageTime, true)
+                                            chatMessages.add(chatMessage)
+                                            chatAdapter.notifyDataSetChanged()
+                                        }
+
+                                }
+                        }
                     }
-                }
 
-            }
+                }
+        } else {
+            // hantera situationen när användaren är null
+        }
+
+
+
     }
 
 
