@@ -36,7 +36,8 @@
             android:exported="false" />
         <activity
             android:name=".LandingPageActivity"
-            android:exported="false">
+            android:exported="false"
+            android:label="">
         </activity>
 
         <provider
