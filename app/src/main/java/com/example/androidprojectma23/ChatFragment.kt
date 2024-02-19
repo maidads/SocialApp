@@ -9,12 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
 class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var latestMessage: DocumentSnapshot
     private var chatMessages = mutableListOf<ChatMessage>()
 
     override fun onCreateView(
@@ -53,28 +56,33 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                             // Get conversation document
                             db.collection("conversations").document(conversationId)
                                 .get()
-                                .addOnSuccessListener { conversationDocument ->
-                                        val lastMessageText = conversationDocument.getString("lastmessageText")
-                                        val lastMessageTime = conversationDocument.getString("lastmessageTime")
+                                .addOnSuccessListener { latestMessageSnapshot ->
+                                    getLastMessage(conversationId) { latestMessage ->
+                                        val lastMessageText = latestMessage.getString("messageBody")
+                                        val lastMessageTime = latestMessage.getTimestamp("messageTime")
 
                                         if (lastMessageTime != null && lastMessageText != null) {
-
                                             val chatMessage = ChatMessage("Conversation", lastMessageText, lastMessageTime, true)
                                             chatMessages.add(chatMessage)
                                             chatAdapter.notifyDataSetChanged()
                                         }
-
+                                    }
                                 }
                         }
                     }
-
                 }
-        } else {
-            // hantera situationen när användaren är null
         }
+    }
 
-
-
+    private fun getLastMessage (conversationId: String, callback: (DocumentSnapshot) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("conversations").document(conversationId).collection("messages").orderBy("messageTime", Query.Direction.DESCENDING).limit(1).get()
+            .addOnSuccessListener { latestMessageSnapshot ->
+                if (!latestMessageSnapshot.isEmpty) {
+                    val latestMessage = latestMessageSnapshot.documents[0]
+                    callback.invoke(latestMessage)
+                }
+            }
     }
 
 
