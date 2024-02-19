@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
 
 class ChatAdapter(private val chatMessages: List<ChatMessage>,
                   private val clickListener: ChatCardListener) :
@@ -38,8 +39,9 @@ class ChatAdapter(private val chatMessages: List<ChatMessage>,
         val chatMessage = chatMessages[position]
         holder.messageName.text = chatMessage.userName
         holder.messageBody.text = chatMessage.messageBody
-        holder.messageTime.text = chatMessage.messageTime
-
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val messageTimeAsString = sdf.format(chatMessage.messageTime.toDate())
+        holder.messageTime.text = messageTimeAsString
     }
 
     override fun getItemCount() = chatMessages.size
