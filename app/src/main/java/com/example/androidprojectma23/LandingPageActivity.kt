@@ -7,7 +7,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class LandingPageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_lading_page)
+        setContentView(R.layout.activity_landing_page)
 
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
