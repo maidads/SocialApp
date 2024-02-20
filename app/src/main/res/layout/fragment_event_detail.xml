@@ -24,4 +24,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="Event Name" />
 
+    <TextView
+        android:id="@+id/detailEventDateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailEventNameTextView"
+        tools:text="Event Name" />
+    <TextView
+        android:id="@+id/detailEventLocationTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintTop_toBottomOf="@id/detailEventDateTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="Event Name" />
+
+    <TextView
+        android:id="@+id/detailEventDescriptionTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginTop="128dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/detailEventLocationTextView"
+        tools:text="Event Name" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
