@@ -22,7 +22,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.first
 
 
-class FindFriendsFragment : Fragment() {
+class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener {
+
+    override fun onSelectionChanged(selectedCount: Int) {
+        fetchAndDisplayMatchingUsers(selectedCount)
+    }
 
     private lateinit var adapter: ProfileCardAdapter
     private val matchingFriendsList = mutableListOf<User>()
@@ -30,35 +34,9 @@ class FindFriendsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val minimumNumberOfInterestRequired = 1
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            // Get current user interests
-            val currentUserInterests = getCurrentUserInterests().first()
-
-            // Get other users interests
-            val allUsersInterests = getAllUsersInterests().first()
-
-            // Get display names and profile image URLs of all users
-            val usersData = getUsersData().first()
-
-            val matchingUsers = mutableListOf<User>()
-            // Iterate through all users and compare their interests to the current user's interests
-            for ((userId, interests) in allUsersInterests) {
-                if (userId != FirebaseAuth.getInstance().currentUser?.uid) {
-                    val commonInterests = findCommonInterests(currentUserInterests, interests)
-                    if (commonInterests.isNotEmpty()) {
-                        // Extract display name and profile image URL for the user
-                        val displayName = usersData[userId]?.first ?: "Anonym"
-                        val profileImageUrl = usersData[userId]?.second ?: ""
-                        // Create a User object and add it to the list of matching users
-                        matchingUsers.add(User(displayName, profileImageUrl, interests.toMutableList()))
-                    }
-                }
-            }
-
-            // Update RecyclerView with the list of matching users
-            adapter.updateData(matchingUsers)
-        }
+        fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired)
     }
 
 
@@ -146,5 +124,33 @@ class FindFriendsFragment : Fragment() {
         Log.e("Tag", "Error fetching users data", e)
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
+
+    fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+
+            val currentUserInterests = getCurrentUserInterests().first()
+
+            val allUsersInterests = getAllUsersInterests().first()
+
+            val usersData = getUsersData().first()
+
+            val matchingUsers = mutableListOf<User>()
+
+            for ((userId, interests) in allUsersInterests) {
+                if (userId != FirebaseAuth.getInstance().currentUser?.uid) {
+                    val commonInterests = findCommonInterests(currentUserInterests, interests)
+                    if (commonInterests.size >= minimumNumberOfInterestsRequired) {
+
+                        val displayName = usersData[userId]?.first ?: "Anonym"
+                        val profileImageUrl = usersData[userId]?.second ?: ""
+
+                        matchingUsers.add(User(displayName, profileImageUrl, interests.toMutableList()))
+                    }
+                }
+            }
+
+            adapter.updateData(matchingUsers)
+        }
+    }
 
 }

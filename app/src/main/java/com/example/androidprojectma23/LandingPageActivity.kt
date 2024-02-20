@@ -20,6 +20,9 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 
 class LandingPageActivity : AppCompatActivity() {
+    interface OnFilterSelectionChangedListener {
+        fun onSelectionChanged(selectedCount: Int)
+    }
 
     private val storageRef = Firebase.storage.reference
     private val firestore = Firebase.firestore
@@ -86,41 +89,40 @@ class LandingPageActivity : AppCompatActivity() {
 
 
     private fun showFilterPopup() {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            return
-        }
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         userProfileManager.getUserInterestsIcons(userId, onSuccess = { icons ->
             val layoutInflater = getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             val popupView = layoutInflater.inflate(R.layout.menu_popup_recycler_view, null)
 
+
+            var selectedCount = 0
+
             val recyclerView: RecyclerView = popupView.findViewById(R.id.popup_recycler_view)
             recyclerView.layoutManager = LinearLayoutManager(this)
-            recyclerView.adapter = FilterMenuAdapter(icons)
 
-            val popupWidth = resources.getDimensionPixelSize(R.dimen.popup_width) // Ange en dimension i res/dimens.xml
+            recyclerView.adapter = FilterMenuAdapter(icons) { count ->
+                selectedCount = count
+            }
+
+            val popupWidth = resources.getDimensionPixelSize(R.dimen.popup_width)
             val popupHeight = WindowManager.LayoutParams.WRAP_CONTENT
 
-            // Först deklarera popupWindow som null och tilldela sedan ett värde.
-            var popupWindow: PopupWindow? = null
+            val popupWindow = PopupWindow(popupView, popupWidth, popupHeight, true).apply {
+                isFocusable = true
+                elevation = 10.0f
+            }
 
             val saveButton: Button = popupView.findViewById(R.id.filter_save_button)
             saveButton.setOnClickListener {
-                Log.d("!!!", "Click click")
 
-                popupWindow?.dismiss() // Stänger popup-fönstret.
-            }
+                val fragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
+                fragment?.fetchAndDisplayMatchingUsers(selectedCount)
 
-            // Nu när popupWindow har deklarerats, initialisera den.
-            popupWindow = PopupWindow(popupView, popupWidth, popupHeight, true).apply {
-                isFocusable = true
-                elevation = 10.0f
-                // Lägg till ytterligare konfiguration här vid behov.
+                popupWindow.dismiss()
             }
 
             val anchorView = findViewById<View>(R.id.filter)
-
             val location = IntArray(2)
             anchorView.getLocationOnScreen(location)
             val xOff = location[0] + anchorView.width - popupWidth
@@ -129,9 +131,10 @@ class LandingPageActivity : AppCompatActivity() {
             popupWindow.showAsDropDown(anchorView, xOff, yOff)
 
         }, onFailure = { exception ->
-            // Hantera fel här
+
         })
     }
+
 
 
 
