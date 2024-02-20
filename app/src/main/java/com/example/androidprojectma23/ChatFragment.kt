@@ -56,16 +56,29 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                             // Get conversation document
                             db.collection("conversations").document(conversationId)
                                 .get()
-                                .addOnSuccessListener { latestMessageSnapshot ->
-                                    getLastMessage(conversationId) { latestMessage ->
-                                        val lastMessageText = latestMessage.getString("messageBody")
-                                        val lastMessageTime = latestMessage.getTimestamp("messageTime")
+                                .addOnSuccessListener {
+                                    val userID1 = it.getString("userID1")
+                                    val userID2 = it.getString("userID2")
+                                    val otherUserId = if (userID1 != currentUserId) userID1 else userID2
 
-                                        if (lastMessageTime != null && lastMessageText != null) {
-                                            val chatMessage = ChatMessage("Conversation", lastMessageText, lastMessageTime, true)
-                                            chatMessages.add(chatMessage)
-                                            chatAdapter.notifyDataSetChanged()
-                                        }
+                                    if (otherUserId != null) {
+                                        db.collection("users").document(otherUserId)
+                                            .get()
+                                            .addOnSuccessListener {
+                                                val otherUserName = it.get("displayName").toString()
+
+                                                getLastMessage(conversationId) { latestMessage ->
+                                                    val lastMessageText = latestMessage.getString("messageBody")
+                                                    val lastMessageTime = latestMessage.getTimestamp("messageTime")
+                                                    if (lastMessageTime != null && lastMessageText != null) {
+
+
+                                                        val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, true)
+                                                        chatMessages.add(chatMessage)
+                                                        chatAdapter.notifyDataSetChanged()
+                                                    }
+                                                }
+                                            }
                                     }
                                 }
                         }
@@ -84,7 +97,6 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                 }
             }
     }
-
 
     override fun onChatCardClicked(position: Int) {
         val chatMessage = chatMessages[position]
