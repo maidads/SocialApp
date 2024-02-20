@@ -40,9 +40,11 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
         val db = FirebaseFirestore.getInstance()
         val auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
+        val tempChatMessages = mutableListOf<ChatMessage>()
 
         if (currentUser != null) {
             val currentUserId = currentUser.uid
+            var conversationsLoadedCount = 0
 
             db.collection("users").document(currentUserId)
                 .get()
@@ -79,7 +81,13 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                                         }
 
                                                         val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
-                                                        chatMessages.add(chatMessage)
+                                                        tempChatMessages.add(chatMessage)
+                                                    }
+                                                    conversationsLoadedCount++ 
+                                                    if (conversationsLoadedCount == conversationIds.size) {
+                                                        val sortedChatMessages = tempChatMessages.sortedByDescending { chatMessage ->  chatMessage.messageTime }
+                                                        chatMessages.clear()
+                                                        chatMessages.addAll(sortedChatMessages)
                                                         chatAdapter.notifyDataSetChanged()
                                                     }
                                                 }
@@ -87,9 +95,11 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                     }
                                 }
                         }
+
                     }
                 }
         }
+
     }
 
     private fun getLastMessage (conversationId: String, callback: (DocumentSnapshot) -> Unit) {
