@@ -38,36 +38,36 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/roboto_black"
-            android:text="Event Rubrik" />
+            android:text="Rubrik" />
 
         <TextView
             android:id="@+id/eventDateTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="150dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto_black"
-            android:text="Event Rubrik" />
+            android:fontFamily="@font/roboto"
+            android:text="Datum" />
         <TextView
             android:id="@+id/eventLocationTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="150dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="50dp"
             android:layout_marginEnd="16dp"
-            android:fontFamily="@font/roboto_black"
-            android:text="Event Rubrik" />
+            android:fontFamily="@font/roboto"
+            android:text="Plats" />
 
         <TextView
             android:id="@+id/eventDescriptionTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="150dp"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="70dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="@font/roboto"
-            android:text="Event Rubrik" />
+            android:text="Info" />
 
 
     </androidx.cardview.widget.CardView>
