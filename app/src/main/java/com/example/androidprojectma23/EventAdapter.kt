@@ -22,6 +22,12 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
             eventDateTextView.text = event.date
             eventLocationTextView.text = event.location
             Glide.with(itemView.context).load(event.image).into(eventImageView)
+            Glide.with(itemView.context)
+                .load(event.image)
+                .placeholder(R.drawable.user_image_icon)
+                .error(R.drawable.user_image_icon)
+                .into(eventImageView)
+
         }
     }
 
