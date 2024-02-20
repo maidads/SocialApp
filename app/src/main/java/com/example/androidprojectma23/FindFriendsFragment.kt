@@ -115,7 +115,7 @@ class FindFriendsFragment : Fragment() {
     }.catch { e ->
         Log.e("!!!", "Error fetching users interests", e)
         emit(mutableMapOf())
-    }.flowOn(Dispatchers.IO) 
+    }.flowOn(Dispatchers.IO)
 
     private fun findCommonInterests(currentUserInterests: List<String>, otherUserInterests: List<String>): List<String> {
         return currentUserInterests.intersect(otherUserInterests).toList()
