@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 
 class ChatAdapter(private val chatMessages: List<ChatMessage>,
@@ -42,6 +43,13 @@ class ChatAdapter(private val chatMessages: List<ChatMessage>,
         val sdf = SimpleDateFormat("dd/MM HH:mm")
         val messageTimeAsString = sdf.format(chatMessage.messageTime.toDate())
         holder.messageTime.text = messageTimeAsString
+
+        Glide.with(holder.itemView.context)
+            .load(chatMessage.profileImageUrl)
+            .circleCrop()
+            .placeholder(R.drawable.baseline_emoji_emotions_24)
+            .error(R.drawable.baseline_emoji_emotions_24)
+            .into(holder.profileImage)
     }
 
     override fun getItemCount() = chatMessages.size
