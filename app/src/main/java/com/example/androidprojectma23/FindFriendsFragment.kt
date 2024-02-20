@@ -127,29 +127,29 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int) {
         viewLifecycleOwner.lifecycleScope.launch {
-
             val currentUserInterests = getCurrentUserInterests().first()
-
             val allUsersInterests = getAllUsersInterests().first()
-
             val usersData = getUsersData().first()
 
-            val matchingUsers = mutableListOf<User>()
+            val tempMatchingUsers = mutableListOf<Pair<User, Int>>()
 
             for ((userId, interests) in allUsersInterests) {
                 if (userId != FirebaseAuth.getInstance().currentUser?.uid) {
                     val commonInterests = findCommonInterests(currentUserInterests, interests)
                     if (commonInterests.size >= minimumNumberOfInterestsRequired) {
-
                         val displayName = usersData[userId]?.first ?: "Anonym"
                         val profileImageUrl = usersData[userId]?.second ?: ""
 
-                        matchingUsers.add(User(displayName, profileImageUrl, interests.toMutableList()))
+                        val user = User(displayName, profileImageUrl, interests.toMutableList())
+
+                        tempMatchingUsers.add(Pair(user, commonInterests.size))
                     }
                 }
             }
 
-            adapter.updateData(matchingUsers)
+            val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.second }
+
+            adapter.updateData(sortedMatchingUsers.map { it.first })
         }
     }
 
