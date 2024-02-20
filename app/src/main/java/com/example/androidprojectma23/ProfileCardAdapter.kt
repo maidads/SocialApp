@@ -33,8 +33,18 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(user: User) {
+
+            // Check if profile image is null, use placeholder image if it is
+            val imageToLoad = if (user.profileImage.isBlank()) {
+                R.drawable.profile_image_placeholder
+            } else {
+                user.profileImage
+            }
+
             Glide.with(view.context)
-                .load(user.profileImage)
+                .load(imageToLoad)
+                .placeholder(R.drawable.profile_image_placeholder)
+                .error(R.drawable.profile_image_placeholder) //
                 .into(view.findViewById(R.id.profileImageView))
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
@@ -64,7 +74,8 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
     }
 
     fun updateData(newUsers: List<User>) {
-        user = newUsers.toMutableList()
+        user.clear()
+        user.addAll(newUsers)
         notifyDataSetChanged()
     }
 
