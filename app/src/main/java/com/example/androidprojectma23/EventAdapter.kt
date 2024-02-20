@@ -11,7 +11,9 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
         private val eventImageView: ImageView = itemView.findViewById(R.id.eventImageView)
-
+        private val eventDescriptionTextView: TextView = itemView.findViewById(R.id.eventDescriptionTextView)
+        private val eventDateTextView: TextView = itemView.findViewById(R.id.eventDateTextView)
+        private val eventLocationTextView: TextView = itemView.findViewById(R.id.eventLocationTextView)
 
         fun bind(event: Event) {
             eventNameTextView.text = event.name
