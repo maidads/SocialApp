@@ -66,6 +66,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                             .get()
                                             .addOnSuccessListener {
                                                 val otherUserName = it.get("displayName").toString()
+                                                val profileImageUrl = it.get("profileImageUrl").toString()
 
                                                 getLastMessage(conversationId) { latestMessage ->
                                                     val lastMessageText = latestMessage.getString("messageBody")
@@ -73,7 +74,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                                     if (lastMessageTime != null && lastMessageText != null) {
 
 
-                                                        val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, true)
+                                                        val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
                                                         chatMessages.add(chatMessage)
                                                         chatAdapter.notifyDataSetChanged()
                                                     }
