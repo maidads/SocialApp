@@ -39,7 +39,7 @@ class ChatAdapter(private val chatMessages: List<ChatMessage>,
         val chatMessage = chatMessages[position]
         holder.messageName.text = chatMessage.userName
         holder.messageBody.text = chatMessage.messageBody
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        val sdf = SimpleDateFormat("dd/MM HH:mm")
         val messageTimeAsString = sdf.format(chatMessage.messageTime.toDate())
         holder.messageTime.text = messageTimeAsString
     }
