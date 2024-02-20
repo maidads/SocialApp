@@ -26,13 +26,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Write a message"/>
+            android:layout_marginBottom="2dp"
+            android:hint="@string/write_a_message"
+            android:layout_gravity="bottom"/>
 
-        <Button
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/chat_send_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"/>
+            android:layout_margin="16dp"
+            android:text="@string/send_button_text"
+            app:icon="@drawable/baseline_send_24" />
+
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
