@@ -18,6 +18,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var chatAdapter: ChatAdapter
     private lateinit var latestMessage: DocumentSnapshot
+    private lateinit var conversationIds: MutableList<String>
     private var chatMessages = mutableListOf<ChatMessage>()
 
     override fun onCreateView(
@@ -51,7 +52,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         // Get list of conversationIds from current user
-                        val conversationIds = document.get("userConversations") as? List<String> ?: listOf()
+                        val conversationIds = document.get("userConversations") as? MutableList<String> ?: mutableListOf()
                         Log.d("MyApp", "Document: $document")
                         // For every conversationId...
                         for (conversationId in conversationIds) {
@@ -83,7 +84,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                                         val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
                                                         tempChatMessages.add(chatMessage)
                                                     }
-                                                    conversationsLoadedCount++ 
+                                                    conversationsLoadedCount++
                                                     if (conversationsLoadedCount == conversationIds.size) {
                                                         val sortedChatMessages = tempChatMessages.sortedByDescending { chatMessage ->  chatMessage.messageTime }
                                                         chatMessages.clear()
@@ -115,14 +116,16 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
     override fun onChatCardClicked(position: Int) {
         val chatMessage = chatMessages[position]
-        openChatConversationFragment(chatMessage)
+        val conversationId = conversationIds[position]
+        openChatConversationFragment(chatMessage, conversationId)
     }
 
-    private fun openChatConversationFragment(chatMessage: ChatMessage) {
+    private fun openChatConversationFragment(chatMessage: ChatMessage, conversationId: String) {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
-                // Antag att vi skickar användarnamnet som ett sätt att identifiera konversationen
-                // I en riktig applikation kan detta vara ett unikt ID för konversationen eller användaren
+                // Send arguments to conversation fragment
+                putString("conversationId", conversationId)
+                putString("conversationProfileImageUrl", chatMessage.profileImageUrl)
                 putString("conversationUserName", chatMessage.userName)
             }
         }
