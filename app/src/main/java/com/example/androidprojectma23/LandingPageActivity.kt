@@ -3,15 +3,13 @@ package com.example.androidprojectma23
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
-import android.widget.PopupMenu
+import android.widget.Button
 import android.widget.PopupWindow
-import android.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
@@ -90,7 +88,6 @@ class LandingPageActivity : AppCompatActivity() {
     private fun showFilterPopup() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
-            // Ingen användare inloggad, visa ett meddelande eller hantera detta fall
             return
         }
 
@@ -100,32 +97,42 @@ class LandingPageActivity : AppCompatActivity() {
 
             val recyclerView: RecyclerView = popupView.findViewById(R.id.popup_recycler_view)
             recyclerView.layoutManager = LinearLayoutManager(this)
-            recyclerView.adapter = InterestsAdapter(icons)
+            recyclerView.adapter = FilterMenuAdapter(icons)
 
             val popupWidth = resources.getDimensionPixelSize(R.dimen.popup_width) // Ange en dimension i res/dimens.xml
             val popupHeight = WindowManager.LayoutParams.WRAP_CONTENT
 
-            val popupWindow = PopupWindow(popupView, popupWidth, popupHeight).apply {
-                isFocusable = true
-                elevation = 10.0f
+            // Först deklarera popupWindow som null och tilldela sedan ett värde.
+            var popupWindow: PopupWindow? = null
+
+            val saveButton: Button = popupView.findViewById(R.id.filter_save_button)
+            saveButton.setOnClickListener {
+                Log.d("!!!", "Click click")
+
+                popupWindow?.dismiss() // Stänger popup-fönstret.
             }
 
-            // Använd ikonen som ankare för popup-fönstret
+            // Nu när popupWindow har deklarerats, initialisera den.
+            popupWindow = PopupWindow(popupView, popupWidth, popupHeight, true).apply {
+                isFocusable = true
+                elevation = 10.0f
+                // Lägg till ytterligare konfiguration här vid behov.
+            }
+
             val anchorView = findViewById<View>(R.id.filter)
 
-            // Beräkna x-off så att popup-fönstret visas till höger om ankaret
             val location = IntArray(2)
             anchorView.getLocationOnScreen(location)
             val xOff = location[0] + anchorView.width - popupWidth
             val yOff = 0
 
-            // Visa PopupWindow till höger om ankaret
             popupWindow.showAsDropDown(anchorView, xOff, yOff)
 
         }, onFailure = { exception ->
             // Hantera fel här
         })
     }
+
 
 
 

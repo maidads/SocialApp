@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 
-class InterestsAdapter(private val interests: List<Int>) : RecyclerView.Adapter<InterestsAdapter.ViewHolder>() {
+class InterestIconMenuAdapter(private val interests: List<Int>) : RecyclerView.Adapter<InterestIconMenuAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val iconView: ImageView = view.findViewById(R.id.iconView)
