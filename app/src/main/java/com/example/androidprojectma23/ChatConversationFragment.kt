@@ -58,9 +58,10 @@ class ChatConversationFragment : Fragment() {
         sendButton.setOnClickListener {
             val messageText = messageInput.text.toString()
             if (messageText.isNotEmpty()) {
+                val timestamp = FieldValue.serverTimestamp()
                 val message = hashMapOf(
                     "messageBody" to messageText,
-                    "messageTime" to FieldValue.serverTimestamp(),
+                    "messageTime" to timestamp,
                     "userName" to currentUser,
                 )
 
@@ -72,14 +73,14 @@ class ChatConversationFragment : Fragment() {
                     .add(message)
                     .addOnSuccessListener { documentReference ->
                         Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+
+                        //adapter.notifyItemInserted(chatMessages.size - 1)
+                        //recyclerView.scrollToPosition(chatMessages.size - 1)
                     }
                     .addOnFailureListener { e ->
                         Log.w("!!!", "Fel vid sparande av meddelande", e)
                     }
-
-      //          adapter.notifyItemInserted(chatMessages.size - 1)
                 messageInput.text.clear()
-       //         recyclerView.scrollToPosition(chatMessages.size - 1)
             }
         }
         return view
@@ -90,44 +91,46 @@ class ChatConversationFragment : Fragment() {
 
         db.collection("conversations").document(conversationId).collection("messages")
             .orderBy("messageTime")
-            .get()
-            .addOnSuccessListener {result ->
-                val messages = mutableListOf<ChatMessage>()
-
-                for (document in result) {
-                    val senderUser = document.getString("userName")
-
-                    if (senderUser != currentUser) {
-                        userName = conversationUserName
-                        profileImageUrl = conversationProfileImageUrl
-                        isUserMessage = false
-                    } else {
-                        userName = currentUserName
-                        profileImageUrl = currentUserProfileImage
-                        isUserMessage = true
-                    }
-
-                    val messageText = document.getString("messageBody")
-                    val messageTime = document.getTimestamp("messageTime")
-
-                    if (messageText != null && messageTime != null) {
-                        val chatMessage = ChatMessage(
-                            userName,
-                            messageText,
-                            messageTime,
-                            profileImageUrl,
-                            isUserMessage
-                        )
-                        messages.add(chatMessage)
-                    }
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.e("!!!", "Error getting documents: ", e)
+                    return@addSnapshotListener
                 }
-                updateRecyclerView(messages)
-                messages.clear()
 
-            }.addOnFailureListener { exception ->
-                Log.e("!!!", "Error getting documents: ", exception)
+                if (snapshot != null) {
+                    val messages = mutableListOf<ChatMessage>()
+
+                    for (document in snapshot.documents) {
+                        val senderUser = document.getString("userName")
+
+                        if (senderUser != currentUser) {
+                            userName = conversationUserName
+                            profileImageUrl = conversationProfileImageUrl
+                            isUserMessage = false
+                        } else {
+                            userName = currentUserName
+                            profileImageUrl = currentUserProfileImage
+                            isUserMessage = true
+                        }
+
+                        val messageText = document.getString("messageBody")
+                        val messageTime = document.getTimestamp("messageTime")
+
+                        if (messageText != null && messageTime != null) {
+                            val chatMessage = ChatMessage(
+                                userName,
+                                messageText,
+                                messageTime,
+                                profileImageUrl,
+                                isUserMessage
+                            )
+                            messages.add(chatMessage)
+                        }
+                    }
+                    updateRecyclerView(messages)
+                    messages.clear()
+                }
             }
-
     }
 
     private fun myInfo(callback: UserInfoCallback) {
