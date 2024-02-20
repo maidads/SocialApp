@@ -56,13 +56,12 @@ class ChatConversationFragment : Fragment() {
                 recyclerView.scrollToPosition(chatMessages.size - 1)
             }
         }
-
         return view
     }
 
     private fun getConversation(conversationId: String, conversationProfileImageUrl: String, conversationUserName: String){
         val db = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+        val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         db.collection("conversations").document(conversationId).collection("messages")
             .get()
@@ -73,8 +72,13 @@ class ChatConversationFragment : Fragment() {
                     val senderUser = document.getString("userName")
 
                     if (senderUser == currentUser) {
-                        userName = "" //current user name
-                        profileImageUrl = "" // current user profile image url
+                        db.collection("users").document(currentUser)
+                            .get()
+                            .addOnSuccessListener {
+                                userName = document.getString("displayName")!!
+                                profileImageUrl = document.getString("profileImageUrl")!!
+                            }
+
                     } else {
                         userName = conversationUserName
                         profileImageUrl = conversationProfileImageUrl
@@ -94,7 +98,6 @@ class ChatConversationFragment : Fragment() {
                         messages.add(chatMessage)
                     }
                 }
-                Log.d("!!!", "messages: $messages")
                 updateRecyclerView(messages)
             }.addOnFailureListener { exception ->
                 Log.e("!!!", "Error getting documents: ", exception)
