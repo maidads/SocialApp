@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ChatConversationFragment : Fragment() {
@@ -20,6 +21,8 @@ class ChatConversationFragment : Fragment() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: ExtendedFloatingActionButton
     private lateinit var userName: String
+    private lateinit var currentUserName: String
+    private lateinit var currentUserProfileImage: String
     private var isUserMessage = true
     private lateinit var profileImageUrl: String
     private val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
@@ -47,7 +50,7 @@ class ChatConversationFragment : Fragment() {
 
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
-                // När användarinformationen har hämtats, kör getConversation()
+                // When user info is loaded, run getConversation()
                 getConversation(conversationId, conversationProfileImageUrl, conversationUserName)
             }
         })
@@ -55,12 +58,31 @@ class ChatConversationFragment : Fragment() {
         sendButton.setOnClickListener {
             val messageText = messageInput.text.toString()
             if (messageText.isNotEmpty()) {
+                val message = hashMapOf(
+                    "messageBody" to messageText,
+                    "messageTime" to FieldValue.serverTimestamp(),
+                    "userName" to currentUser,
+                )
+
+                val db = FirebaseFirestore.getInstance()
+
+                db.collection("conversations")
+                    .document(conversationId)
+                    .collection("messages")
+                    .add(message)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("!!!", "Fel vid sparande av meddelande", e)
+                    }
+
                 // Antag att alla meddelanden skickade via denna vy är från användaren
                 //val newMessage = ChatMessage(userName ?: "Unknown", messageText, "Now", true)
                 //chatMessages.add(newMessage)
-                adapter.notifyItemInserted(chatMessages.size - 1)
+      //          adapter.notifyItemInserted(chatMessages.size - 1)
                 messageInput.text.clear()
-                recyclerView.scrollToPosition(chatMessages.size - 1)
+       //         recyclerView.scrollToPosition(chatMessages.size - 1)
             }
         }
         return view
@@ -81,10 +103,15 @@ class ChatConversationFragment : Fragment() {
                         userName = conversationUserName
                         profileImageUrl = conversationProfileImageUrl
                         isUserMessage = false
+                    } else {
+                        userName = currentUserName
+                        profileImageUrl = currentUserProfileImage
+                        isUserMessage = true
                     }
 
                     val messageText = document.getString("messageBody")
                     val messageTime = document.getTimestamp("messageTime")
+
                     if (messageText != null && messageTime != null) {
                         val chatMessage = ChatMessage(
                             userName,
@@ -97,6 +124,7 @@ class ChatConversationFragment : Fragment() {
                     }
                 }
                 updateRecyclerView(messages)
+                messages.clear()
 
             }.addOnFailureListener { exception ->
                 Log.e("!!!", "Error getting documents: ", exception)
@@ -109,9 +137,9 @@ class ChatConversationFragment : Fragment() {
         db.collection("users").document(currentUser)
             .get()
             .addOnSuccessListener {
-                userName = it.getString("displayName")!!
-                profileImageUrl = it.getString("profileImageUrl")!!
-                callback.onUserInfoReceived(userName, profileImageUrl)
+                currentUserName = it.getString("displayName")!!
+                currentUserProfileImage = it.getString("profileImageUrl")!!
+                callback.onUserInfoReceived(currentUserName, currentUserProfileImage)
             }
     }
 
