@@ -61,12 +61,14 @@ class ChatConversationFragment : Fragment() {
         db.collection("conversations").document(conversationId).collection("messages")
             .get()
             .addOnSuccessListener {result ->
-                val messages = mutableListOf<ChatMessage>()
+                var messages = mutableListOf<ChatMessage>()
 
                 for (document in result) {
+                    Log.d("!!!", document.toString())
                     val userName = ""//om meddelandet skickats av någon annan än mig, sätt conversationUsername annars mitt displayname
-                    val isUserMessage = "" //om det är någon annan än mig som skickat sätt till false
-                    val messageText = document.getString("messageText")
+                    val isUserMessage = false //om det är någon annan än mig som skickat sätt till false
+                    val profileImageUrl = "" // om det är någon annan än mig som skrivit, sätt conversationProfileImageUrl
+                    val messageText = document.getString("messageBody")
                     val messageTime = document.getTimestamp("messageTime")
                     if (messageText != null && messageTime != null) {
                         val chatMessage = ChatMessage(
@@ -74,11 +76,12 @@ class ChatConversationFragment : Fragment() {
                             messageText,
                             messageTime,
                             conversationProfileImageUrl,
-                            true
+                            isUserMessage
                         )
                         messages.add(chatMessage)
                     }
                 }
+                Log.d("!!!", "messages: $messages")
                 updateRecyclerView(messages)
             }.addOnFailureListener { exception ->
                 Log.e("!!!", "Error getting documents: ", exception)
@@ -86,16 +89,10 @@ class ChatConversationFragment : Fragment() {
 
     }
 
-    private fun updateRecyclerView(messages: List<ChatMessage>) {
+    private fun updateRecyclerView(messages: MutableList<ChatMessage>) {
         chatMessages.clear()
         chatMessages.addAll(messages)
         recyclerView.adapter?.notifyDataSetChanged()
     }
-
-//    private fun simulateReceivingMessages(userName: String?) {
-//        // Simulera att lägga till tidigare meddelanden för denna konversation
-//        chatMessages.add(ChatMessage(userName ?: "Unknown", "Hello, how are you?", "Yesterday", false))
-//        chatMessages.add(ChatMessage("You", "I'm good, thanks for asking!", "Yesterday", true))
-//    }
 }
 
