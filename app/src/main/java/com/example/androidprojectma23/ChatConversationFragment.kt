@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ChatConversationFragment : Fragment() {
@@ -17,6 +18,9 @@ class ChatConversationFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var messageInput: EditText
     private lateinit var sendButton: Button
+    private lateinit var userName: String
+    private var isUserMessage = true
+    private lateinit var profileImageUrl: String
     private var chatMessages: MutableList<ChatMessage> = mutableListOf()
 
     override fun onCreateView(
@@ -58,16 +62,25 @@ class ChatConversationFragment : Fragment() {
 
     private fun getConversation(conversationId: String, conversationProfileImageUrl: String, conversationUserName: String){
         val db = FirebaseFirestore.getInstance()
+        val currentUser = FirebaseAuth.getInstance().currentUser?.uid
+
         db.collection("conversations").document(conversationId).collection("messages")
             .get()
             .addOnSuccessListener {result ->
-                var messages = mutableListOf<ChatMessage>()
+                val messages = mutableListOf<ChatMessage>()
 
                 for (document in result) {
-                    Log.d("!!!", document.toString())
-                    val userName = ""//om meddelandet skickats av någon annan än mig, sätt conversationUsername annars mitt displayname
-                    val isUserMessage = false //om det är någon annan än mig som skickat sätt till false
-                    val profileImageUrl = "" // om det är någon annan än mig som skrivit, sätt conversationProfileImageUrl
+                    val senderUser = document.getString("userName")
+
+                    if (senderUser == currentUser) {
+                        userName = "" //current user name
+                        profileImageUrl = "" // current user profile image url
+                    } else {
+                        userName = conversationUserName
+                        profileImageUrl = conversationProfileImageUrl
+                        isUserMessage = false
+                    }
+
                     val messageText = document.getString("messageBody")
                     val messageTime = document.getTimestamp("messageTime")
                     if (messageText != null && messageTime != null) {
