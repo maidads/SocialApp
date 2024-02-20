@@ -77,9 +77,6 @@ class ChatConversationFragment : Fragment() {
                         Log.w("!!!", "Fel vid sparande av meddelande", e)
                     }
 
-                // Antag att alla meddelanden skickade via denna vy är från användaren
-                //val newMessage = ChatMessage(userName ?: "Unknown", messageText, "Now", true)
-                //chatMessages.add(newMessage)
       //          adapter.notifyItemInserted(chatMessages.size - 1)
                 messageInput.text.clear()
        //         recyclerView.scrollToPosition(chatMessages.size - 1)
@@ -92,6 +89,7 @@ class ChatConversationFragment : Fragment() {
         val db = FirebaseFirestore.getInstance()
 
         db.collection("conversations").document(conversationId).collection("messages")
+            .orderBy("messageTime")
             .get()
             .addOnSuccessListener {result ->
                 val messages = mutableListOf<ChatMessage>()
