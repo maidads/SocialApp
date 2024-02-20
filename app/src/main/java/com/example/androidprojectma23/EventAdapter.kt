@@ -17,6 +17,9 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
 
         fun bind(event: Event) {
             eventNameTextView.text = event.name
+            eventDescriptionTextView.text = event.description
+            eventDateTextView.text = event.date
+            eventLocationTextView.text = event.location
         }
     }
 
