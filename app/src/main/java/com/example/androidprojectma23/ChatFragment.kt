@@ -69,10 +69,14 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                                 val profileImageUrl = it.get("profileImageUrl").toString()
 
                                                 getLastMessage(conversationId) { latestMessage ->
-                                                    val lastMessageText = latestMessage.getString("messageBody")
+                                                    var lastMessageText = latestMessage.getString("messageBody")
                                                     val lastMessageTime = latestMessage.getTimestamp("messageTime")
-                                                    if (lastMessageTime != null && lastMessageText != null) {
 
+                                                    if (lastMessageTime != null && lastMessageText != null) {
+                                                        val maxLength = 38
+                                                        if (lastMessageText.length > maxLength) {
+                                                            lastMessageText = lastMessageText.substring(0, maxLength) + "..."
+                                                        }
 
                                                         val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
                                                         chatMessages.add(chatMessage)
