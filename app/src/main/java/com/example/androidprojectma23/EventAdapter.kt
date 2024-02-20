@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,6 +21,7 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
             eventDescriptionTextView.text = event.description
             eventDateTextView.text = event.date
             eventLocationTextView.text = event.location
+            Glide.with(itemView.context).load(event.image).into(eventImageView)
         }
     }
 
