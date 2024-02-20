@@ -21,6 +21,7 @@ class ChatConversationFragment : Fragment() {
     private lateinit var userName: String
     private var isUserMessage = true
     private lateinit var profileImageUrl: String
+    private val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
     private var chatMessages: MutableList<ChatMessage> = mutableListOf()
 
     override fun onCreateView(
@@ -43,7 +44,12 @@ class ChatConversationFragment : Fragment() {
         val adapter = ChatConversationAdapter(chatMessages)
         recyclerView.adapter = adapter
 
-        getConversation(conversationId, conversationProfileImageUrl, conversationUserName)
+        myInfo(object : UserInfoCallback {
+            override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
+                // När användarinformationen har hämtats, kör getConversation()
+                getConversation(conversationId, conversationProfileImageUrl, conversationUserName)
+            }
+        })
 
         sendButton.setOnClickListener {
             val messageText = messageInput.text.toString()
@@ -61,7 +67,6 @@ class ChatConversationFragment : Fragment() {
 
     private fun getConversation(conversationId: String, conversationProfileImageUrl: String, conversationUserName: String){
         val db = FirebaseFirestore.getInstance()
-        val currentUser = FirebaseAuth.getInstance().currentUser?.uid.toString()
 
         db.collection("conversations").document(conversationId).collection("messages")
             .get()
@@ -71,15 +76,7 @@ class ChatConversationFragment : Fragment() {
                 for (document in result) {
                     val senderUser = document.getString("userName")
 
-                    if (senderUser == currentUser) {
-                        db.collection("users").document(currentUser)
-                            .get()
-                            .addOnSuccessListener {
-                                userName = document.getString("displayName")!!
-                                profileImageUrl = document.getString("profileImageUrl")!!
-                            }
-
-                    } else {
+                    if (senderUser != currentUser) {
                         userName = conversationUserName
                         profileImageUrl = conversationProfileImageUrl
                         isUserMessage = false
@@ -92,17 +89,29 @@ class ChatConversationFragment : Fragment() {
                             userName,
                             messageText,
                             messageTime,
-                            conversationProfileImageUrl,
+                            profileImageUrl,
                             isUserMessage
                         )
                         messages.add(chatMessage)
                     }
                 }
                 updateRecyclerView(messages)
+
             }.addOnFailureListener { exception ->
                 Log.e("!!!", "Error getting documents: ", exception)
             }
 
+    }
+
+    private fun myInfo(callback: UserInfoCallback) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("users").document(currentUser)
+            .get()
+            .addOnSuccessListener {
+                userName = it.getString("displayName")!!
+                profileImageUrl = it.getString("profileImageUrl")!!
+                callback.onUserInfoReceived(userName, profileImageUrl)
+            }
     }
 
     private fun updateRecyclerView(messages: MutableList<ChatMessage>) {
@@ -110,5 +119,9 @@ class ChatConversationFragment : Fragment() {
         chatMessages.addAll(messages)
         recyclerView.adapter?.notifyDataSetChanged()
     }
+}
+
+interface UserInfoCallback {
+    fun onUserInfoReceived(userName: String, profileImageUrl: String)
 }
 
