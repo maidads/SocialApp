@@ -52,7 +52,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         // Get list of conversationIds from current user
-                        val conversationIds = document.get("userConversations") as? MutableList<String> ?: mutableListOf()
+                        this.conversationIds = document.get("userConversations") as? MutableList<String> ?: mutableListOf()
                         Log.d("MyApp", "Document: $document")
                         // For every conversationId...
                         for (conversationId in conversationIds) {
@@ -117,6 +117,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
     override fun onChatCardClicked(position: Int) {
         val chatMessage = chatMessages[position]
         val conversationId = conversationIds[position]
+        Log.d("!!!", conversationId)
         openChatConversationFragment(chatMessage, conversationId)
     }
 
