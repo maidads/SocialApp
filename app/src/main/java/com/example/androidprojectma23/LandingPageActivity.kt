@@ -40,7 +40,7 @@ class LandingPageActivity : AppCompatActivity() {
         navBar.selectedItemId = R.id.findFriendsFragment
 
         val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
-        setSupportActionBar(topAppBar) // Gör topAppBar till ActionBar
+        setSupportActionBar(topAppBar)
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
