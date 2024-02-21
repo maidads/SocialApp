@@ -1,10 +1,12 @@
 package com.example.androidprojectma23
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
@@ -74,6 +76,8 @@ class ChatConversationFragment : Fragment() {
                     .addOnSuccessListener { documentReference ->
                         Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
 
+                        hideKeyboard()
+
                         //adapter.notifyItemInserted(chatMessages.size - 1)
                         //recyclerView.scrollToPosition(chatMessages.size - 1)
                     }
@@ -131,6 +135,11 @@ class ChatConversationFragment : Fragment() {
                     messages.clear()
                 }
             }
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
     private fun myInfo(callback: UserInfoCallback) {
