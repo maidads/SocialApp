@@ -36,7 +36,9 @@
     <string name="default_web_client_id">34100932509-6mpmhkped3p205pumov8n1g48b7nb3on.apps.googleusercontent.com</string>
 
     <string name="display_name">Display name</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+  
+    <string name="write_a_message">Skriv meddelande</string>
+    <string name="send_button_text">Skicka</string>
+    <string name="send_message_button_contentDescription">Send message button</string>
 
 </resources>
