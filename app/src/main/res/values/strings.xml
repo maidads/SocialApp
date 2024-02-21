@@ -38,5 +38,6 @@
     <string name="display_name">Display name</string>
     <string name="write_a_message">Skriv meddelande</string>
     <string name="send_button_text">Skicka</string>
+    <string name="send_message_button_contentDescription">Send message button</string>
 
 </resources>

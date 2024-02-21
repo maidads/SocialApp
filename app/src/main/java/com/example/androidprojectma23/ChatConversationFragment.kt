@@ -7,12 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,7 +20,7 @@ class ChatConversationFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var messageInput: EditText
-    private lateinit var sendButton: ExtendedFloatingActionButton
+    private lateinit var sendButton: FloatingActionButton
     private lateinit var userName: String
     private lateinit var currentUserName: String
     private lateinit var currentUserProfileImage: String
