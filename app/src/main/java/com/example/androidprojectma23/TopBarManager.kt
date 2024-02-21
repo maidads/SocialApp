@@ -1,16 +1,28 @@
 package com.example.androidprojectma23
 
-class TopBarManager {
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 
-    fun updateTopBar (fragmentTag: String){
+class TopBarManager() {
+
+    fun updateTopBar (activity: AppCompatActivity, fragmentTag: String){
         when (fragmentTag) {
-            "Fragment1Tag" -> {
-                // Change icons based on which fragment is currently open
+            "FindFriendsFragment" -> {
+                // Change icons based on which fragment is currently open and set click listeners
             }
-            "Fragment2Tag" -> {
+            "EventPageFragment" -> {
 
             }
-            "Fragment3Tag" -> {
+            "ChatFragment" -> {
+
+            }
+            "ChatConversationFragment" -> {
+
+            }
+            "MyProfileFragment" -> {
+
+            }
+            "EventDetailFragment" -> {
 
             }
         }
