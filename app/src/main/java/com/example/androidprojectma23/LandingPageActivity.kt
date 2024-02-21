@@ -28,6 +28,7 @@ class LandingPageActivity : AppCompatActivity() {
 
     private val storageRef = Firebase.storage.reference
     private val firestore = Firebase.firestore
+    private lateinit var listener: FragmentManager.OnBackStackChangedListener
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val userProfileManager = UserProfileManager(storageRef, firestore)
@@ -45,11 +46,13 @@ class LandingPageActivity : AppCompatActivity() {
         setSupportActionBar(topAppBar)
 
         // FragmentTransactionListener for TopBarManager
-        val listener = FragmentManager.OnBackStackChangedListener {
+        listener = FragmentManager.OnBackStackChangedListener {
             val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-            fragmentTag?.let { topBarManager.updateTopBar(this , it) }
+            Log.d("!!!", "Fragment: $fragmentTag")
+            fragmentTag?.let { topBarManager.updateTopBar(this , it)
+            Log.d("!!!", "Fragment: $it")}
         }
-        supportFragmentManager.removeOnBackStackChangedListener(listener)
+        supportFragmentManager.addOnBackStackChangedListener(listener)
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -93,6 +96,11 @@ class LandingPageActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar, menu)
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        supportFragmentManager.removeOnBackStackChangedListener(listener)
     }
 
 
