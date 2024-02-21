@@ -33,8 +33,18 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(user: User) {
+
+            // Check if profile image is null, use placeholder image if it is
+            val imageToLoad = if (user.profileImage.isBlank()) {
+                R.drawable.profile_image_placeholder
+            } else {
+                user.profileImage
+            }
+
             Glide.with(view.context)
-                .load(user.profileImage)
+                .load(imageToLoad)
+                .placeholder(R.drawable.profile_image_placeholder)
+                .error(R.drawable.profile_image_placeholder) //
                 .into(view.findViewById(R.id.profileImageView))
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
@@ -45,9 +55,21 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
                     val interestId = interests[i]
                     val iconString = docIdToIconResMap[interestId]
                     val imageResourceId = iconString?.let {
-                        view.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                        view.context.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                    } ?: R.drawable.icon_empty
+
+                    imageView.setImageResource(imageResourceId)
+
+                    imageView.alpha = if (user.commonInterests.contains(interestId)) {
+                        1.0f
+                    } else {
+                        0.5f
                     }
-                    imageView.setImageResource(imageResourceId ?: R.drawable.icon_empty)
+                }
+
+                for (i in interests.size until imageViewIdProfileCard.size) {
+                    val imageView = view.findViewById<ImageView>(imageViewIdProfileCard[i])
+                    imageView.visibility = View.GONE
                 }
             }
         }
@@ -64,7 +86,8 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
     }
 
     fun updateData(newUsers: List<User>) {
-        user = newUsers.toMutableList()
+        user.clear()
+        user.addAll(newUsers)
         notifyDataSetChanged()
     }
 
