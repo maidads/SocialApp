@@ -45,10 +45,10 @@ class LandingPageActivity : AppCompatActivity() {
         val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
 
+
         // FragmentTransactionListener for TopBarManager
         listener = FragmentManager.OnBackStackChangedListener {
             val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-            Log.d("!!!", "Fragment: $fragmentTag")
             fragmentTag?.let { topBarManager.updateTopBar(this , it)
             Log.d("!!!", "Fragment: $it")}
         }
@@ -69,6 +69,7 @@ class LandingPageActivity : AppCompatActivity() {
                 R.id.findFriendsFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentHolder, FindFriendsFragment())
+                        .addToBackStack(FindFriendsFragment::class.java.simpleName)
                         .commit()
                     true
                 }
@@ -76,6 +77,7 @@ class LandingPageActivity : AppCompatActivity() {
                 R.id.activityFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentHolder, EventPageFragment())
+                        .addToBackStack(EventPageFragment::class.java.simpleName)
                         .commit()
                     true
                 }
@@ -83,6 +85,7 @@ class LandingPageActivity : AppCompatActivity() {
                 R.id.chatFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentHolder, ChatFragment())
+                        .addToBackStack(ChatFragment::class.java.simpleName)
                         .commit()
                     true
                 }
