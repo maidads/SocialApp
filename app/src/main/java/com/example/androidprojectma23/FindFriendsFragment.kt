@@ -131,7 +131,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
             val allUsersInterests = getAllUsersInterests().first()
             val usersData = getUsersData().first()
 
-            val tempMatchingUsers = mutableListOf<Pair<User, Int>>()
+            val tempMatchingUsers = mutableListOf<User>()
 
             for ((userId, interests) in allUsersInterests) {
                 if (userId != FirebaseAuth.getInstance().currentUser?.uid) {
@@ -140,17 +140,24 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                         val displayName = usersData[userId]?.first ?: "Anonym"
                         val profileImageUrl = usersData[userId]?.second ?: ""
 
-                        val user = User(displayName, profileImageUrl, interests.toMutableList())
+                        val user = User(
+                            displayName = displayName,
+                            profileImage = profileImageUrl,
+                            interests = interests.toMutableList(),
+                            commonInterests = commonInterests.toMutableList()
+                        )
 
-                        tempMatchingUsers.add(Pair(user, commonInterests.size))
+                        tempMatchingUsers.add(user)
                     }
                 }
             }
 
-            val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.second }
+            val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.commonInterests.size }
 
-            adapter.updateData(sortedMatchingUsers.map { it.first })
+            adapter.updateData(sortedMatchingUsers)
         }
     }
+
+
 
 }

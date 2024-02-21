@@ -55,9 +55,22 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
                     val interestId = interests[i]
                     val iconString = docIdToIconResMap[interestId]
                     val imageResourceId = iconString?.let {
-                        view.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                        view.context.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                    } ?: R.drawable.icon_empty
+
+                    imageView.setImageResource(imageResourceId)
+
+                    // Justera alpha-värdet baserat på om intresset är gemensamt eller inte
+                    imageView.alpha = if (user.commonInterests.contains(interestId)) {
+                        1.0f
+                    } else {
+                        0.5f
                     }
-                    imageView.setImageResource(imageResourceId ?: R.drawable.icon_empty)
+                }
+
+                for (i in interests.size until imageViewIdProfileCard.size) {
+                    val imageView = view.findViewById<ImageView>(imageViewIdProfileCard[i])
+                    imageView.visibility = View.GONE
                 }
             }
         }
