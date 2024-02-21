@@ -1,11 +1,16 @@
 package com.example.androidprojectma23
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,9 +35,13 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private lateinit var adapter: ProfileCardAdapter
     private val matchingFriendsList = mutableListOf<User>()
+    private lateinit var geoLocationManager: GeoLocationManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        geoLocationManager = GeoLocationManager(requireContext(), requireActivity())
+        checkLocationPermissionAndProceed()
 
         val minimumNumberOfInterestRequired = 1
 
@@ -54,6 +63,20 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
         return view
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                fetchCurrentUserLocation()
+
+            } else {
+                // Platsbehörighet nekades, fortsätt utan platsdata eller visa en förklaring
+
+            }
+        }
+    }
+
 
     private fun setUpRecyclerView(view: View): RecyclerView {
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
@@ -157,6 +180,44 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
             adapter.updateData(sortedMatchingUsers)
         }
     }
+
+    private fun fetchCurrentUserLocation() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            geoLocationManager.getCurrentLocationHash { geohash ->
+                // Använd geohash här
+                // Exempel: Uppdatera UI, gör en databasfråga baserat på geohash, etc.
+                Log.d("MyFragment", "Current user geohash: $geohash")
+            }
+        } else {
+            // Begär platsbehörigheter
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun checkLocationPermissionAndProceed() {
+        if (!geoLocationManager.checkLocationPermission()) {
+            // Visa dialogen innan du begär behörigheten
+            showLocationPermissionDialog()
+        } else {
+            fetchCurrentUserLocation()
+        }
+    }
+
+    private fun showLocationPermissionDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Platsbehörighet krävs")
+            .setMessage("För att ge dig den bästa möjliga upplevelsen och hjälpa dig att hitta nya vänner i närheten, behöver appen tillgång till din plats.")
+            .setPositiveButton("OK") { _, _ ->
+                // Begär platsbehörigheter när användaren accepterar
+                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
+            }
+            .setNegativeButton("Avbryt") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
+
+
+
 
 
 
