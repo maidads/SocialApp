@@ -48,7 +48,9 @@ class EventPageFragment : Fragment() {
                     val name = document.getString("name") ?: ""
                     val description = document.getString("description") ?: ""
                     val date = document.getString("date") ?: ""
-                    eventsList.add(Event(name, description, date))
+                    val location = document.getString("location") ?: ""
+                    val image = document.getString("image") ?: ""
+                    eventsList.add(Event(name, description, date, location, image))
                 }
                 adapter.updateEvents(eventsList)
             }
