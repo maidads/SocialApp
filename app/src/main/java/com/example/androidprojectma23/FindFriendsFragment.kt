@@ -57,7 +57,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private fun setUpRecyclerView(view: View): RecyclerView {
         val recyclerView = view.findViewById<RecyclerView>(R.id.profilesRecyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this.context)
+        recyclerView.layoutManager = this.context?.let { NoScrollableRecycleView(it) }
         recyclerView.adapter = adapter
         return recyclerView
     }
