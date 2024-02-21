@@ -10,6 +10,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupWindow
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
@@ -36,11 +38,18 @@ class LandingPageActivity : AppCompatActivity() {
         setContentView(R.layout.activity_landing_page)
 
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-
         navBar.selectedItemId = R.id.findFriendsFragment
 
+        val topBarManager = TopBarManager()
         val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
+
+        // FragmentTransactionListener for TopBarManager
+        val listener = FragmentManager.OnBackStackChangedListener {
+            val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
+            fragmentTag?.let { topBarManager.updateTopBar(this , it) }
+        }
+        supportFragmentManager.removeOnBackStackChangedListener(listener)
 
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
@@ -60,17 +69,7 @@ class LandingPageActivity : AppCompatActivity() {
                         .commit()
                     true
                 }
-// TODO: Add fragments for activity and chat
 
-//                R.id.activityFragment -> {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.fragmentHolder, ActivityFragment())
-//                        .commit()
-//                    true
-//                }
-
-
-            // Hämtar fragmentet för event sidan
                 R.id.activityFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentHolder, EventPageFragment())
