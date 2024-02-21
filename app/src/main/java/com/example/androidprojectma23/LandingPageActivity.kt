@@ -29,7 +29,16 @@ class LandingPageActivity : AppCompatActivity() {
 //                        .commit()
 //                    true
 //                }
-//
+
+
+            // Hämtar fragmentet för event sidan
+                R.id.activityFragment -> {
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentHolder, EventPageFragment())
+                        .commit()
+                    true
+                }
+
                 R.id.chatFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.fragmentHolder, ChatFragment())
