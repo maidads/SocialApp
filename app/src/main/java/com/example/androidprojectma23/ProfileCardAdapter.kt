@@ -60,7 +60,6 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
                     imageView.setImageResource(imageResourceId)
 
-                    // Justera alpha-värdet baserat på om intresset är gemensamt eller inte
                     imageView.alpha = if (user.commonInterests.contains(interestId)) {
                         1.0f
                     } else {
