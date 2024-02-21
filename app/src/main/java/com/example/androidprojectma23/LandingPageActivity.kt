@@ -41,15 +41,14 @@ class LandingPageActivity : AppCompatActivity() {
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         navBar.selectedItemId = R.id.findFriendsFragment
 
-        val topBarManager = TopBarManager()
+        val topBarManager = TopBarManager(this)
         val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
-
 
         // FragmentTransactionListener for TopBarManager
         listener = FragmentManager.OnBackStackChangedListener {
             val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-            fragmentTag?.let { topBarManager.updateTopBar(this , it)
+            fragmentTag?.let { topBarManager.updateTopBar(it)
             Log.d("!!!", "Fragment: $it")}
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
@@ -153,10 +152,4 @@ class LandingPageActivity : AppCompatActivity() {
 
         })
     }
-
-
-
-
-
-
 }
