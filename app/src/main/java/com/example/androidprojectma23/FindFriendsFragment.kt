@@ -45,6 +45,8 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
         val minimumNumberOfInterestRequired = 1
 
+        fetchNearbyUsersLocation()
+
         fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired)
     }
 
@@ -72,7 +74,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 fetchCurrentUserLocation()
 
             } else {
-                // Platsbehörighet nekades, fortsätt utan platsdata eller visa en förklaring
 
             }
         }
@@ -190,7 +191,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 saveCurrentUserLocationToFirestore(geohash)
             }
         } else {
-            // Begär platsbehörigheter
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
@@ -200,8 +200,36 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val database = FirebaseFirestore.getInstance()
         val userRef = database.collection("users")
 
-        // currentUserUid?.let
+        userUid?.let { uid ->
+            userRef.document(uid).get().addOnSuccessListener { document ->
+                val otherUserGeohash = document.getString("geohash") ?: return@addOnSuccessListener
+                // Calculate a interval based on the users geohash
+                val geohashRange = calculateGeohashRange(otherUserGeohash)
 
+                // Make a query to find a user with the interval
+                userRef.whereGreaterThanOrEqualTo("geohash", geohashRange.first)
+                    .whereLessThanOrEqualTo("geohash", geohashRange.second)
+                    .get()
+                    .addOnSuccessListener { queryDocumentSnapshots ->
+                        for (snapshot in queryDocumentSnapshots.documents) {
+                            val userUid = snapshot.id
+
+                            // Avoid including the current user in the results
+                            if (userUid != uid) {
+                                Log.d("!!!", "Found nearby user: $userUid")
+                                // Handle nearby users
+                            }
+                        }
+                    }
+            }
+        }
+
+    }
+
+    private fun calculateGeohashRange(geohash: String): Pair<String, String> {
+        val start = geohash.substring(0, geohash.length - 1) + "0"
+        val end = geohash.substring(0, geohash.length - 1) + "z"
+        return Pair(start, end)
     }
 
     private fun saveCurrentUserLocationToFirestore(geohash: String) {
@@ -220,7 +248,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private fun checkLocationPermissionAndProceed() {
         if (!geoLocationManager.checkLocationPermission()) {
-            // Visa dialogen innan du begär behörigheten
+
             showLocationPermissionDialog()
         } else {
             fetchCurrentUserLocation()
