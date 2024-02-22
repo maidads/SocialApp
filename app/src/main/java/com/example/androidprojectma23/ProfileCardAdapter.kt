@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.ViewFlipper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidprojectma23.IconMapping.docIdToIconResMap
@@ -18,7 +19,7 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
         parent: ViewGroup,
         viewType: Int
     ): ProfileCardAdapter.ProfileViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.profile_card_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.profile_card_viewflipper, parent, false)
         return ProfileViewHolder(view)
     }
 
@@ -33,6 +34,10 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(user: User) {
+            val viewFlipper = itemView.findViewById<ViewFlipper>(R.id.profileCardBack)
+            itemView.setOnClickListener {
+                viewFlipper.showNext()
+            }
 
             // Check if profile image is null, use placeholder image if it is
             val imageToLoad = if (user.profileImage.isBlank()) {
