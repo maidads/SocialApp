@@ -66,6 +66,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.d("!!!", "onRequestPermissionsResult received.")
         if (requestCode == GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fetchCurrentUserLocation()
@@ -144,7 +145,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
         emit(usersData)
     }.catch { e ->
-        Log.e("Tag", "Error fetching users data", e)
+        Log.e("!!!", "Error fetching users data", e)
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
 
@@ -182,15 +183,38 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     }
 
     private fun fetchCurrentUserLocation() {
+        Log.d("!!!", "Attempting to fetch current user location")
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             geoLocationManager.getCurrentLocationHash { geohash ->
-                // Använd geohash här
-                // Exempel: Uppdatera UI, gör en databasfråga baserat på geohash, etc.
-                Log.d("MyFragment", "Current user geohash: $geohash")
+                Log.d("!!!", "Current user geohash: $geohash")
+                saveCurrentUserLocationToFirestore(geohash)
             }
         } else {
             // Begär platsbehörigheter
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun fetchNearbyUsersLocation() {
+        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+        val database = FirebaseFirestore.getInstance()
+        val userRef = database.collection("users")
+
+        // currentUserUid?.let
+
+    }
+
+    private fun saveCurrentUserLocationToFirestore(geohash: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let {
+            val userRef = FirebaseFirestore.getInstance().collection("users").document(it)
+            userRef.update("geohash", geohash)
+                .addOnSuccessListener {
+                    Log.d("!!!", "Saving geohash for user: $userId")
+                }
+                .addOnFailureListener {
+                    e -> Log.w("!!!", "Error updating user geohash.", e)
+                }
         }
     }
 
