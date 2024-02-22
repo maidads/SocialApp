@@ -3,7 +3,6 @@ package com.example.androidprojectma23
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -44,6 +43,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         topAppBar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
         updateTopBarWithInitialFragment()
+        topBarManager.setMenuItemClickListener()
 
         // FragmentTransactionListener for TopBarManager
         listener = FragmentManager.OnBackStackChangedListener {
@@ -52,10 +52,10 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
 
+        topBarManager.setMenuItemClickListener()
+
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         navBar.selectedItemId = R.id.findFriendsFragment
-
-        filterIconClickListener()
 
         navBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -74,6 +74,14 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     override fun onBackIconClicked() {
         // Better method?
         onBackPressed()
+    }
+
+    override fun onFilterMenuItemClicked() {
+        showFilterPopup()
+    }
+
+    override fun onSavedProfileMenuItemClicked() {
+        // Open SavedProfilesFragment
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -144,18 +152,5 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         }, onFailure = { exception ->
 
         })
-    }
-
-    private fun filterIconClickListener() {
-        topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.filter -> {
-                    showFilterPopup()
-                    true
-                }
-                else -> false
-            }
-        }
-
     }
 }
