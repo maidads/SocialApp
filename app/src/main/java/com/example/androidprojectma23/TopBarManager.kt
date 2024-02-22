@@ -1,14 +1,18 @@
 package com.example.androidprojectma23
 
-import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 
-class TopBarManager(private var activity: AppCompatActivity) {
+class TopBarManager(private var activity: AppCompatActivity, private val clickListener: TopBarClickListener) {
     private lateinit var topAppBar: MaterialToolbar
     private lateinit var filterMenuItem: MenuItem
     private lateinit var savedProfileMenuItem: MenuItem
+
+    interface TopBarClickListener{
+        fun onProfileIconClicked()
+        fun onBackIconClicked()
+    }
 
     fun updateTopBar (fragmentTag: String){
         topAppBar = activity.findViewById(R.id.topAppBar)
@@ -63,6 +67,7 @@ class TopBarManager(private var activity: AppCompatActivity) {
             menuItem.isVisible = visibility
         }
     }
+
     fun showPageTitle(isVisible: Boolean, title: String?) {
         topAppBar.title = if (isVisible) title else null
     }
@@ -71,9 +76,12 @@ class TopBarManager(private var activity: AppCompatActivity) {
         when (icon) {
             "profile" -> {
                 topAppBar.setNavigationIcon(R.drawable.baseline_person_24)
+                topAppBar.setNavigationOnClickListener { clickListener.onProfileIconClicked() }
+
             }
             "back" -> {
                 topAppBar.setNavigationIcon(R.drawable.baseline_arrow_back_24)
+                topAppBar.setNavigationOnClickListener { clickListener.onBackIconClicked() }
             }
         }
     }

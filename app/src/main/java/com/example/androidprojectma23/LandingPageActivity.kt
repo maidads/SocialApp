@@ -21,13 +21,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
 
-class LandingPageActivity : AppCompatActivity() {
+class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListener {
     interface OnFilterSelectionChangedListener {
         fun onSelectionChanged(selectedCount: Int)
     }
 
     private val storageRef = Firebase.storage.reference
     private val firestore = Firebase.firestore
+    private lateinit var topAppBar: MaterialToolbar
     private lateinit var listener: FragmentManager.OnBackStackChangedListener
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -41,8 +42,8 @@ class LandingPageActivity : AppCompatActivity() {
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         navBar.selectedItemId = R.id.findFriendsFragment
 
-        val topBarManager = TopBarManager(this)
-        val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
+        val topBarManager = TopBarManager(this, this)
+        topAppBar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
 
         // FragmentTransactionListener for TopBarManager
@@ -53,15 +54,7 @@ class LandingPageActivity : AppCompatActivity() {
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
 
-        topAppBar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.filter -> {
-                    showFilterPopup()
-                    true
-                }
-                else -> false
-            }
-        }
+        topBarClickListener()
 
         navBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -94,6 +87,14 @@ class LandingPageActivity : AppCompatActivity() {
         }
 
     }
+    override fun onProfileIconClicked() {
+        // Open MyProfileFragment
+    }
+
+    override fun onBackIconClicked() {
+        // Better method?
+        onBackPressed()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar, menu)
@@ -104,7 +105,6 @@ class LandingPageActivity : AppCompatActivity() {
         super.onDestroy()
         supportFragmentManager.removeOnBackStackChangedListener(listener)
     }
-
 
     private fun showFilterPopup() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
@@ -151,5 +151,18 @@ class LandingPageActivity : AppCompatActivity() {
         }, onFailure = { exception ->
 
         })
+    }
+
+    private fun topBarClickListener() {
+        topAppBar.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.filter -> {
+                    showFilterPopup()
+                    true
+                }
+                else -> false
+            }
+        }
+
     }
 }
