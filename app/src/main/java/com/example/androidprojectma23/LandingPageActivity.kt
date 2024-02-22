@@ -52,8 +52,6 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
 
-        topBarManager.setMenuItemClickListener()
-
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
         navBar.selectedItemId = R.id.findFriendsFragment
 
