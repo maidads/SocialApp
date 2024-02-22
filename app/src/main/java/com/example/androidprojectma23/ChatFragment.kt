@@ -133,7 +133,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentHolder, chatConversationFragment)
-            .addToBackStack(null)  // Lägger till transaktionen till backstack för att möjliggöra navigering tillbaka
+            .addToBackStack(ChatConversationFragment::class.java.simpleName)  // Lägger till transaktionen till backstack för att möjliggöra navigering tillbaka
             .commit()
     }
 }
