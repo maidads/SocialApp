@@ -30,6 +30,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     private val firestore = Firebase.firestore
     private lateinit var topAppBar: MaterialToolbar
     private lateinit var listener: FragmentManager.OnBackStackChangedListener
+    private lateinit var topBarManager: TopBarManager
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val userProfileManager = UserProfileManager(storageRef, firestore)
@@ -39,49 +40,28 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing_page)
 
-        val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        navBar.selectedItemId = R.id.findFriendsFragment
-
-        val topBarManager = TopBarManager(this, this)
+        topBarManager = TopBarManager(this, this)
         topAppBar = findViewById(R.id.topAppBar)
         setSupportActionBar(topAppBar)
+        updateTopBarWithInitialFragment()
 
         // FragmentTransactionListener for TopBarManager
         listener = FragmentManager.OnBackStackChangedListener {
             val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
-            fragmentTag?.let { topBarManager.updateTopBar(it)
-            Log.d("!!!", "Fragment: $it")}
+            fragmentTag?.let { topBarManager.updateTopBar(it) }
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
 
-        topBarClickListener()
+        val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        navBar.selectedItemId = R.id.findFriendsFragment
+
+        filterIconClickListener()
 
         navBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.findFriendsFragment -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentHolder, FindFriendsFragment())
-                        .addToBackStack(FindFriendsFragment::class.java.simpleName)
-                        .commit()
-                    true
-                }
-
-                R.id.activityFragment -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentHolder, EventPageFragment())
-                        .addToBackStack(EventPageFragment::class.java.simpleName)
-                        .commit()
-                    true
-                }
-
-                R.id.chatFragment -> {
-                    supportFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentHolder, ChatFragment())
-                        .addToBackStack(ChatFragment::class.java.simpleName)
-                        .commit()
-                    true
-                }
-
+                R.id.findFriendsFragment -> replaceFragment(FindFriendsFragment())
+                R.id.activityFragment -> replaceFragment(EventPageFragment())
+                R.id.chatFragment -> replaceFragment(ChatFragment())
                 else -> false
             }
         }
@@ -104,6 +84,19 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     override fun onDestroy() {
         super.onDestroy()
         supportFragmentManager.removeOnBackStackChangedListener(listener)
+    }
+
+    fun updateTopBarWithInitialFragment() {
+        val initialFragmentTag = "FindFriendsFragment"
+        topBarManager.updateTopBar(initialFragmentTag)
+    }
+
+    private fun replaceFragment(fragment: Fragment): Boolean {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentHolder, fragment)
+            .addToBackStack(fragment::class.java.simpleName)
+            .commit()
+        return true
     }
 
     private fun showFilterPopup() {
@@ -153,7 +146,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         })
     }
 
-    private fun topBarClickListener() {
+    private fun filterIconClickListener() {
         topAppBar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.filter -> {
