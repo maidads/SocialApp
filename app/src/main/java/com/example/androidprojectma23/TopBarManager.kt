@@ -1,50 +1,79 @@
 package com.example.androidprojectma23
 
 import android.util.Log
-import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.appbar.MaterialToolbar
 
 class TopBarManager(private var activity: AppCompatActivity) {
-    //All main fragments: My profile icon/button upper left,
-    //All sub fragments: Back icon/button upper left
+    private lateinit var topAppBar: MaterialToolbar
+    private lateinit var filterMenuItem: MenuItem
+    private lateinit var savedProfileMenuItem: MenuItem
 
     fun updateTopBar (fragmentTag: String){
-        val topAppBar: MaterialToolbar = activity.findViewById(R.id.topAppBar)
-        val filterMenuItem = topAppBar.menu.findItem(R.id.filter)
-        val savedProfilesMenuItem = topAppBar.menu.findItem(R.id.favorite)
+        topAppBar = activity.findViewById(R.id.topAppBar)
+        filterMenuItem = topAppBar.menu.findItem(R.id.filter)
+        savedProfileMenuItem = topAppBar.menu.findItem(R.id.favorite)
+        val upperRightIcons = listOf(filterMenuItem, savedProfileMenuItem)
 
         when (fragmentTag) {
             "FindFriendsFragment" -> {
-                filterMenuItem?.isVisible = true
-                savedProfilesMenuItem?.isVisible = true
-                topAppBar.title = null
-                Log.d("!!!", "If friends is chosen from start")
+                setMenuItemVisibility(upperRightIcons, true)
+                showPageTitle(false, null)
+                setUpperLeftIcon("profile")
             }
             "EventPageFragment" -> {
-                filterMenuItem?.isVisible = false
-                savedProfilesMenuItem?.isVisible = false
-                topAppBar.title = null
-                Log.d("!!!", "If event is runned")
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(false, null)
+                setUpperLeftIcon("profile")
             }
             "ChatFragment" -> {
-                filterMenuItem?.isVisible = false
-                savedProfilesMenuItem?.isVisible = false
-                topAppBar.title = null
-                //Remove icons upper right
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(false, null)
+                setUpperLeftIcon("profile")
             }
             "ChatConversationFragment" -> {
-                topAppBar.title = "Other user name" //Get username
-                //User displayname center
+                setMenuItemVisibility(upperRightIcons, false)
+                val otherUserName = "Other user name" //Set name based on clicked conversation
+                showPageTitle(true, otherUserName)
+                setUpperLeftIcon("back")
             }
             "MyProfileFragment" -> {
-                topAppBar.title = "Min profil"
-                //Fragment name center "Min Profil"
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(true, "Min Profil")
+                setUpperLeftIcon("back")
             }
             "EventDetailFragment" -> {
-                topAppBar.title = "Event name"
-                //Event name center
+                setMenuItemVisibility(upperRightIcons, false)
+                val eventName = "Event name" //Set name based on clicked event
+                showPageTitle(true, eventName)
+                setUpperLeftIcon("back")
+            }
+
+            "MyFriendsFragment" -> {
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(true, "Vänner")
+                setUpperLeftIcon("back")
+            }
+        }
+    }
+
+    fun setMenuItemVisibility(menuItems: List<MenuItem>, visibility: Boolean) {
+        menuItems.forEach { menuItem ->
+            menuItem.isVisible = visibility
+        }
+    }
+    fun showPageTitle(isVisible: Boolean, title: String?) {
+        topAppBar.title = if (isVisible) title else null
+    }
+
+    fun setUpperLeftIcon(icon: String){
+        when (icon) {
+            "profile" -> {
+                topAppBar.setNavigationIcon(R.drawable.baseline_person_24)
+            }
+            "back" -> {
+                topAppBar.setNavigationIcon(R.drawable.baseline_arrow_back_24)
             }
         }
     }
