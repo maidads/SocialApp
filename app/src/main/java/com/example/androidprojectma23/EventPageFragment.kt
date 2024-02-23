@@ -11,17 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class EventPageFragment : Fragment() {
+class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EventAdapter
     private lateinit var events: List<Event>
     private lateinit var firestore: FirebaseFirestore
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_page, container, false)
     }
 
@@ -30,8 +27,7 @@ class EventPageFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.eventsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        adapter = EventAdapter(emptyList())
-
+        adapter = EventAdapter(emptyList(), this)
         recyclerView.adapter = adapter
         firestore = FirebaseFirestore.getInstance()
 
@@ -57,6 +53,10 @@ class EventPageFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.d("!!!", "Error getting documents: ", exception)
             }
+    }
+
+    override fun onEventClick(event: Event) {
+        TODO("Not yet implemented")
     }
 
 
