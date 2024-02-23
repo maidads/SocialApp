@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.widget.ViewFlipper
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -12,6 +13,9 @@ class ItemMoveCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouch
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
         mAdapter.onItemDismiss(viewHolder.adapterPosition)
+        //Reset flip to show profile card front
+        val cardView = viewHolder.itemView
+        cardView.findViewById<ViewFlipper>(R.id.profileCardBack).displayedChild = 0
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {

@@ -83,7 +83,6 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
             itemView.setOnClickListener {
                 viewFlipper.showNext()
-
             }
         }
     }
