@@ -8,7 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+class EventAdapter(private var events: List<Event>, private val listener: OnEventClickListener) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+
+    interface OnEventClickListener {
+        fun onEventClick(event: Event)
+    }
     class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
         private val eventImageView: ImageView = itemView.findViewById(R.id.eventImageView)
