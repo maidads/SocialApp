@@ -1,11 +1,18 @@
 package com.example.androidprojectma23
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.androidprojectma23.IconMapping.docIdToIconResMap
@@ -36,54 +43,79 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(user: User) {
             val viewFlipper = itemView.findViewById<ViewFlipper>(R.id.profileCardBack)
+            val cardContainer = view.findViewById<View>(R.id.profile_card_viewflipper)
+            val frontImage = view.findViewById<ImageView>(R.id.profileImageView)
+            val backImage = view.findViewById<ImageView>(R.id.profileImageViewBack)
 
-            Glide.with(view.context)
-                .load(user.profileImage)
-                .placeholder(R.drawable.profile_image_placeholder)
-                .error(R.drawable.profile_image_placeholder) //
-                .into(view.findViewById(R.id.profileImageView))
+            fun flipCard(){
+                val scale = view.resources.displayMetrics.density
+                cardContainer.cameraDistance = 10000 * scale
+                val firstHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, 100f)
+                firstHalfFlip.duration = 250
+                firstHalfFlip.interpolator = AccelerateInterpolator()
+                firstHalfFlip.addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        viewFlipper.showNext()
 
-            Glide.with(view.context)
-                .load(user.profileImage)
-                .placeholder(R.drawable.profile_image_placeholder)
-                .error(R.drawable.profile_image_placeholder) //
-                .into(view.findViewById(R.id.profileImageViewBack))
+                        val secondHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", -100f, 0f)
+                        secondHalfFlip.duration = 250
+                        secondHalfFlip.interpolator = DecelerateInterpolator()
+                        secondHalfFlip.start()
+                    }
+                })
+                firstHalfFlip.start()
+            }
+
+            fun loadProfileImage(imageView: ImageView) {
+                Glide.with(view.context)
+                    .load(user.profileImage)
+                    .placeholder(R.drawable.profile_image_placeholder)
+                    .error(R.drawable.profile_image_placeholder) //
+                    .into(imageView)
+            }
+
+            fun loadInterests(imageViewIds: List<Int>){
+                user.interests?.let { interests ->
+                    for (i in 0 until minOf(interests.size, imageViewIds.size)) {
+                        val imageView = view.findViewById<ImageView>(imageViewIds[i])
+                        val interestId = interests[i]
+                        val iconString = docIdToIconResMap[interestId]
+                        val imageResourceId = iconString?.let {
+                            view.context.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
+                        } ?: R.drawable.icon_empty
+
+                        imageView.setImageResource(imageResourceId)
+
+                        imageView.alpha = if (user.commonInterests.contains(interestId)) {
+                            1.0f
+                        } else {
+                            0.5f
+                        }
+                    }
+
+                    for (i in interests.size until imageViewIds.size) {
+                        val imageView = view.findViewById<ImageView>(imageViewIds[i])
+                        imageView.visibility = View.GONE
+                    }
+                }
+            }
+
+            itemView.setOnClickListener {
+                flipCard()
+            }
+
+            //Load and set all information to show on card
+            loadInterests(imageViewIdProfileCard)
+            loadInterests(imageViewIdProfileCardBack)
+
+            loadProfileImage(frontImage)
+            loadProfileImage(backImage)
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
             view.findViewById<TextView>(R.id.displayNameTextViewBack).text = user.displayName
 
-            fun loadInterests(imageViewIds: List<Int>){
-            user.interests?.let { interests ->
-                for (i in 0 until minOf(interests.size, imageViewIds.size)) {
-                    val imageView = view.findViewById<ImageView>(imageViewIds[i])
-                    val interestId = interests[i]
-                    val iconString = docIdToIconResMap[interestId]
-                    val imageResourceId = iconString?.let {
-                        view.context.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
-                    } ?: R.drawable.icon_empty
-
-                    imageView.setImageResource(imageResourceId)
-
-                    imageView.alpha = if (user.commonInterests.contains(interestId)) {
-                        1.0f
-                    } else {
-                        0.5f
-                    }
-                }
-
-                for (i in interests.size until imageViewIds.size) {
-                    val imageView = view.findViewById<ImageView>(imageViewIds[i])
-                    imageView.visibility = View.GONE
-                }
-            }
-            }
-
-            loadInterests(imageViewIdProfileCard)
-            loadInterests(imageViewIdProfileCardBack)
-
-            itemView.setOnClickListener {
-                viewFlipper.showNext()
-            }
+//          Set user age here:
+//          view.findViewById<TextView>(R.id.ageTextViewBack).text = view.context.getString(R.string.age_placeholder, age)
         }
     }
 
