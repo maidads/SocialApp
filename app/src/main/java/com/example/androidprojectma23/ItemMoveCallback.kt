@@ -16,6 +16,12 @@ class ItemMoveCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouch
         //Reset flip to show profile card front
         val cardView = viewHolder.itemView
         cardView.findViewById<ViewFlipper>(R.id.profileCardBack).displayedChild = 0
+
+        if (direction == ItemTouchHelper.START) {
+            // User swipe left = save
+        } else if (direction == ItemTouchHelper.END) {
+            // User swipe right = next card
+        }
     }
 
     override fun getMovementFlags(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder): Int {
