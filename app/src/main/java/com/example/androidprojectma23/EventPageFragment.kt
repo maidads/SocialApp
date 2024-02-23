@@ -56,8 +56,22 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
     }
 
     override fun onEventClick(event: Event) {
-        TODO("Not yet implemented")
-    }
+        Log.d("EventPageFragment", "Event clicked: ${event.name}")
 
+        val eventDetailFragment = EventDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("nameKey", event.name)
+                putString("descriptionKey", event.description)
+                putString("dateKey", event.date)
+                putString("locationKey", event.location)
+            }
+        }
+
+        activity?.supportFragmentManager?.beginTransaction()?.apply {
+            replace(R.id.fragmentHolder, eventDetailFragment)
+            addToBackStack(null)
+            commit()
+        }
+    }
 
 }
