@@ -42,5 +42,6 @@
     <string name="write_a_message">Skriv meddelande</string>
     <string name="send_button_text">Skicka</string>
     <string name="send_message_button_contentDescription">Send message button</string>
+    <string name="age_placeholder_back">Ålder: %1$s</string>
 
 </resources>
