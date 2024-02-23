@@ -25,6 +25,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.first
+import kotlin.math.max
+
 
 
 class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener {
@@ -44,8 +46,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         checkLocationPermissionAndProceed()
 
         val minimumNumberOfInterestRequired = 1
-
-        fetchNearbyUsersLocation()
 
         fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired)
     }
@@ -152,14 +152,22 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int) {
         viewLifecycleOwner.lifecycleScope.launch {
+            // Först, hämta ID:n för närliggande användare.
+            val nearbyUserIds = fetchNearbyUsersLocation().first()
             val currentUserInterests = getCurrentUserInterests().first()
-            val allUsersInterests = getAllUsersInterests().first()
-            val usersData = getUsersData().first()
+
+            val allUsersInterests = getAllUsersInterests().first().filterKeys { userId ->
+                userId in nearbyUserIds
+            }
+
+            val usersData = getUsersData().first().filterKeys { userId ->
+                userId in nearbyUserIds
+            }
 
             val tempMatchingUsers = mutableListOf<User>()
 
             for ((userId, interests) in allUsersInterests) {
-                if (userId != FirebaseAuth.getInstance().currentUser?.uid) {
+                if (userId in nearbyUserIds) { // Check to see if a user is nearby
                     val commonInterests = findCommonInterests(currentUserInterests, interests)
                     if (commonInterests.size >= minimumNumberOfInterestsRequired) {
                         val displayName = usersData[userId]?.first ?: "Anonym"
@@ -177,11 +185,13 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 }
             }
 
+            // Sort and update the adapter with matching users
             val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.commonInterests.size }
-
             adapter.updateData(sortedMatchingUsers)
         }
     }
+
+
 
     private fun fetchCurrentUserLocation() {
         Log.d("!!!", "Attempting to fetch current user location")
@@ -195,40 +205,42 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         }
     }
 
-    private fun fetchNearbyUsersLocation() {
-        val userUid = FirebaseAuth.getInstance().currentUser?.uid
+    private fun fetchNearbyUsersLocation(): Flow<List<String>> = flow {
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         val database = FirebaseFirestore.getInstance()
         val userRef = database.collection("users")
+        val nearbyUserIds = mutableListOf<String>()
 
-        userUid?.let { uid ->
-            userRef.document(uid).get().addOnSuccessListener { document ->
-                val otherUserGeohash = document.getString("geohash") ?: return@addOnSuccessListener
-                // Calculate a interval based on the users geohash
-                val geohashRange = calculateGeohashRange(otherUserGeohash)
+        currentUserUid?.let { uid ->
+            val document = userRef.document(uid).get().await() // Use kotlinx-coroutines to wait for results
+            val currentUserGeohash = document.getString("geohash") ?: return@flow
+            val geohashRange = calculateGeohashRange(currentUserGeohash)
 
-                // Make a query to find a user with the interval
-                userRef.whereGreaterThanOrEqualTo("geohash", geohashRange.first)
-                    .whereLessThanOrEqualTo("geohash", geohashRange.second)
-                    .get()
-                    .addOnSuccessListener { queryDocumentSnapshots ->
-                        for (snapshot in queryDocumentSnapshots.documents) {
-                            val userUid = snapshot.id
+            val querySnapshot = userRef
+                .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
+                .whereLessThanOrEqualTo("geohash", geohashRange.second)
+                .get()
+                .await() // Using kotlinx-coroutines to wait for results
 
-                            // Avoid including the current user in the results
-                            if (userUid != uid) {
-                                Log.d("!!!", "Found nearby user: $userUid")
-                                // Handle nearby users
-                            }
-                        }
-                    }
+            for (snapshot in querySnapshot.documents) {
+                if (snapshot.id != uid) {
+                    nearbyUserIds.add(snapshot.id)
+                }
             }
         }
 
+        emit(nearbyUserIds)
+    }.catch { e ->
+        Log.e("fetchNearbyUsersLocation", "Error fetching nearby users", e)
     }
 
+
     private fun calculateGeohashRange(geohash: String): Pair<String, String> {
-        val start = geohash.substring(0, geohash.length - 1) + "0"
-        val end = geohash.substring(0, geohash.length - 1) + "z"
+        // Check too see that the geohash is longer than the amout of chars to remove
+        val newLength = max(geohash.length - 3, 1)
+        val baseGeohash = geohash.substring(0, newLength)
+        val start = baseGeohash + "0".repeat(geohash.length - newLength)
+        val end = baseGeohash + "z".repeat(geohash.length - newLength)
         return Pair(start, end)
     }
 
