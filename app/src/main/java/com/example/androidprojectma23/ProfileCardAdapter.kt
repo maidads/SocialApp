@@ -95,7 +95,7 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
                     for (i in interests.size until imageViewIds.size) {
                         val imageView = view.findViewById<ImageView>(imageViewIds[i])
-                        imageView.visibility = View.GONE
+                        imageView.visibility = View.VISIBLE
                     }
                 }
             }
