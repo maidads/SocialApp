@@ -49,9 +49,10 @@ class EventDetailFragment : Fragment() {
     private fun displayEventDetails(event: Event?) {
         event?.let {
             view?.findViewById<TextView>(R.id.detailEventNameTextView)?.text = event.name
-            view?.findViewById<TextView>(R.id.detailEventDescriptionTextView)?.text = event.description
             view?.findViewById<TextView>(R.id.detailEventLocationTextView)?.text = event.location
             view?.findViewById<TextView>(R.id.detailEventDateTextView)?.text = event.date
+            view?.findViewById<TextView>(R.id.detailEventMoreInfoTextView)?.text = event.moreInfo
+
 
             event.image?.let { imageUrl ->
                 view?.findViewById<ImageView>(R.id.detailEventImageView)?.let { imageView ->

@@ -34,7 +34,9 @@
             android:id="@+id/detailEventNameTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginTop="200dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto_black"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,38 +48,47 @@
             android:id="@+id/detailEventDateTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="230dp"
+            android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/detailEventNameTextView"
             tools:text="Event Date" />
 
         <TextView
             android:id="@+id/detailEventLocationTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="257dp"
+            android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailEventDateTextView"
             tools:text="Event Location" />
 
         <TextView
-            android:id="@+id/detailEventDescriptionTextView"
+            android:id="@+id/detailEventMoreInfoTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="284dp"
+            android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailEventLocationTextView"
-            tools:text="Event More Info" />
+            tools:text="More Info" />
 
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
