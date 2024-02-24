@@ -205,6 +205,20 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         }
     }
 
+    private fun saveCurrentUserLocationToFirestore(geohash: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let {
+            val userRef = FirebaseFirestore.getInstance().collection("users").document(it)
+            userRef.update("geohash", geohash)
+                .addOnSuccessListener {
+                    Log.d("!!!", "Saving geohash for user: $userId")
+                }
+                .addOnFailureListener {
+                        e -> Log.w("!!!", "Error updating user geohash.", e)
+                }
+        }
+    }
+
     private fun fetchNearbyUsersLocation(): Flow<List<String>> = flow {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
         val database = FirebaseFirestore.getInstance()
@@ -242,20 +256,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val start = baseGeohash + "0".repeat(geohash.length - newLength)
         val end = baseGeohash + "z".repeat(geohash.length - newLength)
         return Pair(start, end)
-    }
-
-    private fun saveCurrentUserLocationToFirestore(geohash: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        userId?.let {
-            val userRef = FirebaseFirestore.getInstance().collection("users").document(it)
-            userRef.update("geohash", geohash)
-                .addOnSuccessListener {
-                    Log.d("!!!", "Saving geohash for user: $userId")
-                }
-                .addOnFailureListener {
-                    e -> Log.w("!!!", "Error updating user geohash.", e)
-                }
-        }
     }
 
     private fun checkLocationPermissionAndProceed() {
