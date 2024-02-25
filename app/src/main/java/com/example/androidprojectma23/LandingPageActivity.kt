@@ -10,6 +10,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupWindow
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
@@ -18,6 +20,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.launch
 
 class LandingPageActivity : AppCompatActivity() {
     interface OnFilterSelectionChangedListener {
@@ -28,12 +31,16 @@ class LandingPageActivity : AppCompatActivity() {
     private val firestore = Firebase.firestore
     val userId = FirebaseAuth.getInstance().currentUser?.uid
 
+    private lateinit var geoLocationManager: GeoLocationManager
+
     private val userProfileManager = UserProfileManager(storageRef, firestore)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing_page)
+
+        geoLocationManager = GeoLocationManager(applicationContext, this)
 
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
@@ -124,11 +131,28 @@ class LandingPageActivity : AppCompatActivity() {
 
             val saveButton: Button = popupView.findViewById(R.id.filter_save_button)
             saveButton.setOnClickListener {
-
+                // Hämta fragmentet där du vill anropa funktionen
                 val fragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
-                fragment?.fetchAndDisplayMatchingUsers(selectedCount)
 
-                popupWindow.dismiss()
+                // Kontrollera om fragmentet är instansierat och använd lifecycleScope för att starta en korutin
+                fragment?.let { frag ->
+                    lifecycleScope.launch {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+                            Toast.makeText(this@LandingPageActivity, "Användar-ID inte tillgängligt.", Toast.LENGTH_SHORT).show()
+                            return@launch
+                        }
+
+                        val currentLocation = geoLocationManager.getCurrentLocation(userId)
+                        if (currentLocation != null) {
+                            // Anropa funktionen med den nuvarande platsen
+                            frag.fetchAndDisplayMatchingUsers(selectedCount, currentLocation.latitude, currentLocation.longitude)
+                        } else {
+                            Toast.makeText(this@LandingPageActivity, "Kunde inte hämta nuvarande plats.", Toast.LENGTH_SHORT).show()
+                        }
+
+                        popupWindow.dismiss()
+                    }
+                }
             }
 
             val anchorView = findViewById<View>(R.id.filter)
