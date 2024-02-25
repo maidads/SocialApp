@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import ch.hsr.geohash.GeoHash
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CompletableDeferred
 
 class GeoLocationManager(private val context: Context, private val activity: Activity) {
 
@@ -35,21 +36,32 @@ class GeoLocationManager(private val context: Context, private val activity: Act
         return true
     }
 
-    fun getCurrentLocationHash(onHashReceived: (String) -> Unit) {
+    suspend fun getCurrentLocation(userId: String): User? {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Log.d("!!!", "Location permissions not granted")
-            return
-        } else {
-            Log.d("!!!", "Location permissions granted, requesting updates...")
+            return null
         }
 
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity)
-        fusedLocationClient.lastLocation.addOnSuccessListener { location : Location? ->
-            location?.let {
-                val geohash = GeoHash.withCharacterPrecision(location.latitude, location.longitude, 12).toBase32()
-                Log.d("!!!", "Location changed: $location")
-                onHashReceived(geohash)
+        val deferredLocation = CompletableDeferred<Location?>()
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            deferredLocation.complete(location)
+        }
+
+        val location = deferredLocation.await()
+        return location?.let {
+            val geohash = GeoHash.withCharacterPrecision(it.latitude, it.longitude, 12).toBase32()
+            User(
+                userId = userId, // Använd userId här
+                geohash = geohash,
+                latitude = it.latitude,
+                longitude = it.longitude
+            ).also { user ->
+                Log.d("!!!", "Location obtained: Lat=${it.latitude}, Lng=${it.longitude}, Geohash=$geohash")
             }
         }
     }
+
+
 }
