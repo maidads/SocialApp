@@ -2,6 +2,7 @@ package com.example.androidprojectma23
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -9,14 +10,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ch.hsr.geohash.GeoHash
+import ch.hsr.geohash.WGS84Point
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
@@ -25,15 +34,43 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.first
+import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.max
-
+import kotlin.math.sin
+import kotlin.math.sqrt
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 
 
 class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener {
 
     override fun onSelectionChanged(selectedCount: Int) {
-        fetchAndDisplayMatchingUsers(selectedCount)
+        // Använda lifecycleScope för att starta en korutin
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (geoLocationManager.checkLocationPermission()) {
+                // Hämta användarens ID här
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+                    Toast.makeText(requireContext(), "Användar-ID är inte tillgängligt", Toast.LENGTH_LONG).show()
+                    return@launch // Avsluta korutinen om userId inte finns
+                }
+
+                // Anta att getCurrentLocation nu är en suspend funktion eller anpassad för att använda CompletableDeferred
+                val userLocation = geoLocationManager.getCurrentLocation(userId)
+                userLocation?.let {
+                    // Anropa din suspend funktion med den nuvarande platsen och användar-ID
+                    fetchAndDisplayMatchingUsers(selectedCount, it.latitude, it.longitude)
+                } ?: run {
+                    // Hantera fallet då platsen inte kunde hämtas
+                    Toast.makeText(requireContext(), "Kunde inte få aktuell plats", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                // Behörighet är inte beviljad; hanteringen bör redan vara på plats via checkLocationPermission
+                Toast.makeText(requireContext(), "Platsbehörighet krävs", Toast.LENGTH_LONG).show()
+            }
+        }
     }
+
 
     private lateinit var adapter: ProfileCardAdapter
     private val matchingFriendsList = mutableListOf<User>()
@@ -47,7 +84,27 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
         val minimumNumberOfInterestRequired = 1
 
-        fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired)
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Först, säkerställ att vi har behörigheter.
+            checkLocationPermissionAndProceed() // Se till att detta hanterar permissions asynkront om det behövs.
+
+            // Hämta användarID från Firebase Auth.
+            val userId = FirebaseAuth.getInstance().currentUser?.uid
+            if (userId != null) {
+                // Om vi har ett userId, fortsätt med att hämta platsen.
+                val userLocation = geoLocationManager.getCurrentLocation(userId)
+                userLocation?.let {
+                    // Använd platsinformationen som vanligt.
+                    fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired, it.latitude, it.longitude)
+                } ?: run {
+                    // Om platsen inte kunde hämtas, visa ett meddelande.
+                    Toast.makeText(requireContext(), "Kunde inte få aktuell plats", Toast.LENGTH_LONG).show()
+                }
+            } else {
+                // Om userId inte finns tillgängligt, visa ett lämpligt meddelande.
+                Toast.makeText(requireContext(), "Användar-ID är inte tillgängligt", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
 
@@ -150,113 +207,145 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
 
-    fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int) {
+    suspend fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int, currentLat: Double, currentLng: Double) {
+        Log.d("!!!", "fetchAndDisplayMatchingUsers")
         viewLifecycleOwner.lifecycleScope.launch {
-            // Först, hämta ID:n för närliggande användare.
-            val nearbyUserIds = fetchNearbyUsersLocation().first()
+            // Antag att detta nu returnerar User-objekt direkt, inklusive all nödvändig information
+            val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 50.0) // Anpassa radiegränsen efter behov
             val currentUserInterests = getCurrentUserInterests().first()
 
-            val allUsersInterests = getAllUsersInterests().first().filterKeys { userId ->
-                userId in nearbyUserIds
-            }
-
-            val usersData = getUsersData().first().filterKeys { userId ->
-                userId in nearbyUserIds
-            }
+            val allUsersInterests = getAllUsersInterests().first()
 
             val tempMatchingUsers = mutableListOf<User>()
 
-            for ((userId, interests) in allUsersInterests) {
-                if (userId in nearbyUserIds) { // Check to see if a user is nearby
+            for (user in nearbyUsers) {
+                val interests = allUsersInterests[user.userId]
+                if (interests != null) {
                     val commonInterests = findCommonInterests(currentUserInterests, interests)
+
                     if (commonInterests.size >= minimumNumberOfInterestsRequired) {
-                        val displayName = usersData[userId]?.first ?: "Anonym"
-                        val profileImageUrl = usersData[userId]?.second ?: ""
+                        // Uppdatera användarens intressen och gemensamma intressen baserat på matchningen
+                        user.interests = interests.toMutableList()
+                        user.commonInterests = commonInterests.toMutableList()
 
-                        val user = User(
-                            displayName = displayName,
-                            profileImage = profileImageUrl,
-                            interests = interests.toMutableList(),
-                            commonInterests = commonInterests.toMutableList()
-                        )
-
+                        // Lägg till den uppdaterade användaren i listan med temporära matchande användare
                         tempMatchingUsers.add(user)
                     }
                 }
             }
 
-            // Sort and update the adapter with matching users
+            // Sortera matchande användare efter antal gemensamma intressen och uppdatera adaptern
             val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.commonInterests.size }
             adapter.updateData(sortedMatchingUsers)
         }
     }
 
-
-
     private fun fetchCurrentUserLocation() {
         Log.d("!!!", "Attempting to fetch current user location")
+        val userId = FirebaseAuth.getInstance().currentUser?.uid // Hämta användarID
+        if (userId == null) {
+            Log.d("!!!", "User ID not available, cannot fetch location")
+            return // Avsluta om vi inte har ett användarID
+        }
+
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            geoLocationManager.getCurrentLocationHash { geohash ->
-                Log.d("!!!", "Current user geohash: $geohash")
-                saveCurrentUserLocationToFirestore(geohash)
+            // Använda lifecycleScope för att starta en korutin
+            viewLifecycleOwner.lifecycleScope.launch {
+                val user = geoLocationManager.getCurrentLocation(userId) // Använd userId här om det behövs
+                user?.let {
+                    Log.d("!!!", "Current user location: Lat=${it.latitude}, Lng=${it.longitude}, Geohash=${it.geohash}")
+                    // Här sparar vi all användarplatsinformation till Firestore
+                    saveCurrentUserLocationToFirestore(userId, it.geohash, it.latitude, it.longitude)
+                } ?: run {
+                    Log.d("!!!", "Could not fetch user location")
+                    // Hantera fallet då platsen inte kunde hämtas
+                }
             }
         } else {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
         }
     }
 
-    private fun saveCurrentUserLocationToFirestore(geohash: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        userId?.let {
-            val userRef = FirebaseFirestore.getInstance().collection("users").document(it)
-            userRef.update("geohash", geohash)
-                .addOnSuccessListener {
-                    Log.d("!!!", "Saving geohash for user: $userId")
-                }
-                .addOnFailureListener {
-                        e -> Log.w("!!!", "Error updating user geohash.", e)
-                }
-        }
+    private fun saveCurrentUserLocationToFirestore(userId: String, geohash: String, latitude: Double, longitude: Double) {
+        val userLocationMap = hashMapOf(
+            "geohash" to geohash,
+            "latitude" to latitude,
+            "longitude" to longitude
+        )
+        val db = Firebase.firestore
+        db.collection("userLocations").document(userId) // Använd userId som dokument-ID
+            .set(userLocationMap)
+            .addOnSuccessListener {
+                Log.d("!!!", "User location saved successfully")
+            }
+            .addOnFailureListener { e ->
+                Log.d("!!!", "Error saving user location", e)
+            }
     }
 
-    private fun fetchNearbyUsersLocation(): Flow<List<String>> = flow {
-        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-        val database = FirebaseFirestore.getInstance()
-        val userRef = database.collection("users")
-        val nearbyUserIds = mutableListOf<String>()
 
-        currentUserUid?.let { uid ->
-            val document = userRef.document(uid).get().await() // Use kotlinx-coroutines to wait for results
-            val currentUserGeohash = document.getString("geohash") ?: return@flow
-            val geohashRange = calculateGeohashRange(currentUserGeohash)
+    private suspend fun fetchUsersWithinRadius(currentLat: Double, currentLng: Double, radiusInKm: Double): List<User> {
+        Log.d("!!!", "fetchUsersWithinRadius")
+        val currentUserGeohash = calculateGeohash(currentLat, currentLng)
+        val geohashNeighbors = findGeohashNeighbors(currentUserGeohash)
+        val db = FirebaseFirestore.getInstance()
+        val usersWithinRadius = mutableListOf<User>()
 
-            val querySnapshot = userRef
-                .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
-                .whereLessThanOrEqualTo("geohash", geohashRange.second)
-                .get()
-                .await() // Using kotlinx-coroutines to wait for results
+        // Använd Dispatchers.IO för att köra blockerande IO-operationer utanför huvudtråden
+        withContext(Dispatchers.IO) {
+            geohashNeighbors.forEach { geohash ->
+                try {
+                    // Vänta synkront på att varje uppgift ska slutföras
+                    val snapshot = Tasks.await(
+                        db.collection("users")
+                            .whereEqualTo("geohash", geohash)
+                            .get()
+                    )
 
-            for (snapshot in querySnapshot.documents) {
-                if (snapshot.id != uid) {
-                    nearbyUserIds.add(snapshot.id)
+                    // Hantera varje dokument i snapshot
+                    for (document in snapshot.documents) {
+                        val user = document.toObject(User::class.java)
+                        if (user != null) {
+                            val distance = calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
+                            if (distance <= radiusInKm) {
+                                usersWithinRadius.add(user)
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Hantera undantag, t.ex. ExecutionException eller InterruptedException
                 }
             }
         }
 
-        emit(nearbyUserIds)
-    }.catch { e ->
-        Log.e("fetchNearbyUsersLocation", "Error fetching nearby users", e)
+        return usersWithinRadius
+    }
+
+    private fun calculateGeohash(latitude: Double, longitude: Double): String {
+        val point = WGS84Point(latitude, longitude)
+        return GeoHash.geoHashStringWithCharacterPrecision(point.latitude, point.longitude, 9) // Justera precisionen efter behov
+    }
+
+    private fun findGeohashNeighbors(geohash: String): List<String> {
+        val hash = GeoHash.fromGeohashString(geohash)
+        val neighbors = hash.getAdjacent()
+        val geohashList = mutableListOf<String>()
+        neighbors.forEach { geohashList.add(it.toBase32()) }
+        return geohashList
+    }
+
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val R = 6371 // Earth radius in km
+        val latDistance = Math.toRadians(lat2 - lat1)
+        val lonDistance = Math.toRadians(lon2 - lon1)
+        val a = sin(latDistance / 2) * sin(latDistance / 2) +
+                (cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                        sin(lonDistance / 2) * sin(lonDistance / 2))
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        return R * c // Distance in km
     }
 
 
-    private fun calculateGeohashRange(geohash: String): Pair<String, String> {
-        // Check too see that the geohash is longer than the amout of chars to remove
-        val newLength = max(geohash.length - 3, 1)
-        val baseGeohash = geohash.substring(0, newLength)
-        val start = baseGeohash + "0".repeat(geohash.length - newLength)
-        val end = baseGeohash + "z".repeat(geohash.length - newLength)
-        return Pair(start, end)
-    }
 
     private fun checkLocationPermissionAndProceed() {
         if (!geoLocationManager.checkLocationPermission()) {
