@@ -55,12 +55,6 @@ class TopBarManager(
                 setTopBarNavigationIcon("back")
             }
 
-            "MyFriendsFragment" -> {
-                setMenuItemVisibility(upperRightIcons, false)
-                showPageTitle(true, "Vänner")
-                setTopBarNavigationIcon("back")
-            }
-
             "SavedProfilesFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
                 showPageTitle(true, "Sparade profiler")

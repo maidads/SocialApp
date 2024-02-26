@@ -92,7 +92,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     }
 
     override fun setTitle(title: String) {
-        topBarManager.showPageTitle(true, title.toString())
+        topBarManager.showPageTitle(true, title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
