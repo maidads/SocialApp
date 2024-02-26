@@ -1,7 +1,7 @@
 package com.example.androidprojectma23
 
 data class User(
-    val userId: String = "",
+    var userId: String = "",
     var displayName: String = "",
     var profileImage: String = "",
     var interests: MutableList<String> = mutableListOf(),
