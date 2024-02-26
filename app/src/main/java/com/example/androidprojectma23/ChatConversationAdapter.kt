@@ -3,8 +3,10 @@ package com.example.androidprojectma23
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class ChatConversationAdapter(
     private val chatMessages: List<ChatMessage>
@@ -48,8 +50,17 @@ class ChatConversationAdapter(
 
     class OtherMessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val messageBody: TextView = view.findViewById(R.id.text_message_body)
+        private val profileImage: ImageView = view.findViewById(R.id.shapeableImageView)
         fun bind(chatMessage: ChatMessage) {
             messageBody.text = chatMessage.messageBody
+
+            Glide.with(itemView.context)
+                .load(chatMessage.profileImageUrl)
+                .circleCrop()
+                .placeholder(R.drawable.baseline_emoji_emotions_24)
+                .error(R.drawable.baseline_emoji_emotions_24)
+                .into(profileImage)
+
         }
     }
 }
