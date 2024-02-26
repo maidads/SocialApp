@@ -211,7 +211,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
             try {
                 val allUsersInterests = getAllUsersInterests().first()
                 val usersData = getUsersData().first()
-                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 50.0).filter { it.userId != currentUserUid }
+                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 5.0).filter { it.userId != currentUserUid }
                 val currentUserInterests = getCurrentUserInterests().first()
 
                 val tempMatchingUsers = nearbyUsers.filter { user ->
@@ -374,7 +374,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private fun calculateGeohash(latitude: Double, longitude: Double): String {
         val point = WGS84Point(latitude, longitude)
-        return GeoHash.geoHashStringWithCharacterPrecision(point.latitude, point.longitude, 4) // Justera precisionen efter behov
+        return GeoHash.geoHashStringWithCharacterPrecision(point.latitude, point.longitude, 4)
     }
 
 //    private fun findGeohashNeighbors(geohash: String): List<String> {
