@@ -53,7 +53,7 @@ class GeoLocationManager(private val context: Context, private val activity: Act
         return location?.let {
             val geohash = GeoHash.withCharacterPrecision(it.latitude, it.longitude, 12).toBase32()
             User(
-                userId = userId, // Använd userId här
+                userId = userId,
                 geohash = geohash,
                 latitude = it.latitude,
                 longitude = it.longitude
