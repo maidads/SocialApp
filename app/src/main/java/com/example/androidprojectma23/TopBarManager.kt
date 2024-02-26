@@ -41,8 +41,6 @@ class TopBarManager(
 
             "ChatConversationFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                val otherUserName = "Other user name" //Set name based on clicked conversation
-                showPageTitle(true, otherUserName)
                 setTopBarNavigationIcon("back")
             }
 

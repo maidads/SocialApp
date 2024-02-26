@@ -36,8 +36,8 @@ class EventDetailFragment : Fragment() {
     }
 
     private fun setTopBarTitle(eventName: String) {
-        val topBarClickListener = (activity as LandingPageActivity)
-        topBarClickListener.setTitle(eventName)
+        val topBarActivity = (activity as LandingPageActivity)
+        topBarActivity.setTitle(eventName)
     }
 
 
