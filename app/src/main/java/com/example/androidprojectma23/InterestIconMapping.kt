@@ -61,12 +61,10 @@ object IconMapping {
         R.id.interestImageView5
     )
 
-    fun getIconName(id:String): String {
-        return docIdToIconResMap[id].toString()
-    }
-
-//    fun getIconId(docId: String): Int? {
-//        return docIdToIconResMap[docId]
-//    }
+    val imageViewIdProfileCardBack = listOf(
+        R.id.interestImageViewBack, R.id.interestImageView2Back,
+        R.id.interestImageView3Back, R.id.interestImageView4Back,
+        R.id.interestImageView5Back
+    )
 
 }
