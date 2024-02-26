@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 
 class EventDetailFragment : Fragment() {
+    private lateinit var firestore: FirebaseFirestore
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_event_detail, container, false)
@@ -19,7 +20,28 @@ class EventDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val eventData = arguments?.getString("eventKey")
+        firestore = FirebaseFirestore.getInstance()
+        val event = Event(
+            name = arguments?.getString("name", "") ?: "",
+            description = arguments?.getString("description", "") ?: "",
+            date = arguments?.getString("date", "") ?: "",
+            location = arguments?.getString("location", "") ?: "",
+            image = arguments?.getString("image", "") ?: ""
+        )
+        displayEventDetails(event)
     }
 
+
+    private fun displayEventDetails(event: Event) {
+        view?.findViewById<TextView>(R.id.detailEventNameTextView)?.text = event.name
+        view?.findViewById<TextView>(R.id.detailEventDescriptionTextView)?.text = event.description
+        view?.findViewById<TextView>(R.id.detailEventDateTextView)?.text = event.date
+        view?.findViewById<TextView>(R.id.detailEventLocationTextView)?.text = event.location
+
+        event.image?.let { imageUrl ->
+            view?.findViewById<ImageView>(R.id.detailEventImageView)?.let { imageView ->
+                Glide.with(this).load(imageUrl).into(imageView)
+            }
+        }
+    }
 }

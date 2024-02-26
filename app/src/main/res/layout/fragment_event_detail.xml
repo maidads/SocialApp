@@ -74,7 +74,7 @@
             tools:text="Event Location" />
 
         <TextView
-            android:id="@+id/detailEventMoreInfoTextView"
+            android:id="@+id/detailEventDescriptionTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

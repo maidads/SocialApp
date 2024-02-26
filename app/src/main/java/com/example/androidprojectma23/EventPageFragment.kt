@@ -56,14 +56,13 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
     }
 
     override fun onEventClick(event: Event) {
-        Log.d("EventPageFragment", "Event clicked: ${event.name}")
-
         val eventDetailFragment = EventDetailFragment().apply {
             arguments = Bundle().apply {
-                putString("nameKey", event.name)
-                putString("descriptionKey", event.description)
-                putString("dateKey", event.date)
-                putString("locationKey", event.location)
+                putString("name", event.name)
+                putString("description", event.description)
+                putString("date", event.date)
+                putString("location", event.location)
+                putString("image", event.image)
             }
         }
 
