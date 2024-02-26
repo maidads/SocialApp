@@ -33,8 +33,6 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(user: User) {
-
-            // Check if profile image is null, use placeholder image if it is
             val imageToLoad = if (user.profileImage.isBlank()) {
                 R.drawable.profile_image_placeholder
             } else {
@@ -44,35 +42,38 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
             Glide.with(view.context)
                 .load(imageToLoad)
                 .placeholder(R.drawable.profile_image_placeholder)
-                .error(R.drawable.profile_image_placeholder) //
+                .error(R.drawable.profile_image_placeholder)
                 .into(view.findViewById(R.id.profileImageView))
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
 
             user.interests?.let { interests ->
-                for (i in 0 until minOf(interests.size, imageViewIdProfileCard.size)) {
+                // Create and sort a list of interests based on their alpha value
+                val sortedInterests = interests.map { interest ->
+                    val alpha = if (user.commonInterests.contains(interest)) 1.0f else 0.5f
+                    interest to alpha
+                }.sortedByDescending { it.second }
+
+                for (i in 0 until minOf(sortedInterests.size, imageViewIdProfileCard.size)) {
+                    val (interest, alpha) = sortedInterests[i]
                     val imageView = view.findViewById<ImageView>(imageViewIdProfileCard[i])
-                    val interestId = interests[i]
-                    val iconString = docIdToIconResMap[interestId]
+                    val iconString = docIdToIconResMap[interest]
                     val imageResourceId = iconString?.let {
                         view.context.resources.getIdentifier(it.toString(), "drawable", view.context.packageName)
                     } ?: R.drawable.icon_empty
 
                     imageView.setImageResource(imageResourceId)
-
-                    imageView.alpha = if (user.commonInterests.contains(interestId)) {
-                        1.0f
-                    } else {
-                        0.5f
-                    }
+                    imageView.alpha = alpha
                 }
 
-                for (i in interests.size until imageViewIdProfileCard.size) {
+                // Hide redundant ImageView-elements
+                for (i in sortedInterests.size until imageViewIdProfileCard.size) {
                     val imageView = view.findViewById<ImageView>(imageViewIdProfileCard[i])
                     imageView.visibility = View.GONE
                 }
             }
         }
+
     }
 
     override fun onItemMove(fromPosition: Int, toPosition: Int) {

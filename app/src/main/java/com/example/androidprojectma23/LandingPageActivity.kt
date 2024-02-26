@@ -9,6 +9,8 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupWindow
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +21,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.launch
 
 class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListener {
     interface OnFilterSelectionChangedListener {
@@ -27,6 +30,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
     private val storageRef = Firebase.storage.reference
     private val firestore = Firebase.firestore
+    private lateinit var geoLocationManager: GeoLocationManager
     private lateinit var topAppBar: MaterialToolbar
     private lateinit var listener: FragmentManager.OnBackStackChangedListener
     private lateinit var topBarManager: TopBarManager
@@ -39,8 +43,16 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing_page)
 
+        geoLocationManager = GeoLocationManager(applicationContext, this)
+
+        val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+
+        navBar.selectedItemId = R.id.findFriendsFragment
+
+        val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         topBarManager = TopBarManager(this, this)
         topAppBar = findViewById(R.id.topAppBar)
+
         setSupportActionBar(topAppBar)
         updateTopBarWithInitialFragment()
         topBarManager.setMenuItemClickListener()
@@ -134,9 +146,25 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
             saveButton.setOnClickListener {
 
                 val fragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
-                fragment?.fetchAndDisplayMatchingUsers(selectedCount)
 
-                popupWindow.dismiss()
+                fragment?.let { frag ->
+                    lifecycleScope.launch {
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
+                            Toast.makeText(this@LandingPageActivity, "Användar-ID inte tillgängligt.", Toast.LENGTH_SHORT).show()
+                            return@launch
+                        }
+
+                        val currentLocation = geoLocationManager.getCurrentLocation(userId)
+                        if (currentLocation != null) {
+
+                            frag.fetchAndDisplayMatchingUsers(selectedCount, currentLocation.latitude, currentLocation.longitude)
+                        } else {
+                            Toast.makeText(this@LandingPageActivity, "Kunde inte hämta nuvarande plats.", Toast.LENGTH_SHORT).show()
+                        }
+
+                        popupWindow.dismiss()
+                    }
+                }
             }
 
             val anchorView = findViewById<View>(R.id.filter)
