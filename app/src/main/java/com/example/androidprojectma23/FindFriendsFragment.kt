@@ -208,63 +208,36 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     }.flowOn(Dispatchers.IO)
 
     suspend fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int, currentLat: Double, currentLng: Double) {
-        Log.d("!!!", "fetchAndDisplayMatchingUsers start")
+        Log.d("displayMatch", "fetchAndDisplayMatchingUsers start")
+        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                // Hämta alla användarintressen och användarinformation
-                Log.d("!!!", "Fetching all users interests")
                 val allUsersInterests = getAllUsersInterests().first()
-                Log.d("!!!", "Fetching users data")
                 val usersData = getUsersData().first()
-                Log.d("!!!", "All users interests: $allUsersInterests")
-                Log.d("!!!", "Users data: $usersData")
-
-                // Antag att detta nu returnerar User-objekt direkt, inklusive all nödvändig information
-                Log.d("!!!", "Fetching nearby users")
-                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 5000.0) // Anpassa radiegränsen efter behov
-                Log.d("!!!", "Nearby users: $nearbyUsers")
+                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 5000000.0).filter { it.userId != currentUserUid }
                 val currentUserInterests = getCurrentUserInterests().first()
-                Log.d("!!!", "Current user interests: $currentUserInterests")
 
-                val tempMatchingUsers = mutableListOf<User>()
-
-                for (user in nearbyUsers) {
-                    val interests = allUsersInterests[user.userId]
-                    if (interests != null) {
-                        val commonInterests = findCommonInterests(currentUserInterests, interests)
-
-                        if (commonInterests.size >= minimumNumberOfInterestsRequired) {
-                            // Hämta användarinformation för den matchande användaren
-                            val userData = usersData[user.userId]
-                            val displayName = userData?.first ?: "Anonym"
-                            val profileImageUrl = userData?.second ?: ""
-
-                            // Uppdatera användarens intressen och gemensamma intressen baserat på matchningen
-                            user.interests = interests.toMutableList()
-                            user.commonInterests = commonInterests.toMutableList()
-                            user.displayName = displayName
-                            user.profileImage = profileImageUrl
-
-                            // Lägg till den uppdaterade användaren i listan med temporära matchande användare
-                            tempMatchingUsers.add(user)
-                        }
+                val tempMatchingUsers = nearbyUsers.filter { user ->
+                    val interests = allUsersInterests[user.userId] ?: emptyList()
+                    val commonInterests = interests.intersect(currentUserInterests).toList()
+                    user.commonInterests = commonInterests.toMutableList()
+                    commonInterests.size >= minimumNumberOfInterestsRequired
+                }.map { user ->
+                    usersData[user.userId]?.let { data ->
+                        user.displayName = data.first
+                        user.profileImage = data.second
                     }
-                }
+                    user
+                }.sortedByDescending { it.commonInterests.size }
 
-                // Sortera matchande användare efter antal gemensamma intressen och uppdatera adaptern
-                val sortedMatchingUsers = tempMatchingUsers.sortedByDescending { it.commonInterests.size }
-                adapter.updateData(sortedMatchingUsers)
-
-                Log.d("!!!", "Matching users updated: $sortedMatchingUsers")
+                adapter.updateData(tempMatchingUsers)
+                Log.d("displayMatch", "Matching users updated: $tempMatchingUsers")
             } catch (e: Exception) {
-                Log.e("!!!", "Error fetching and displaying matching users", e)
+                Log.e("displayMatch", "Error fetching and displaying matching users", e)
             }
         }
     }
-
-
-
-
 
 
     private fun fetchCurrentUserLocation() {
@@ -315,46 +288,92 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
             }
     }
 
-
-
-
     private suspend fun fetchUsersWithinRadius(currentLat: Double, currentLng: Double, radiusInKm: Double): List<User> {
         Log.d("!!!", "fetchUsersWithinRadius start")
+        // Beräkna den aktuella användarens geohash baserat på dess latitud och longitud
         val currentUserGeohash = calculateGeohash(currentLat, currentLng)
-        val geohashNeighbors = findGeohashNeighbors(currentUserGeohash)
+        // Använd calculateGeohashRange för att beräkna start- och slutpunkterna för geohash-intervallet
+        val geohashRange = calculateGeohashRange(currentUserGeohash)
         val db = FirebaseFirestore.getInstance()
         val usersWithinRadius = mutableListOf<User>()
 
         withContext(Dispatchers.IO) {
-            geohashNeighbors.forEach { geohash ->
-                try {
-                    Log.d("!!!", "Fetching users for geohash: $geohash")
-                    // Vänta synkront på att varje uppgift ska slutföras
-                    val snapshot = Tasks.await(
-                        db.collection("users")
-                            .whereEqualTo("geohash", geohash)
-                            .get()
-                    )
+            try {
+                Log.d("!!!", "Fetching users within geohash range: ${geohashRange.first} to ${geohashRange.second}")
+                // Fråga efter användare inom det beräknade geohash-intervallet
+                val snapshot = Tasks.await(
+                    db.collection("users")
+                        .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
+                        .whereLessThanOrEqualTo("geohash", geohashRange.second)
+                        .get()
+                )
 
-                    for (document in snapshot.documents) {
-                        val user = document.toObject(User::class.java)
-                        if (user != null) {
-                            val distance = calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
-                            Log.d("!!!", "Distance to user ${user.userId}: $distance km")
-                            if (distance <= radiusInKm) {
-                                usersWithinRadius.add(user)
-                            }
+                for (document in snapshot.documents) {
+                    val user = document.toObject(User::class.java)
+                    if (user != null) {
+                        user.userId = document.id // Manuellt sätt userId här
+                        val distance = calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
+                        Log.d("!!!", "Distance to user ${user.userId}: $distance km")
+                        if (distance <= radiusInKm) {
+                            usersWithinRadius.add(user)
                         }
                     }
-                } catch (e: Exception) {
-                    // Hantera undantag, t.ex. ExecutionException eller InterruptedException
-                    Log.e("!!!", "Error fetching users for geohash $geohash", e)
                 }
+            } catch (e: Exception) {
+                // Hantera eventuella undantag som kan uppstå under databasfrågan
+                Log.e("!!!", "Error fetching users within geohash range", e)
             }
         }
 
         Log.d("!!!", "fetchUsersWithinRadius end. Found ${usersWithinRadius.size} users within radius.")
+        if (usersWithinRadius.isNotEmpty()) {
+            usersWithinRadius.forEach { user ->
+                Log.d("!!!", "User within radius: ${user.userId}")
+            }
+        } else {
+            Log.d("!!!", "No users found within radius.")
+        }
         return usersWithinRadius
+    }
+
+
+//    private fun fetchNearbyUsersLocation(): Flow<List<String>> = flow {
+//        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
+//        val database = FirebaseFirestore.getInstance()
+//        val userRef = database.collection("users")
+//        val nearbyUserIds = mutableListOf<String>()
+//
+//        currentUserUid?.let { uid ->
+//            val document = userRef.document(uid).get().await() // Use kotlinx-coroutines to wait for results
+//            val currentUserGeohash = document.getString("geohash") ?: return@flow
+//            val geohashRange = calculateGeohashRange(currentUserGeohash)
+//
+//            val querySnapshot = userRef
+//                .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
+//                .whereLessThanOrEqualTo("geohash", geohashRange.second)
+//                .get()
+//                .await() // Using kotlinx-coroutines to wait for results
+//
+//            for (snapshot in querySnapshot.documents) {
+//                if (snapshot.id != uid) {
+//                    nearbyUserIds.add(snapshot.id)
+//                }
+//            }
+//        }
+//
+//        emit(nearbyUserIds)
+//    }.catch { e ->
+//        Log.e("fetchNearbyUsersLocation", "Error fetching nearby users", e)
+//    }
+
+
+    private fun calculateGeohashRange(geohash: String): Pair<String, String> {
+        // Check too see that the geohash is longer than the amout of chars to remove
+        val newLength = max(geohash.length - 3, 1)
+        val baseGeohash = geohash.substring(0, newLength)
+        val start = baseGeohash + "0".repeat(geohash.length - newLength)
+        val end = baseGeohash + "z".repeat(geohash.length - newLength)
+        return Pair(start, end)
     }
 
 
@@ -363,13 +382,13 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         return GeoHash.geoHashStringWithCharacterPrecision(point.latitude, point.longitude, 4) // Justera precisionen efter behov
     }
 
-    private fun findGeohashNeighbors(geohash: String): List<String> {
-        val hash = GeoHash.fromGeohashString(geohash)
-        val neighbors = hash.adjacent
-        val geohashList = mutableListOf<String>()
-        neighbors.forEach { geohashList.add(it.toBase32()) }
-        return geohashList
-    }
+//    private fun findGeohashNeighbors(geohash: String): List<String> {
+//        val hash = GeoHash.fromGeohashString(geohash)
+//        val neighbors = hash.adjacent
+//        val geohashList = mutableListOf<String>()
+//        neighbors.forEach { geohashList.add(it.toBase32()) }
+//        return geohashList
+//    }
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371 // Earth radius in km
