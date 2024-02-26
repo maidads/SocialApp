@@ -28,7 +28,8 @@
             android:layout_height="wrap_content"
             android:minHeight="?attr/actionBarSize"
             app:menu="@menu/top_app_bar"
-            app:navigationIcon="@drawable/baseline_person_24" />
+            app:navigationIcon="@drawable/baseline_person_24"
+            app:title="Page title" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
