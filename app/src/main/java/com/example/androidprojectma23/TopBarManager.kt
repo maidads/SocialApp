@@ -17,6 +17,7 @@ class TopBarManager(
         fun onBackIconClicked()
         fun onFilterMenuItemClicked()
         fun onSavedProfileMenuItemClicked()
+        fun setTitle()
     }
 
     fun updateTopBar(fragmentTag: String) {
@@ -78,7 +79,7 @@ class TopBarManager(
         }
     }
 
-    private fun showPageTitle(isVisible: Boolean, title: String?) {
+    fun showPageTitle(isVisible: Boolean, title: String?) {
         topAppBar.title = if (isVisible) title else null
     }
 
