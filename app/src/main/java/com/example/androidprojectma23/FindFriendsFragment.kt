@@ -85,23 +85,23 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val minimumNumberOfInterestRequired = 1
 
         viewLifecycleOwner.lifecycleScope.launch {
-            // Först, säkerställ att vi har behörigheter.
-            checkLocationPermissionAndProceed() // Se till att detta hanterar permissions asynkront om det behövs.
 
-            // Hämta användarID från Firebase Auth.
+            checkLocationPermissionAndProceed()
+
+
             val userId = FirebaseAuth.getInstance().currentUser?.uid
             if (userId != null) {
-                // Om vi har ett userId, fortsätt med att hämta platsen.
+
                 val userLocation = geoLocationManager.getCurrentLocation(userId)
                 userLocation?.let {
-                    // Använd platsinformationen som vanligt.
+
                     fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired, it.latitude, it.longitude)
                 } ?: run {
-                    // Om platsen inte kunde hämtas, visa ett meddelande.
+
                     Toast.makeText(requireContext(), "Kunde inte få aktuell plats", Toast.LENGTH_LONG).show()
                 }
             } else {
-                // Om userId inte finns tillgängligt, visa ett lämpligt meddelande.
+
                 Toast.makeText(requireContext(), "Användar-ID är inte tillgängligt", Toast.LENGTH_LONG).show()
             }
         }
@@ -238,19 +238,19 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private fun fetchCurrentUserLocation() {
         Log.d("!!!", "Attempting to fetch current user location")
-        val userId = FirebaseAuth.getInstance().currentUser?.uid // Hämta användarID
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId == null) {
             Log.d("!!!", "User ID not available, cannot fetch location")
-            return // Avsluta om vi inte har ett användarID
+            return
         }
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Använda lifecycleScope för att starta en korutin
+
             viewLifecycleOwner.lifecycleScope.launch {
-                val user = geoLocationManager.getCurrentLocation(userId) // Använd userId här om det behövs
+                val user = geoLocationManager.getCurrentLocation(userId)
                 user?.let {
                     Log.d("!!!", "Current user location: Lat=${it.latitude}, Lng=${it.longitude}, Geohash=${it.geohash}")
-                    // Här sparar vi all användarplatsinformation till Firestore
+
                     saveCurrentUserLocationToFirestore(userId, it.geohash, it.latitude, it.longitude)
                 } ?: run {
                     Log.d("!!!", "Could not fetch user location")
@@ -263,19 +263,18 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     }
 
     private fun saveCurrentUserLocationToFirestore(userId: String, geohash: String, latitude: Double, longitude: Double) {
-        // Skapa en Map med de värden du vill uppdatera
+
         val locationUpdateMap = hashMapOf<String, Any>(
             "geohash" to geohash,
             "latitude" to latitude,
             "longitude" to longitude
         )
 
-        // Referera till Firestore databasen
+
         val db = FirebaseFirestore.getInstance()
 
-        // Uppdatera användarens dokument i 'users' samlingen med det nya platsdatat
         db.collection("users").document(userId)
-            .update(locationUpdateMap) // Använder `update` istället för `set` för att behålla befintliga fält oförändrade
+            .update(locationUpdateMap)
             .addOnSuccessListener {
                 Log.d("!!!", "User location updated successfully")
             }
@@ -286,9 +285,9 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private suspend fun fetchUsersWithinRadius(currentLat: Double, currentLng: Double, radiusInKm: Double): List<User> {
         Log.d("!!!", "fetchUsersWithinRadius start")
-        // Beräkna den aktuella användarens geohash baserat på dess latitud och longitud
+
         val currentUserGeohash = calculateGeohash(currentLat, currentLng)
-        // Använd calculateGeohashRange för att beräkna start- och slutpunkterna för geohash-intervallet
+
         val geohashRange = calculateGeohashRange(currentUserGeohash)
         val db = FirebaseFirestore.getInstance()
         val usersWithinRadius = mutableListOf<User>()
@@ -296,7 +295,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         withContext(Dispatchers.IO) {
             try {
                 Log.d("!!!", "Fetching users within geohash range: ${geohashRange.first} to ${geohashRange.second}")
-                // Fråga efter användare inom det beräknade geohash-intervallet
+
                 val snapshot = Tasks.await(
                     db.collection("users")
                         .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
@@ -307,7 +306,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 for (document in snapshot.documents) {
                     val user = document.toObject(User::class.java)
                     if (user != null) {
-                        user.userId = document.id // Manuellt sätt userId här
+                        user.userId = document.id
                         val distance = calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
                         Log.d("!!!", "Distance to user ${user.userId}: $distance km")
                         if (distance <= radiusInKm) {
@@ -316,7 +315,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                     }
                 }
             } catch (e: Exception) {
-                // Hantera eventuella undantag som kan uppstå under databasfrågan
+                
                 Log.e("!!!", "Error fetching users within geohash range", e)
             }
         }
