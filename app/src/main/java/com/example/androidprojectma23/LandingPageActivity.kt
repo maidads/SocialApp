@@ -49,7 +49,6 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
         navBar.selectedItemId = R.id.findFriendsFragment
 
-        val topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         topBarManager = TopBarManager(this, this)
         topAppBar = findViewById(R.id.topAppBar)
 
@@ -64,8 +63,6 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
 
-        val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        navBar.selectedItemId = R.id.findFriendsFragment
 
         navBar.setOnItemSelectedListener { item ->
             when (item.itemId) {
