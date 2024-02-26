@@ -6,5 +6,5 @@ data class Event(
     val date: String = "",
     val location: String = "",
     val image: String = "",
-    val moreInfo: String? = ""
+    val longDescription: String? = ""
 )

@@ -23,7 +23,7 @@ class EventDetailFragment : Fragment() {
         firestore = FirebaseFirestore.getInstance()
         val event = Event(
             name = arguments?.getString("name", "") ?: "",
-            description = arguments?.getString("description", "") ?: "",
+            longDescription = arguments?.getString("longDescription", "") ?: "",
             date = arguments?.getString("date", "") ?: "",
             location = arguments?.getString("location", "") ?: "",
             image = arguments?.getString("image", "") ?: ""
@@ -34,7 +34,7 @@ class EventDetailFragment : Fragment() {
 
     private fun displayEventDetails(event: Event) {
         view?.findViewById<TextView>(R.id.detailEventNameTextView)?.text = event.name
-        view?.findViewById<TextView>(R.id.detailEventDescriptionTextView)?.text = event.description
+        view?.findViewById<TextView>(R.id.detailEventLongDescriptionTextView)?.text = event.longDescription
         view?.findViewById<TextView>(R.id.detailEventDateTextView)?.text = event.date
         view?.findViewById<TextView>(R.id.detailEventLocationTextView)?.text = event.location
 

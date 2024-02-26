@@ -46,7 +46,8 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
                     val date = document.getString("date") ?: ""
                     val location = document.getString("location") ?: ""
                     val image = document.getString("image") ?: ""
-                    eventsList.add(Event(name, description, date, location, image))
+                    val longDescription = document.getString("longDescription") ?: ""
+                    eventsList.add(Event(name, description, date, location, image, longDescription))
                 }
                 adapter.updateEvents(eventsList)
             }
@@ -59,7 +60,7 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
         val eventDetailFragment = EventDetailFragment().apply {
             arguments = Bundle().apply {
                 putString("name", event.name)
-                putString("description", event.description)
+                putString("longDescription", event.longDescription)
                 putString("date", event.date)
                 putString("location", event.location)
                 putString("image", event.image)
