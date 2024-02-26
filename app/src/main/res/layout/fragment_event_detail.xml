@@ -20,6 +20,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <ImageView
             android:id="@+id/detailEventImageView"
             android:layout_width="match_parent"
@@ -56,6 +60,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/detailEventImageView"
             tools:text="Event Date" />
 
         <TextView
@@ -63,7 +68,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="257dp"
             android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -73,12 +77,20 @@
             app:layout_constraintTop_toBottomOf="@id/detailEventDateTextView"
             tools:text="Event Location" />
 
+            <ScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintTop_toBottomOf="@id/detailEventLocationTextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
         <TextView
             android:id="@+id/detailEventLongDescriptionTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="302dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="280dp"
             android:layout_marginRight="10dp"
             android:fontFamily="@font/roboto"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -87,7 +99,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/detailEventLocationTextView"
             tools:text="More Info" />
+            </ScrollView>
 
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
