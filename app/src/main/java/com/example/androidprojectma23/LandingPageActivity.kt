@@ -167,8 +167,4 @@ class LandingPageActivity : AppCompatActivity() {
     }
 
 
-
-
-
-
 }
