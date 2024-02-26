@@ -91,7 +91,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         // Open SavedProfilesFragment
     }
 
-    override fun setTitle() {
+    override fun setTitle(title: String) {
         topBarManager.showPageTitle(true, title.toString())
     }
 

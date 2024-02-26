@@ -17,7 +17,7 @@ class TopBarManager(
         fun onBackIconClicked()
         fun onFilterMenuItemClicked()
         fun onSavedProfileMenuItemClicked()
-        fun setTitle()
+        fun setTitle(title: String)
     }
 
     fun updateTopBar(fragmentTag: String) {
@@ -54,8 +54,6 @@ class TopBarManager(
 
             "EventDetailFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                val eventName = "Event name" //Set name based on clicked event
-                showPageTitle(true, eventName)
                 setTopBarNavigationIcon("back")
             }
 

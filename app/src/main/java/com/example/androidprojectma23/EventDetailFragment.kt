@@ -30,9 +30,14 @@ class EventDetailFragment : Fragment() {
             image = arguments?.getString("image", "") ?: ""
         )
 
-        val topBarClickListener = (activity as LandingPageActivity)
-        topBarClickListener.setTitle(event.name)
+        setTopBarTitle(event.name)
+
         displayEventDetails(event)
+    }
+
+    private fun setTopBarTitle(eventName: String) {
+        val topBarClickListener = (activity as LandingPageActivity)
+        topBarClickListener.setTitle(eventName)
     }
 
 
