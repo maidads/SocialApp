@@ -211,7 +211,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
             try {
                 val allUsersInterests = getAllUsersInterests().first()
                 val usersData = getUsersData().first()
-                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 5000000.0).filter { it.userId != currentUserUid }
+                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 50.0).filter { it.userId != currentUserUid }
                 val currentUserInterests = getCurrentUserInterests().first()
 
                 val tempMatchingUsers = nearbyUsers.filter { user ->
