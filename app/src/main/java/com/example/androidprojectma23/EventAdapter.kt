@@ -8,8 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
-    class EventViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class EventAdapter(private var events: List<Event>, private val listener: OnEventClickListener) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+
+    interface OnEventClickListener {
+        fun onEventClick(event: Event)
+    }
+    class EventViewHolder(itemView: View, private val listener: EventAdapter.OnEventClickListener) : RecyclerView.ViewHolder(itemView) {
         private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
         private val eventImageView: ImageView = itemView.findViewById(R.id.eventImageView)
         private val eventDescriptionTextView: TextView = itemView.findViewById(R.id.eventDescriptionTextView)
@@ -25,12 +29,16 @@ class EventAdapter(private var events: List<Event>) : RecyclerView.Adapter<Event
                 .load(event.image)
                 .error(R.drawable.icon_wine)
                 .into(eventImageView)
+
+            itemView.setOnClickListener {
+                    listener.onEventClick(event)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.event_more_info, parent, false)
-        return EventViewHolder(view)
+        return EventViewHolder(view, listener)
     }
 
     override fun getItemCount() = events.size

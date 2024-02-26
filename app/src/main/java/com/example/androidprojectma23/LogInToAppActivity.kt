@@ -160,21 +160,19 @@ class LogInToAppActivity : AppCompatActivity() {
     private fun saveNewUserInfo() {
 
         val currentUser = auth.currentUser
-        val user = hashMapOf(
-            "Username" to auth.currentUser?.email,
-            "userID" to currentUser?.uid
+        if (currentUser != null) {
+            val userBasicInfo = hashMapOf(
+                "userId" to currentUser.uid
+            )
 
-        )
-
-        val db = Firebase.firestore
-        auth.currentUser?.uid?.let { userId ->
-            db.collection("users").document(userId)
-                .set(user)
+            val db = Firebase.firestore
+            db.collection("users").document(currentUser.uid)
+                .set(userBasicInfo)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Användarinformationen har sparats.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Grundläggande användarinformation har sparats.", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Det gick inte att spara ny användarinformation.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Det gick inte att spara grundläggande användarinformation.", Toast.LENGTH_SHORT).show()
                 }
         }
     }
