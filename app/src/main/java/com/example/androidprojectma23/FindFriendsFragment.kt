@@ -183,10 +183,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
 
-    private fun findCommonInterests(currentUserInterests: List<String>, otherUserInterests: List<String>): List<String> {
-        return currentUserInterests.intersect(otherUserInterests).toList()
-    }
-
     private fun getUsersData(): Flow<Map<String, Pair<String, String>>> = flow {
         val db = FirebaseFirestore.getInstance()
         val usersCollection = db.collection("users")
