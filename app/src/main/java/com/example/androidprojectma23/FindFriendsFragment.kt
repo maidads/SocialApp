@@ -332,36 +332,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     }
 
 
-//    private fun fetchNearbyUsersLocation(): Flow<List<String>> = flow {
-//        val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid
-//        val database = FirebaseFirestore.getInstance()
-//        val userRef = database.collection("users")
-//        val nearbyUserIds = mutableListOf<String>()
-//
-//        currentUserUid?.let { uid ->
-//            val document = userRef.document(uid).get().await() // Use kotlinx-coroutines to wait for results
-//            val currentUserGeohash = document.getString("geohash") ?: return@flow
-//            val geohashRange = calculateGeohashRange(currentUserGeohash)
-//
-//            val querySnapshot = userRef
-//                .whereGreaterThanOrEqualTo("geohash", geohashRange.first)
-//                .whereLessThanOrEqualTo("geohash", geohashRange.second)
-//                .get()
-//                .await() // Using kotlinx-coroutines to wait for results
-//
-//            for (snapshot in querySnapshot.documents) {
-//                if (snapshot.id != uid) {
-//                    nearbyUserIds.add(snapshot.id)
-//                }
-//            }
-//        }
-//
-//        emit(nearbyUserIds)
-//    }.catch { e ->
-//        Log.e("fetchNearbyUsersLocation", "Error fetching nearby users", e)
-//    }
-
-
     private fun calculateGeohashRange(geohash: String): Pair<String, String> {
         // Check too see that the geohash is longer than the amout of chars to remove
         val newLength = max(geohash.length - 3, 1)
@@ -376,14 +346,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val point = WGS84Point(latitude, longitude)
         return GeoHash.geoHashStringWithCharacterPrecision(point.latitude, point.longitude, 4)
     }
-
-//    private fun findGeohashNeighbors(geohash: String): List<String> {
-//        val hash = GeoHash.fromGeohashString(geohash)
-//        val neighbors = hash.adjacent
-//        val geohashList = mutableListOf<String>()
-//        neighbors.forEach { geohashList.add(it.toBase32()) }
-//        return geohashList
-//    }
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val R = 6371 // Earth radius in km
