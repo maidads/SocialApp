@@ -29,7 +29,6 @@ class LandingPageActivity : AppCompatActivity() {
 
     private val storageRef = Firebase.storage.reference
     private val firestore = Firebase.firestore
-    val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private lateinit var geoLocationManager: GeoLocationManager
 
@@ -131,10 +130,9 @@ class LandingPageActivity : AppCompatActivity() {
 
             val saveButton: Button = popupView.findViewById(R.id.filter_save_button)
             saveButton.setOnClickListener {
-                // Hämta fragmentet där du vill anropa funktionen
+
                 val fragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
 
-                // Kontrollera om fragmentet är instansierat och använd lifecycleScope för att starta en korutin
                 fragment?.let { frag ->
                     lifecycleScope.launch {
                         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
@@ -144,7 +142,7 @@ class LandingPageActivity : AppCompatActivity() {
 
                         val currentLocation = geoLocationManager.getCurrentLocation(userId)
                         if (currentLocation != null) {
-                            // Anropa funktionen med den nuvarande platsen
+
                             frag.fetchAndDisplayMatchingUsers(selectedCount, currentLocation.latitude, currentLocation.longitude)
                         } else {
                             Toast.makeText(this@LandingPageActivity, "Kunde inte hämta nuvarande plats.", Toast.LENGTH_SHORT).show()

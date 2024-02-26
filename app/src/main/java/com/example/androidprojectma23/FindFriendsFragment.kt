@@ -315,7 +315,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                     }
                 }
             } catch (e: Exception) {
-                
+
                 Log.e("!!!", "Error fetching users within geohash range", e)
             }
         }
