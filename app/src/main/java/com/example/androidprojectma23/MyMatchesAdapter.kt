@@ -13,6 +13,13 @@ class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyM
     class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val displayNameTextView: TextView = view.findViewById(R.id.myMatches_userDisplayName)
         private val userProfileImage: ImageView = view.findViewById(R.id.myMatches_userProfileImage)
+        private val iconImages = listOf<ImageView>(
+            view.findViewById(R.id.iconImage1),
+            view.findViewById(R.id.iconImage2),
+            view.findViewById(R.id.iconImage3),
+            view.findViewById(R.id.iconImage4),
+            view.findViewById(R.id.iconImage5)
+        )
 
         fun bind(user: User) {
             displayNameTextView.text = user.displayName
@@ -22,7 +29,17 @@ class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyM
                 .placeholder(R.drawable.profile_image_placeholder)
                 .error(R.drawable.profile_image_placeholder)
                 .into(userProfileImage)
-            // Add more views here
+
+            // Clear previous icons
+            iconImages.forEach { it.setImageDrawable(null) }
+
+            user.interests.take(iconImages.size).forEachIndexed { index, interestDocId ->
+                IconMapping.docIdToIconResMap[interestDocId]?.let { iconResId ->
+                    Glide.with(itemView.context)
+                        .load(iconResId)
+                        .into(iconImages[index])
+                }
+            }
         }
     }
 

@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/myMatches_userProfileImage"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
@@ -36,19 +36,63 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/myMatches_userDisplayName"
                 app:layout_constraintStart_toStartOf="@id/theCard"
-                app:layout_constraintTop_toTopOf="@id/theCard"/>
+                app:layout_constraintTop_toTopOf="@id/theCard" />
 
             <TextView
                 android:id="@+id/myMatches_userDisplayName"
                 android:layout_width="216dp"
                 android:layout_height="24dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginEnd="10dp"
                 android:text="Rubrik"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/myMatches_userProfileImage"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <ImageView
+                android:id="@+id/iconImage1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/myMatches_userProfileImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_empty" />
+
+            <ImageView
+                android:id="@+id/iconImage2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iconImage1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_empty" />
+
+            <ImageView
+                android:id="@+id/iconImage3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iconImage2"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_empty" />
+
+            <ImageView
+                android:id="@+id/iconImage4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iconImage3"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_empty" />
+
+            <ImageView
+                android:id="@+id/iconImage5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iconImage4"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/icon_empty" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
