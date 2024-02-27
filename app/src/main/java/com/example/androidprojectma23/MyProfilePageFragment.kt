@@ -1,11 +1,13 @@
 package com.example.androidprojectma23
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -57,20 +59,25 @@ class MyProfilePageFragment : Fragment() {
                     val user = document.toObject<User>()
                     if (user != null) {
                         displayNameTextView.text = user.displayName
-                        ageTextView.text = user.age.toString()
+                        ageTextView.text = user.age.toString() + " år"
+                        aboutInfoTextView.text = user.about.ifEmpty { "Ingen information tillgänglig" }
+                        interestsInfoTextView.text = user.myInterests.ifEmpty { "Ingen information tillgänglig" }
 
-                        context?.let { it ->
-                            Glide.with(it)
-                                .load(user.profileImage)
+                        context?.let { context ->
+                            Glide.with(context)
+                                .load(user.profileImageUrl)
                                 .placeholder(R.drawable.user_image_icon)            // Standardbild medan den riktiga bilden laddas
                                 .error(R.drawable.user_image_icon)                  // Om det inte går att ladda den riktiga bilden
                                 .circleCrop()                                       // Cirkulär form
                                 .into(profileImageView)
                         }
                     } else {
+                        displayNameTextView.text = "Användare hittades inte"
                     }
                 }
                 .addOnFailureListener { exception ->
+                    Log.e("MyProfilePageFragment", "Error loading user profile", exception)
+                    Toast.makeText(context, "Error loading user profile", Toast.LENGTH_SHORT).show()
                 }
         }
     }
