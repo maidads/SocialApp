@@ -72,31 +72,24 @@ class ChatConversationFragment : Fragment() {
         sendButton.setOnClickListener {
 
             if (conversationId == "no existing id") {
-
                 setUpNewConversation()
-
             } else {
-                val messageText = messageInput.text.toString()
-                if (messageText.isNotEmpty()) {
-                    val timestamp = FieldValue.serverTimestamp()
-                    val message = hashMapOf(
-                        "messageBody" to messageText,
-                        "messageTime" to timestamp,
-                        "userName" to currentUser,
-                    )
-                    saveAndSendMessage(message,conversationId)
-                    messageInput.text.clear()
-                }
+                saveAndSendMessage(conversationId)
             }
         }
         return view
     }
 
-    private fun createMessage(){
+    private fun saveAndSendMessage(conversationId: String){
+        val messageText = messageInput.text.toString()
+        if (messageText.isNotEmpty()) {
+            val timestamp = FieldValue.serverTimestamp()
+            val message = hashMapOf(
+                "messageBody" to messageText,
+                "messageTime" to timestamp,
+                "userName" to currentUser,
+            )
 
-    }
-
-    private fun saveAndSendMessage(message: HashMap<String, Any>, conversationId: String){
         val db = FirebaseFirestore.getInstance()
 
         db.collection("conversations")
@@ -114,7 +107,8 @@ class ChatConversationFragment : Fragment() {
             .addOnFailureListener { e ->
                 Log.w("!!!", "Fel vid sparande av meddelande", e)
             }
-
+            messageInput.text.clear()
+        }
     }
 
     private fun getConversation(
