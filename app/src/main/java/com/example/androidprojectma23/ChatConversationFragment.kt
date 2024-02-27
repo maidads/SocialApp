@@ -70,14 +70,21 @@ class ChatConversationFragment : Fragment() {
         })
 
         sendButton.setOnClickListener {
-
             if (conversationId == "no existing id") {
-                setUpNewConversation()
+                setUpNewConversation { newConversationId ->
+                    saveAndSendMessage(newConversationId)
+                }
             } else {
                 saveAndSendMessage(conversationId)
             }
         }
         return view
+    }
+
+    private fun setUpNewConversation(callback: (String) -> Unit) {
+        //Need to set conversationId and return the right one to use in save and send
+        val newConversationId = "new id"
+        callback(newConversationId)
     }
 
     private fun saveAndSendMessage(conversationId: String){
@@ -160,11 +167,6 @@ class ChatConversationFragment : Fragment() {
                     messages.clear()
                 }
             }
-    }
-
-    private fun setUpNewConversation() {
-
-
     }
 
     private fun hideKeyboard() {
