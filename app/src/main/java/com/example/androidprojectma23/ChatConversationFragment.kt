@@ -2,6 +2,7 @@ package com.example.androidprojectma23
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -41,8 +42,14 @@ class ChatConversationFragment : Fragment() {
 
         // Fetch argument sent from ChatFragment
         val conversationId = arguments?.getString("conversationId").toString()
-        val conversationProfileImageUrl = arguments?.getString("conversationProfileImageUrl").toString()
+        val conversationUserId = arguments?.getString("conversationUserId").toString()
+        val conversationProfileImageUrl =
+            arguments?.getString("conversationProfileImageUrl").toString()
         val conversationUserName = arguments?.getString("conversationUserName").toString()
+
+        Log.d("!!!", conversationUserName)
+        Log.d("!!!", conversationUserId)
+        Log.d("!!!", conversationId)
 
         // Initial setup for RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -52,44 +59,69 @@ class ChatConversationFragment : Fragment() {
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
                 // When user info is loaded, run getConversation()
-                getConversation(conversationId, conversationProfileImageUrl, conversationUserName)
+                if (conversationId != "no existing id") {
+                    getConversation(
+                        conversationId,
+                        conversationProfileImageUrl,
+                        conversationUserName
+                    )
+                }
             }
         })
 
         sendButton.setOnClickListener {
-            val messageText = messageInput.text.toString()
-            if (messageText.isNotEmpty()) {
-                val timestamp = FieldValue.serverTimestamp()
-                val message = hashMapOf(
-                    "messageBody" to messageText,
-                    "messageTime" to timestamp,
-                    "userName" to currentUser,
-                )
 
-                val db = FirebaseFirestore.getInstance()
+            if (conversationId == "no existing id") {
 
-                db.collection("conversations")
-                    .document(conversationId)
-                    .collection("messages")
-                    .add(message)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+                setUpNewConversation()
 
-                        hideKeyboard()
-
-                        //adapter.notifyItemInserted(chatMessages.size - 1)
-                        //recyclerView.scrollToPosition(chatMessages.size - 1)
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("!!!", "Fel vid sparande av meddelande", e)
-                    }
-                messageInput.text.clear()
+            } else {
+                val messageText = messageInput.text.toString()
+                if (messageText.isNotEmpty()) {
+                    val timestamp = FieldValue.serverTimestamp()
+                    val message = hashMapOf(
+                        "messageBody" to messageText,
+                        "messageTime" to timestamp,
+                        "userName" to currentUser,
+                    )
+                    saveAndSendMessage(message,conversationId)
+                    messageInput.text.clear()
+                }
             }
         }
         return view
     }
 
-    private fun getConversation(conversationId: String, conversationProfileImageUrl: String, conversationUserName: String){
+    private fun createMessage(){
+
+    }
+
+    private fun saveAndSendMessage(message: HashMap<String, Any>, conversationId: String){
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("conversations")
+            .document(conversationId)
+            .collection("messages")
+            .add(message)
+            .addOnSuccessListener { documentReference ->
+                Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+
+                hideKeyboard()
+
+                //adapter.notifyItemInserted(chatMessages.size - 1)
+                //recyclerView.scrollToPosition(chatMessages.size - 1)
+            }
+            .addOnFailureListener { e ->
+                Log.w("!!!", "Fel vid sparande av meddelande", e)
+            }
+
+    }
+
+    private fun getConversation(
+        conversationId: String,
+        conversationProfileImageUrl: String,
+        conversationUserName: String
+    ) {
         val db = FirebaseFirestore.getInstance()
 
         db.collection("conversations").document(conversationId).collection("messages")
@@ -136,8 +168,14 @@ class ChatConversationFragment : Fragment() {
             }
     }
 
+    private fun setUpNewConversation() {
+
+
+    }
+
     private fun hideKeyboard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
