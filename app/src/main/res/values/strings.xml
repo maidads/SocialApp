@@ -38,10 +38,12 @@
     <string name="display_name">Display name</string>
 
     <string name="popup_filter_save_button">Spara</string>
-  
+
     <string name="write_a_message">Skriv meddelande</string>
     <string name="send_button_text">Skicka</string>
     <string name="send_message_button_contentDescription">Send message button</string>
     <string name="age_placeholder_back">Ålder: %1$s</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
