@@ -25,18 +25,18 @@
 
             <ImageView
                 android:id="@+id/myMatches_userProfileImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="12dp"
                 android:adjustViewBounds="true"
+                android:src="@drawable/profile_image_placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/myMatches_userDisplayName"
                 app:layout_constraintStart_toStartOf="@id/theCard"
-                app:layout_constraintTop_toTopOf="@id/theCard"
-                tools:srcCompat="@tools:sample/avatars" />
+                app:layout_constraintTop_toTopOf="@id/theCard"/>
 
             <TextView
                 android:id="@+id/myMatches_userDisplayName"
