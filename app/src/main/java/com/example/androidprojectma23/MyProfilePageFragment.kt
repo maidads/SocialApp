@@ -29,6 +29,12 @@ class MyProfilePageFragment : Fragment() {
         editProfileButton = view.findViewById(R.id.editProfileButton)
 
         editProfileButton.setOnClickListener {
+            val changeProfileFragment = ChangeProfileFragment()
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragmentHolder, changeProfileFragment)
+                .addToBackStack(null)
+                .commit()
         }
 
         return view
