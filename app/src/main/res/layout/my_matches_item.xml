@@ -27,72 +27,117 @@
                 android:id="@+id/myMatches_userProfileImage"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="12dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="5dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/profile_image_placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/myMatches_userDisplayName"
-                app:layout_constraintStart_toStartOf="@id/theCard"
-                app:layout_constraintTop_toTopOf="@id/theCard" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/myMatches_userDisplayName" />
 
             <TextView
                 android:id="@+id/myMatches_userDisplayName"
-                android:layout_width="216dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="8dp"
-                android:text="Rubrik"
-                app:layout_constraintStart_toEndOf="@+id/myMatches_userProfileImage"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_width="96dp"
+                android:layout_height="17dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/roboto_bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="UnusedAttribute" />
 
             <ImageView
                 android:id="@+id/iconImage1"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/myMatches_userProfileImage"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintStart_toEndOf="@+id/myMatches_userDisplayName"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
                 android:id="@+id/iconImage2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toStartOf="@+id/iconImage3"
                 app:layout_constraintStart_toEndOf="@+id/iconImage1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
                 android:id="@+id/iconImage3"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iconImage2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
                 android:id="@+id/iconImage4"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iconImage3"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="@+id/iconImage2"
+                app:layout_constraintStart_toEndOf="@+id/iconImage1"
+                app:layout_constraintTop_toBottomOf="@+id/icon2text"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
                 android:id="@+id/iconImage5"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/iconImage4"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:layout_constraintEnd_toStartOf="@+id/iconImage3"
+                app:layout_constraintStart_toEndOf="@+id/iconImage2"
+                app:layout_constraintTop_toBottomOf="@+id/icon3text"
                 app:srcCompat="@drawable/icon_empty" />
+
+            <TextView
+                android:id="@+id/icon1text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="icon"
+                app:layout_constraintEnd_toEndOf="@+id/iconImage1"
+                app:layout_constraintStart_toStartOf="@+id/iconImage1"
+                app:layout_constraintTop_toBottomOf="@+id/iconImage1" />
+
+            <TextView
+                android:id="@+id/icon2text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="icon"
+                app:layout_constraintEnd_toEndOf="@+id/iconImage2"
+                app:layout_constraintStart_toStartOf="@+id/iconImage2"
+                app:layout_constraintTop_toBottomOf="@+id/iconImage2" />
+
+            <TextView
+                android:id="@+id/icon3text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="icon"
+                app:layout_constraintEnd_toEndOf="@+id/iconImage3"
+                app:layout_constraintStart_toStartOf="@+id/iconImage3"
+                app:layout_constraintTop_toBottomOf="@+id/iconImage3" />
+
+            <TextView
+                android:id="@+id/icon4text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="icon"
+                app:layout_constraintEnd_toEndOf="@+id/iconImage4"
+                app:layout_constraintStart_toStartOf="@+id/iconImage4"
+                app:layout_constraintTop_toBottomOf="@+id/iconImage4" />
+
+            <TextView
+                android:id="@+id/icon5text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="icon"
+                app:layout_constraintEnd_toEndOf="@+id/iconImage5"
+                app:layout_constraintStart_toStartOf="@+id/iconImage5"
+                app:layout_constraintTop_toBottomOf="@+id/iconImage5" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
