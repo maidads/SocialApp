@@ -71,7 +71,7 @@ class ChatConversationFragment : Fragment() {
 
         sendButton.setOnClickListener {
             if (conversationId == "no existing id") {
-                setUpNewConversation { newConversationId ->
+                setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
                     saveAndSendMessage(newConversationId)
                 }
             } else {
@@ -81,10 +81,29 @@ class ChatConversationFragment : Fragment() {
         return view
     }
 
-    private fun setUpNewConversation(callback: (String) -> Unit) {
-        //Need to set conversationId and return the right one to use in save and send
-        val newConversationId = "new id"
+    private fun setUpNewConversation(conversationUserId: String, currentUser: String, callback: (String) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val conversationsCollection = db.collection("conversations")
+        val newConversationDocument = conversationsCollection.document()
+        val newConversationId = newConversationDocument.id
+        newConversationDocument.collection("messages")
+
+        val userIds = listOf(conversationUserId, currentUser)
+        newConversationDocument.set(mapOf(
+            conversationUserId to userIds[0],
+            currentUser to userIds[1]
+        ))
+
+        //Add a message collection
+
+        //Get newConversationId
+        //Add to users>user1ID>userConversations array
+
         callback(newConversationId)
+    }
+
+    private fun isConversationExisting(){
+        TODO("to identify existing conversation")
     }
 
     private fun saveAndSendMessage(conversationId: String){
@@ -108,6 +127,7 @@ class ChatConversationFragment : Fragment() {
 
                 hideKeyboard()
 
+                TODO("Make automatic scroll down work")
                 //adapter.notifyItemInserted(chatMessages.size - 1)
                 //recyclerView.scrollToPosition(chatMessages.size - 1)
             }
