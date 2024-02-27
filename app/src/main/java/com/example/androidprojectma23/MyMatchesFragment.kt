@@ -74,10 +74,11 @@ class MyMatchesFragment : Fragment() {
             db.collection("users").document(userId).get().addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
                     val user = document.toObject(User::class.java)
+                    user?.profileImage = document.getString("profileImageUrl") ?: "" // TODO Fix so that profile images saves as profileImage instead of profileImageUrl (change in UserProfileManager)
                     user?.let { usersList.add(it) }
 
-                    if (usersList.size == userIds.size) { // Kontrollera om alla användare är hämtade
-                        matchesAdapter.updateUsers(usersList) // Uppdatera din RecyclerView
+                    if (usersList.size == userIds.size) {
+                        matchesAdapter.updateUsers(usersList)
                     }
                 }
             }.addOnFailureListener { exception ->
