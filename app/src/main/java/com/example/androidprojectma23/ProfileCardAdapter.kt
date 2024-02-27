@@ -25,7 +25,7 @@ class ProfileCardAdapter (private var user: MutableList<User>, private val newMe
     ItemMoveCallback.ItemTouchHelperAdapter {
 
     interface NewMessageButtonClickListener {
-        fun onNewMessageButtonClicked(user: User)
+        fun onNewMessageButtonClicked(otherUser: User)
     }
 
     override fun onCreateViewHolder(
