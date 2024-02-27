@@ -76,13 +76,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     }
     override fun onProfileIconClicked() {
         // Open MyProfileFragment
-        val changeProfileFragment = ChangeProfileFragment()
-
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.fragmentHolder, changeProfileFragment)
-            addToBackStack(null)
-            commit()
-        }
+        replaceFragment(ChangeProfileFragment())
     }
 
     override fun onBackIconClicked() {
