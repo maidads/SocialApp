@@ -6,11 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class MyMatchesAdapter(private val users: List<User>) : RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
+class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
 
-    class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val displayNameTextView: TextView = view.findViewById(R.id.myMatches_userDisplayName)
+
         fun bind(user: User) {
-            itemView.findViewById<TextView>(R.id.myMatches_userDisplayName).text = user.displayName
+            displayNameTextView.text = user.displayName
+            // Add more views here
         }
     }
 
@@ -20,9 +23,13 @@ class MyMatchesAdapter(private val users: List<User>) : RecyclerView.Adapter<MyM
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        val user = users[position]
-        holder.bind(user)
+        holder.bind(users[position])
     }
 
     override fun getItemCount(): Int = users.size
+
+    fun updateUsers(newUsers: List<User>) {
+        users = newUsers
+        notifyDataSetChanged()
+    }
 }
