@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MyMatchesFragment : Fragment() {
@@ -33,6 +31,9 @@ class MyMatchesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             val userIds = it.getStringArrayList(ARG_USER_IDS)
+            if (userIds != null) {
+                UserSharedPreferences.saveUserIds(requireContext(), userIds.toSet())
+            }
             // Logga användar-ID:n
             Log.d("MyMatchesFragment", "Mottagna användar-ID:n: $userIds")
 
@@ -45,63 +46,43 @@ class MyMatchesFragment : Fragment() {
         recyclerView = view.findViewById(R.id.matchesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-
-        val userIds = arguments?.getStringArrayList(ARG_USER_IDS)
-
-        val users = fetchDataBasedOnUserIds(userIds)
-
-        matchesAdapter = MyMatchesAdapter(users)
+        matchesAdapter = MyMatchesAdapter(emptyList())
         recyclerView.adapter = matchesAdapter
+
+        fetchUsersAndDisplay()
 
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        arguments?.getStringArrayList(ARG_USER_IDS)?.let { userIds ->
-            fetchUsers(userIds) { users ->
-                setupRecyclerView(users)
-            }
+
+        val savedUserIds = UserSharedPreferences.getUserIds(requireContext())
+        if (savedUserIds != null && savedUserIds.isNotEmpty()) {
+            Log.d("MyMatchesFragment", "Återhämtade sparade användar-ID:n: $savedUserIds")
+        } else {
+            Log.d("MyMatchesFragment", "Inga sparade användar-ID:n att återhämta.")
         }
     }
 
-    private fun fetchUsers(userIds: ArrayList<String>, onComplete: (List<User>) -> Unit) {
-        val firestore = FirebaseFirestore.getInstance()
-        val users = mutableListOf<User>()
+    private fun fetchUsersAndDisplay() {
+        val userIds = UserSharedPreferences.getUserIds(requireContext()) ?: return
+        val db = FirebaseFirestore.getInstance()
+        val usersList = mutableListOf<User>()
 
-        val tasks = userIds.map { userId ->
-            firestore.collection("users").document(userId).get()
-        }
+        userIds.forEach { userId ->
+            db.collection("users").document(userId).get().addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val user = document.toObject(User::class.java)
+                    user?.let { usersList.add(it) }
 
-        Tasks.whenAllSuccess<DocumentSnapshot>(tasks)
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    document.toObject(User::class.java)?.let { user ->
-                        users.add(user)
+                    if (usersList.size == userIds.size) { // Kontrollera om alla användare är hämtade
+                        matchesAdapter.updateUsers(usersList) // Uppdatera din RecyclerView
                     }
                 }
-                onComplete(users)
+            }.addOnFailureListener { exception ->
+                Log.d("MyMatchesFragment", "Error getting documents: ", exception)
             }
-    }
-
-    private fun setupRecyclerView(users: List<User>) {
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        recyclerView.adapter = MyMatchesAdapter(users)
-    }
-
-    private fun fetchDataBasedOnUserIds(userIds: List<String>?): List<User> {
-        val users = mutableListOf<User>()
-        userIds?.forEach { userId ->
-
-            val user = fetchUserDetails(userId)
-            users.add(user)
         }
-        return users
-    }
-
-    private fun fetchUserDetails(userId: String): User {
-
-
-        return User(userId, "Användarnamn", "Profilbild URL")
     }
 }
