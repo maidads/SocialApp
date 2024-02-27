@@ -2,7 +2,6 @@ package com.example.androidprojectma23
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -11,20 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.hsr.geohash.GeoHash
 import ch.hsr.geohash.WGS84Point
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
@@ -150,17 +144,16 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         return touchHelper
     }
 
-    override fun onNewMessageButtonClicked(user: User) {
+    override fun onNewMessageButtonClicked(otherUser: User) {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
-                // Skicka argument till konversationsfragmentet
-                putString("conversationId", user.userId)
-                putString("conversationProfileImageUrl", user.profileImage)
-                putString("conversationUserName", user.displayName)
+                putString("conversationId", "no existing id")
+                putString("conversationUserId", otherUser.userId)
+                putString("conversationProfileImageUrl", otherUser.profileImage)
+                putString("conversationUserName", otherUser.displayName)
             }
         }
 
-        // Använd aktivitetens supportFragmentManager för att göra fragmenttransaktionen
         val transaction = requireActivity().supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fragmentHolder, chatConversationFragment)
         transaction.addToBackStack(ChatConversationFragment::class.java.simpleName)
