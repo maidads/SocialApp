@@ -1,16 +1,20 @@
 package com.example.androidprojectma23
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
+class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (String) -> Unit) : RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
 
-    class UserViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class UserViewHolder(view: View, private val onClick: (String) -> Unit) : RecyclerView.ViewHolder(view) {
+
+        private val cardView: CardView = view.findViewById(R.id.myMatchesCard)
         private val displayNameTextView: TextView = view.findViewById(R.id.myMatches_userDisplayName)
         private val userProfileImage: ImageView = view.findViewById(R.id.myMatches_userProfileImage)
         private val iconImages = listOf<ImageView>(
@@ -29,6 +33,7 @@ class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyM
         )
 
         fun bind(user: User) {
+            Log.d("MyMatchesAdapter", "Binding user with userId: ${user.userId}")
             displayNameTextView.text = user.displayName
 
             Glide.with(itemView.context)
@@ -53,12 +58,17 @@ class MyMatchesAdapter(private var users: List<User>) : RecyclerView.Adapter<MyM
                     iconTexts[index].text = itemView.context.getString(interestNameResId)
                 }
             }
+
+            cardView.setOnClickListener {
+                Log.d("MyMatchesAdapter", "Kort klickat med userId: ${user.userId}")
+                onClick(user.userId)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.my_matches_item, parent, false)
-        return UserViewHolder(view)
+        return UserViewHolder(view, onUserClick)
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {

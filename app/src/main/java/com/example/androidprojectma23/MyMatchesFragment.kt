@@ -46,7 +46,8 @@ class MyMatchesFragment : Fragment() {
         recyclerView = view.findViewById(R.id.matchesRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        matchesAdapter = MyMatchesAdapter(emptyList())
+        matchesAdapter = MyMatchesAdapter(emptyList()) { userId ->
+        }
         recyclerView.adapter = matchesAdapter
 
         fetchUsersAndDisplay()
@@ -58,7 +59,7 @@ class MyMatchesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val savedUserIds = UserSharedPreferences.getUserIds(requireContext())
-        if (savedUserIds != null && savedUserIds.isNotEmpty()) {
+        if (!savedUserIds.isNullOrEmpty()) {
             Log.d("MyMatchesFragment", "Återhämtade sparade användar-ID:n: $savedUserIds")
         } else {
             Log.d("MyMatchesFragment", "Inga sparade användar-ID:n att återhämta.")
@@ -73,12 +74,15 @@ class MyMatchesFragment : Fragment() {
         userIds.forEach { userId ->
             db.collection("users").document(userId).get().addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
-                    val user = document.toObject(User::class.java)
+
+                    val user = document.toObject(User::class.java)?.copy(userId = document.id)
                     user?.profileImage = document.getString("profileImageUrl") ?: "" // TODO Fix so that profile images saves as profileImage instead of profileImageUrl (change in UserProfileManager)
                     user?.let { usersList.add(it) }
 
                     if (usersList.size == userIds.size) {
-                        matchesAdapter.updateUsers(usersList)
+                        activity?.runOnUiThread {
+                            matchesAdapter.updateUsers(usersList)
+                        }
                     }
                 }
             }.addOnFailureListener { exception ->
@@ -86,4 +90,5 @@ class MyMatchesFragment : Fragment() {
             }
         }
     }
+
 }
