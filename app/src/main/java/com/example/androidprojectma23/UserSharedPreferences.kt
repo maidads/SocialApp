@@ -16,7 +16,7 @@ object UserSharedPreferences {
         val updatedUserIds = existingUserIds.union(userIds)
         val editor = getPreferences(context).edit()
         editor.putStringSet(USER_ID_SET_KEY, updatedUserIds)
-        editor.apply() // Använd apply() för asynkron sparande
+        editor.apply() // Using apply() for saving asynchronous
         Log.d("UserSharedPreferences", "Sparade användar-ID:n: $userIds")
     }
 
