@@ -89,6 +89,9 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
     override fun onSavedProfileMenuItemClicked() {
         // Open SavedProfilesFragment
+        val userIds = SwipeDataManager.getAndClearUsers()
+        val fragment = MyMatchesFragment.newInstance(ArrayList(userIds))
+        replaceFragment(fragment)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

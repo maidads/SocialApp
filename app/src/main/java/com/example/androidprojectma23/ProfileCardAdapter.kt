@@ -3,6 +3,7 @@ package com.example.androidprojectma23
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +21,10 @@ import com.example.androidprojectma23.IconMapping.imageViewIdProfileCard
 import com.example.androidprojectma23.IconMapping.imageViewIdProfileCardBack
 import java.util.Collections
 
-class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+class ProfileCardAdapter (
+    private var user: MutableList<User>,
+    private val onLeftSwipe: (String) -> Unit
+) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
     ItemMoveCallback.ItemTouchHelperAdapter {
 
     override fun onCreateViewHolder(
@@ -127,13 +131,24 @@ class ProfileCardAdapter (private var user: MutableList<User>) : RecyclerView.Ad
         }
 
     }
-
     override fun onItemMove(fromPosition: Int, toPosition: Int) {
         Collections.swap(this.user, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
     }
 
     override fun onItemDismiss(position: Int) {
+        this.user.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    override fun onLeftSwipe(position: Int) {
+        val userId = user[position].userId
+        SwipeDataManager.addUser(userId) // Add user-id in the list
+        user.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+    override fun onRightSwipe(position: Int) {
         this.user.removeAt(position)
         notifyItemRemoved(position)
     }
