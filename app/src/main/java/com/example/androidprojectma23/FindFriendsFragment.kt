@@ -43,7 +43,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 
-class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener {
+class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener, ProfileCardAdapter.NewMessageButtonClickListener {
 
     override fun onSelectionChanged(selectedCount: Int) {
         // Använda lifecycleScope för att starta en korutin
@@ -114,7 +114,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter(matchingFriendsList)
+        adapter = ProfileCardAdapter(matchingFriendsList, this)
 
         val recyclerView = setUpRecyclerView(view)
         val touchHelper = setUpItemTouchHelper(adapter)
@@ -148,6 +148,23 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val callback = ItemMoveCallback(adapter)
         val touchHelper = ItemTouchHelper(callback)
         return touchHelper
+    }
+
+    override fun onNewMessageButtonClicked(user: User) {
+        val chatConversationFragment = ChatConversationFragment().apply {
+            arguments = Bundle().apply {
+                // Skicka argument till konversationsfragmentet
+                putString("conversationId", user.userId)
+                putString("conversationProfileImageUrl", user.profileImage)
+                putString("conversationUserName", user.displayName)
+            }
+        }
+
+        // Använd aktivitetens supportFragmentManager för att göra fragmenttransaktionen
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentHolder, chatConversationFragment)
+        transaction.addToBackStack(ChatConversationFragment::class.java.simpleName)
+        transaction.commit()
     }
 
     private fun getCurrentUserInterests(): Flow<List<String>> = flow {
