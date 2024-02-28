@@ -61,42 +61,35 @@ class ChatConversationFragment : Fragment() {
 
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
-                // When user info is loaded, run getConversation()
-                if (conversationId != null) {
-                    getConversation(
-                        conversationUserId,
-                        conversationId,
-                        conversationProfileImageUrl,
-                        conversationUserName
-                    )
-                } else {
-                    findConversationId(currentUser, conversationUserId) { existingConversationId ->
-                        if (existingConversationId != null){
+                findConversationId(currentUser, conversationUserId) { existingConversationId ->
+                    if (existingConversationId != null) {
                         getConversation(
                             conversationUserId,
                             existingConversationId,
                             conversationProfileImageUrl,
                             conversationUserName
                         )
+                        sendButton.setOnClickListener {
+                                saveAndSendMessage(existingConversationId)
+                        }
+                    } else {
+                        sendButton.setOnClickListener {
+                                setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
+                                    saveAndSendMessage(newConversationId)
+                                }
                         }
                     }
                 }
             }
         })
-
-        sendButton.setOnClickListener {
-            if (conversationId == null) {
-                setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
-                    saveAndSendMessage(newConversationId)
-                }
-            } else {
-                saveAndSendMessage(conversationId)
-            }
-        }
         return view
     }
 
-    private fun setUpNewConversation(conversationUserId: String, currentUser: String, callback: (String) -> Unit) {
+    private fun setUpNewConversation(
+        conversationUserId: String,
+        currentUser: String,
+        callback: (String) -> Unit
+    ) {
         val db = FirebaseFirestore.getInstance()
         val conversationsCollection = db.collection("conversations")
         val newConversationDocument = conversationsCollection.document()
@@ -104,10 +97,12 @@ class ChatConversationFragment : Fragment() {
         newConversationDocument.collection("messages")
 
         val userIds = listOf(conversationUserId, currentUser)
-        newConversationDocument.set(mapOf(
-            "userID1" to currentUser,
-            "userID2" to conversationUserId
-        ))
+        newConversationDocument.set(
+            mapOf(
+                "userID1" to currentUser,
+                "userID2" to conversationUserId
+            )
+        )
 
         for (userId in userIds) {
             val userDocument = db.collection("users").document(userId)
@@ -115,7 +110,8 @@ class ChatConversationFragment : Fragment() {
                 if (snapshot.exists()) {
                     // Kontrollera om användardokumentet har fältet "userConversations"
                     val userConversations = snapshot.get("userConversations") as? List<String>
-                    val updatedConversations = userConversations?.plus(newConversationId) ?: listOf(newConversationId)
+                    val updatedConversations =
+                        userConversations?.plus(newConversationId) ?: listOf(newConversationId)
                     userDocument.update("userConversations", updatedConversations)
                 } else {
                     // Om användardokumentet inte finns, skapa det och lägg till fältet "userConversations" med det nya konversations-ID:et
@@ -133,8 +129,10 @@ class ChatConversationFragment : Fragment() {
 
         // Skapa en kombinerad sökning där vi söker efter konversationer där antingen
         // userID1 är user1 och userID2 är user2, eller userID1 är user2 och userID2 är user1
-        val search1 = conversationsCollection.whereEqualTo("userID1", user1).whereEqualTo("userID2", user2)
-        val search2 = conversationsCollection.whereEqualTo("userID1", user2).whereEqualTo("userID2", user1)
+        val search1 =
+            conversationsCollection.whereEqualTo("userID1", user1).whereEqualTo("userID2", user2)
+        val search2 =
+            conversationsCollection.whereEqualTo("userID1", user2).whereEqualTo("userID2", user1)
 
         // Kör den första sökningen
         search1.get().addOnSuccessListener { snapshot ->
@@ -156,7 +154,7 @@ class ChatConversationFragment : Fragment() {
         }
     }
 
-    private fun saveAndSendMessage(conversationId: String){
+    private fun saveAndSendMessage(conversationId: String) {
         val messageText = messageInput.text.toString()
         if (messageText.isNotEmpty()) {
             val timestamp = FieldValue.serverTimestamp()
@@ -166,24 +164,24 @@ class ChatConversationFragment : Fragment() {
                 "userName" to currentUser,
             )
 
-        val db = FirebaseFirestore.getInstance()
+            val db = FirebaseFirestore.getInstance()
 
-        db.collection("conversations")
-            .document(conversationId)
-            .collection("messages")
-            .add(message)
-            .addOnSuccessListener { documentReference ->
-                Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+            db.collection("conversations")
+                .document(conversationId)
+                .collection("messages")
+                .add(message)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
 
-                hideKeyboard()
+                    hideKeyboard()
 
-                //TODO("Make automatic scroll down work")
-                //adapter.notifyItemInserted(chatMessages.size - 1)
-                //recyclerView.scrollToPosition(chatMessages.size - 1)
-            }
-            .addOnFailureListener { e ->
-                Log.w("!!!", "Fel vid sparande av meddelande", e)
-            }
+                    //TODO("Make automatic scroll down work")
+                    //adapter.notifyItemInserted(chatMessages.size - 1)
+                    //recyclerView.scrollToPosition(chatMessages.size - 1)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("!!!", "Fel vid sparande av meddelande", e)
+                }
             messageInput.text.clear()
         }
     }

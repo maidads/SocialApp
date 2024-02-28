@@ -8,5 +8,5 @@ data class ChatMessage(
     val messageBody: String,
     val messageTime: Timestamp,
     val profileImageUrl: String,
-    val isUserMessage: Boolean
+    val isUserMessage: Boolean,
 )

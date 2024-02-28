@@ -116,12 +116,10 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
     override fun onChatCardClicked(position: Int) {
         val chatMessage = chatMessages[position]
-        val conversationId = conversationIds[position]
-        Log.d("!!!", conversationId)
-        openChatConversationFragment(chatMessage, conversationId)
+        openChatConversationFragment(chatMessage)
     }
 
-    private fun openChatConversationFragment(chatMessage: ChatMessage, conversationId: String) {
+    private fun openChatConversationFragment(chatMessage: ChatMessage) {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
                 // Send arguments to conversation fragment
