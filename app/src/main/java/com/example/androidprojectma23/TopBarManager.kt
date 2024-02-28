@@ -55,11 +55,17 @@ class TopBarManager(
                 setTopBarNavigationIcon("back")
             }
 
-            "SavedProfilesFragment" -> {
+            "MyMatchesFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                showPageTitle(true, "Sparade profiler")
+                showPageTitle(true, "Matchningar")
+                setTopBarNavigationIcon("profile")
+            }
+            "MyMatchesDetailFragment" -> {
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(true, "Mer info")
                 setTopBarNavigationIcon("back")
             }
+
         }
     }
 

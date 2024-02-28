@@ -1,6 +1,7 @@
 package com.example.androidprojectma23
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +24,9 @@ class ChangeProfileFragment : Fragment() {
     lateinit var changeImageButton : FloatingActionButton
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_change_profile, container, false)
+        val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
+        Log.d("MyFragment", "onCreateView called for ChangeProfilePageFragment")
+        return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
