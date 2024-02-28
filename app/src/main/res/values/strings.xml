@@ -43,5 +43,30 @@
     <string name="send_button_text">Skicka</string>
     <string name="send_message_button_contentDescription">Send message button</string>
     <string name="age_placeholder_back">Ålder: %1$s</string>
+    <string name="music">Musik</string>
+    <string name="sports">Sport</string>
+    <string name="movies">Film</string>
+    <string name="art">Konst</string>
+    <string name="books">Böcker</string>
+    <string name="wine">Vin</string>
+    <string name="cooking">Matlagning</string>
+    <string name="travel">Resa</string>
+    <string name="festival">Festival</string>
+    <string name="fashion">Mode</string>
+    <string name="dance">Dans</string>
+    <string name="games">Spel</string>
+    <string name="yoga">Yoga</string>
+    <string name="camping">Camping</string>
+    <string name="fika">Fika</string>
+    <string name="training">Träning</string>
+    <string name="animals">Djur</string>
+    <string name="garden">Trädgård</string>
+    <string name="photography">Fotografering</string>
+    <string name="technology">Teknologi</string>
+    <string name="matches_details_description_default_text">Användaren har inte fyllt i ytterligare info om sig själv ännu. Fråga istället?</string>
+    <string name="matches_details_interest_header">Mina intressen</string>
+    <string name="matches_details_about_header">Om mig</string>
+    <string name="matches_interest_myInterest_textVIew">Här kan användaren utveckla lite kring vad den gillar att göra eller liknande.</string>
+    <string name="matches_details_send_message_text">Skicka meddelande</string>
 
 </resources>
