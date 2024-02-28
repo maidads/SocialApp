@@ -147,7 +147,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     override fun onNewMessageButtonClicked(otherUser: User) {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
-                putString("conversationId", "no existing id")
+                putString("conversationUserId", null)
                 putString("conversationUserId", otherUser.userId)
                 putString("conversationProfileImageUrl", otherUser.profileImage)
                 putString("conversationUserName", otherUser.displayName)

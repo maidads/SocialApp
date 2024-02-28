@@ -23,6 +23,7 @@ class ChatConversationFragment : Fragment() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: FloatingActionButton
     private lateinit var userName: String
+    private lateinit var userId: String
     private lateinit var currentUserName: String
     private lateinit var currentUserProfileImage: String
     private var isUserMessage = true
@@ -41,15 +42,17 @@ class ChatConversationFragment : Fragment() {
         sendButton = view.findViewById(R.id.chat_send_button)
 
         // Fetch argument sent from ChatFragment
-        val conversationId = arguments?.getString("conversationId").toString()
+        val conversationId = arguments?.getString("conversationId")
         val conversationUserId = arguments?.getString("conversationUserId").toString()
         val conversationProfileImageUrl =
             arguments?.getString("conversationProfileImageUrl").toString()
         val conversationUserName = arguments?.getString("conversationUserName").toString()
 
-        Log.d("!!!", conversationUserName)
-        Log.d("!!!", conversationUserId)
-        Log.d("!!!", conversationId)
+        Log.d("!!!", "Username: $conversationUserName")
+        Log.d("!!!", "UserId: $conversationUserId")
+        Log.d("!!!", "Convo id: $conversationId.toString()")
+        Log.d("!!!", "ImageUrl: $conversationProfileImageUrl")
+
 
         // Initial setup for RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -59,18 +62,30 @@ class ChatConversationFragment : Fragment() {
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
                 // When user info is loaded, run getConversation()
-                if (conversationId != "no existing id") {
+                if (conversationId != null) {
                     getConversation(
+                        conversationUserId,
                         conversationId,
                         conversationProfileImageUrl,
                         conversationUserName
                     )
+                } else {
+                    findConversationId(currentUser, conversationUserId) { existingConversationId ->
+                        if (existingConversationId != null){
+                        getConversation(
+                            conversationUserId,
+                            existingConversationId,
+                            conversationProfileImageUrl,
+                            conversationUserName
+                        )
+                        }
+                    }
                 }
             }
         })
 
         sendButton.setOnClickListener {
-            if (conversationId == "no existing id") {
+            if (conversationId == null) {
                 setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
                     saveAndSendMessage(newConversationId)
                 }
@@ -90,20 +105,55 @@ class ChatConversationFragment : Fragment() {
 
         val userIds = listOf(conversationUserId, currentUser)
         newConversationDocument.set(mapOf(
-            conversationUserId to userIds[0],
-            currentUser to userIds[1]
+            "userID1" to currentUser,
+            "userID2" to conversationUserId
         ))
 
-        //Add a message collection
-
-        //Get newConversationId
-        //Add to users>user1ID>userConversations array
+        for (userId in userIds) {
+            val userDocument = db.collection("users").document(userId)
+            userDocument.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    // Kontrollera om användardokumentet har fältet "userConversations"
+                    val userConversations = snapshot.get("userConversations") as? List<String>
+                    val updatedConversations = userConversations?.plus(newConversationId) ?: listOf(newConversationId)
+                    userDocument.update("userConversations", updatedConversations)
+                } else {
+                    // Om användardokumentet inte finns, skapa det och lägg till fältet "userConversations" med det nya konversations-ID:et
+                    userDocument.set(mapOf("userConversations" to listOf(newConversationId)))
+                }
+            }
+        }
 
         callback(newConversationId)
     }
 
-    private fun isConversationExisting(){
-        TODO("to identify existing conversation")
+    private fun findConversationId(user1: String, user2: String, callback: (String?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val conversationsCollection = db.collection("conversations")
+
+        // Skapa en kombinerad sökning där vi söker efter konversationer där antingen
+        // userID1 är user1 och userID2 är user2, eller userID1 är user2 och userID2 är user1
+        val search1 = conversationsCollection.whereEqualTo("userID1", user1).whereEqualTo("userID2", user2)
+        val search2 = conversationsCollection.whereEqualTo("userID1", user2).whereEqualTo("userID2", user1)
+
+        // Kör den första sökningen
+        search1.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.isEmpty) {
+                // Vi hittade en konversation
+                callback(snapshot.documents[0].id)
+            } else {
+                // Kör den andra sökningen
+                search2.get().addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        // Vi hittade en konversation
+                        callback(snapshot.documents[0].id)
+                    } else {
+                        // Vi hittade ingen konversation
+                        callback(null)
+                    }
+                }
+            }
+        }
     }
 
     private fun saveAndSendMessage(conversationId: String){
@@ -127,7 +177,7 @@ class ChatConversationFragment : Fragment() {
 
                 hideKeyboard()
 
-                TODO("Make automatic scroll down work")
+                //TODO("Make automatic scroll down work")
                 //adapter.notifyItemInserted(chatMessages.size - 1)
                 //recyclerView.scrollToPosition(chatMessages.size - 1)
             }
@@ -139,6 +189,7 @@ class ChatConversationFragment : Fragment() {
     }
 
     private fun getConversation(
+        conversationUserId: String,
         conversationId: String,
         conversationProfileImageUrl: String,
         conversationUserName: String
@@ -160,10 +211,12 @@ class ChatConversationFragment : Fragment() {
                         val senderUser = document.getString("userName")
 
                         if (senderUser != currentUser) {
+                            userId = conversationUserId
                             userName = conversationUserName
                             profileImageUrl = conversationProfileImageUrl
                             isUserMessage = false
                         } else {
+                            userId = currentUser
                             userName = currentUserName
                             profileImageUrl = currentUserProfileImage
                             isUserMessage = true
@@ -174,6 +227,7 @@ class ChatConversationFragment : Fragment() {
 
                         if (messageText != null && messageTime != null) {
                             val chatMessage = ChatMessage(
+                                userId,
                                 userName,
                                 messageText,
                                 messageTime,

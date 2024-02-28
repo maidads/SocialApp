@@ -81,7 +81,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                                             lastMessageText = lastMessageText.substring(0, maxLength) + "..."
                                                         }
 
-                                                        val chatMessage = ChatMessage(otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
+                                                        val chatMessage = ChatMessage(otherUserId, otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
                                                         tempChatMessages.add(chatMessage)
                                                     }
                                                     conversationsLoadedCount++
@@ -125,7 +125,8 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
                 // Send arguments to conversation fragment
-                putString("conversationId", conversationId)
+                putString("conversationId", null)
+                putString("conversationUserId", chatMessage.userId)
                 putString("conversationProfileImageUrl", chatMessage.profileImageUrl)
                 putString("conversationUserName", chatMessage.userName)
             }
