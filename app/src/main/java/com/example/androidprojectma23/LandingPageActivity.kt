@@ -76,6 +76,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     }
     override fun onProfileIconClicked() {
         // Open MyProfileFragment
+        replaceFragment(MyProfilePageFragment())
     }
 
     override fun onBackIconClicked() {

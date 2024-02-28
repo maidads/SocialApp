@@ -98,7 +98,8 @@ class SignUpNewAccountActivity : AppCompatActivity() {
         currentUser?.let { user ->
             val userData = hashMapOf(
                 "userID" to user.uid,
-                "Username" to newUsernameEditText.text.toString()
+                "Username" to newUsernameEditText.text.toString(),
+                "about" to "Ingen information tillgänglig"
             )
 
             val db = Firebase.firestore
