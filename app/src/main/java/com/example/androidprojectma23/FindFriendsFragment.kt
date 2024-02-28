@@ -108,7 +108,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter(matchingFriendsList) { userId ->
+        adapter = ProfileCardAdapter(matchingFriendsList, this) { userId ->
             Log.d("SwipeLeft", "Vänster swipe på användare med ID: $userId")
         }
 
