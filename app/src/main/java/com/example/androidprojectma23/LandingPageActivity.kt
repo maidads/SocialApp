@@ -47,6 +47,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
         val navBar: BottomNavigationView = findViewById(R.id.bottomNavigationView)
 
+        replaceFragment(FindFriendsFragment())
         navBar.selectedItemId = R.id.findFriendsFragment
 
         topBarManager = TopBarManager(this, this)

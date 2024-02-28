@@ -33,7 +33,7 @@ class MyProfilePageFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_my_profile_page, container, false)
-        Log.d("MyFragment", "onCreateView called for MyProfilePageFragment")
+
         profileImageView = view.findViewById(R.id.profileImageViewBack)
         displayNameTextView = view.findViewById(R.id.displayNameTextViewBack)
         ageTextView = view.findViewById(R.id.ageTextViewBack)
