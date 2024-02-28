@@ -42,7 +42,6 @@ class ChatConversationFragment : Fragment() {
         sendButton = view.findViewById(R.id.chat_send_button)
 
         // Fetch argument sent from ChatFragment
-        val conversationId = arguments?.getString("conversationId")
         val conversationUserId = arguments?.getString("conversationUserId").toString()
         val conversationProfileImageUrl =
             arguments?.getString("conversationProfileImageUrl").toString()
@@ -50,7 +49,6 @@ class ChatConversationFragment : Fragment() {
 
         Log.d("!!!", "Username: $conversationUserName")
         Log.d("!!!", "UserId: $conversationUserId")
-        Log.d("!!!", "Convo id: $conversationId.toString()")
         Log.d("!!!", "ImageUrl: $conversationProfileImageUrl")
 
 

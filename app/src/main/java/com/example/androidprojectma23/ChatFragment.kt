@@ -122,8 +122,6 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
     private fun openChatConversationFragment(chatMessage: ChatMessage) {
         val chatConversationFragment = ChatConversationFragment().apply {
             arguments = Bundle().apply {
-                // Send arguments to conversation fragment
-                putString("conversationId", null)
                 putString("conversationUserId", chatMessage.userId)
                 putString("conversationProfileImageUrl", chatMessage.profileImageUrl)
                 putString("conversationUserName", chatMessage.userName)
