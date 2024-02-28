@@ -17,6 +17,7 @@ class TopBarManager(
         fun onBackIconClicked()
         fun onFilterMenuItemClicked()
         fun onSavedProfileMenuItemClicked()
+        fun setTitle(title: String)
     }
 
     fun updateTopBar(fragmentTag: String) {
@@ -40,8 +41,6 @@ class TopBarManager(
 
             "ChatConversationFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                val otherUserName = "Other user name" //Set name based on clicked conversation
-                showPageTitle(true, otherUserName)
                 setTopBarNavigationIcon("back")
             }
 
@@ -53,14 +52,6 @@ class TopBarManager(
 
             "EventDetailFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                val eventName = "Event name" //Set name based on clicked event
-                showPageTitle(true, eventName)
-                setTopBarNavigationIcon("back")
-            }
-
-            "MyFriendsFragment" -> {
-                setMenuItemVisibility(upperRightIcons, false)
-                showPageTitle(true, "Vänner")
                 setTopBarNavigationIcon("back")
             }
 
@@ -78,7 +69,7 @@ class TopBarManager(
         }
     }
 
-    private fun showPageTitle(isVisible: Boolean, title: String?) {
+    fun showPageTitle(isVisible: Boolean, title: String?) {
         topAppBar.title = if (isVisible) title else null
     }
 
