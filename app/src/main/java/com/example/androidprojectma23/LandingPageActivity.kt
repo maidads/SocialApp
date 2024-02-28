@@ -91,6 +91,10 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         // Open SavedProfilesFragment
     }
 
+    override fun setTitle(title: String) {
+        topBarManager.showPageTitle(true, title)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.top_app_bar, menu)
         return true

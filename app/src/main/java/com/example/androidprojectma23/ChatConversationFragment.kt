@@ -47,10 +47,7 @@ class ChatConversationFragment : Fragment() {
             arguments?.getString("conversationProfileImageUrl").toString()
         val conversationUserName = arguments?.getString("conversationUserName").toString()
 
-        Log.d("!!!", "Username: $conversationUserName")
-        Log.d("!!!", "UserId: $conversationUserId")
-        Log.d("!!!", "ImageUrl: $conversationProfileImageUrl")
-
+        setTopBarTitle(conversationUserName)
 
         // Initial setup for RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -243,6 +240,10 @@ class ChatConversationFragment : Fragment() {
                     messages.clear()
                 }
             }
+    }
+    private fun setTopBarTitle(conversationUserName: String) {
+        val topBarActivity = (activity as LandingPageActivity)
+        topBarActivity.setTitle(conversationUserName)
     }
 
     private fun hideKeyboard() {
