@@ -51,7 +51,7 @@ class MyProfilePageFragment : Fragment() {
 
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragmentHolder, changeProfileFragment)
-                .addToBackStack(null)
+                .addToBackStack(ChangeProfileFragment::class.java.simpleName)
                 .commit()
         }
         firestore = FirebaseFirestore.getInstance()

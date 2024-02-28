@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -24,21 +25,61 @@ class ChangeProfileFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_change_profile, container, false)
     }
-/*
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         firestore = FirebaseFirestore.getInstance()
-        userId = FirebaseAuth.getInstance().currentUser?.uid
 
         nameEditText = view.findViewById(R.id.nameEditText)
         ageEditText = view.findViewById(R.id.ageEditText)
         aboutEditText = view.findViewById(R.id.aboutEditText)
         interestsEditText = view.findViewById(R.id.interestsEditText)
-        val saveProfileButton = view.findViewById<FloatingActionButton>(R.id.saveProfileButton)
+        val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
 
 
- */
+        saveProfileButton.setOnClickListener {
+            saveProfileToFirestore()
+        }
+    }
+
+    private fun saveProfileToFirestore() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+
+        userId?.let { uid ->
+            val userMap = hashMapOf(
+                "displayName" to nameEditText.text.toString(),
+                "age" to ageEditText.text.toString(),
+                "about" to aboutEditText.text.toString(),
+                "myInterests" to interestsEditText.text.toString()
+            )
+
+            firestore.collection("users").document(uid)
+                .update(userMap as Map<String, Any>)
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Error updating profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+
+    /*
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
+
+            firestore = FirebaseFirestore.getInstance()
+            userId = FirebaseAuth.getInstance().currentUser?.uid
+
+            nameEditText = view.findViewById(R.id.nameEditText)
+            ageEditText = view.findViewById(R.id.ageEditText)
+            aboutEditText = view.findViewById(R.id.aboutEditText)
+            interestsEditText = view.findViewById(R.id.interestsEditText)
+            val saveProfileButton = view.findViewById<FloatingActionButton>(R.id.saveProfileButton)
+
+
+     */
         //loadExistingUserInfo()
 /*
         saveProfileButton.setOnClickListener {
