@@ -24,8 +24,8 @@ import java.util.Collections
 
 class ProfileCardAdapter (
     private var user: MutableList<User>,
-    private val onLeftSwipe: (String) -> Unit, 
-    private val newMessageButtonClickListener: NewMessageButtonClickListener)
+    private val newMessageButtonClickListener: NewMessageButtonClickListener,
+    private val onLeftSwipe: (String) -> Unit)
  : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
 
     ItemMoveCallback.ItemTouchHelperAdapter {
