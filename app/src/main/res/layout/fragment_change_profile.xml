@@ -56,7 +56,7 @@
                         android:textSize="26sp"
                         android:textStyle="bold" />
                     <EditText
-                        android:id="@+id/ageTextViewBack"
+                        android:id="@+id/ageEditText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
@@ -84,7 +84,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/aboutInfoTextView"
+                    android:id="@+id/aboutEditText"
                     android:layout_width="match_parent"
                     android:layout_height="58dp"
                     android:layout_marginTop="16dp"
@@ -101,7 +101,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/interestsInfoTextView"
+                    android:id="@+id/interestsEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
