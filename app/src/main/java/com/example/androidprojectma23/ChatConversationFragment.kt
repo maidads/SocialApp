@@ -2,6 +2,7 @@ package com.example.androidprojectma23
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ class ChatConversationFragment : Fragment() {
     private lateinit var messageInput: EditText
     private lateinit var sendButton: FloatingActionButton
     private lateinit var userName: String
+    private lateinit var userId: String
     private lateinit var currentUserName: String
     private lateinit var currentUserProfileImage: String
     private var isUserMessage = true
@@ -40,8 +42,9 @@ class ChatConversationFragment : Fragment() {
         sendButton = view.findViewById(R.id.chat_send_button)
 
         // Fetch argument sent from ChatFragment
-        val conversationId = arguments?.getString("conversationId").toString()
-        val conversationProfileImageUrl = arguments?.getString("conversationProfileImageUrl").toString()
+        val conversationUserId = arguments?.getString("conversationUserId").toString()
+        val conversationProfileImageUrl =
+            arguments?.getString("conversationProfileImageUrl").toString()
         val conversationUserName = arguments?.getString("conversationUserName").toString()
 
         setTopBarTitle(conversationUserName)
@@ -53,45 +56,143 @@ class ChatConversationFragment : Fragment() {
 
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
-                // When user info is loaded, run getConversation()
-                getConversation(conversationId, conversationProfileImageUrl, conversationUserName)
+                findConversationId(currentUser, conversationUserId) { existingConversationId ->
+                    if (existingConversationId != null) {
+                        getConversation(
+                            conversationUserId,
+                            existingConversationId,
+                            conversationProfileImageUrl,
+                            conversationUserName
+                        )
+                        sendButton.setOnClickListener {
+                                saveAndSendMessage(existingConversationId)
+                        }
+                    } else {
+                        sendButton.setOnClickListener {
+                                setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
+                                    saveAndSendMessage(newConversationId)
+                                    getConversation(
+                                        conversationUserId,
+                                        newConversationId,
+                                        conversationProfileImageUrl,
+                                        conversationUserName
+                                    )
+                                }
+                        }
+                    }
+                }
             }
         })
-
-        sendButton.setOnClickListener {
-            val messageText = messageInput.text.toString()
-            if (messageText.isNotEmpty()) {
-                val timestamp = FieldValue.serverTimestamp()
-                val message = hashMapOf(
-                    "messageBody" to messageText,
-                    "messageTime" to timestamp,
-                    "userName" to currentUser,
-                )
-
-                val db = FirebaseFirestore.getInstance()
-
-                db.collection("conversations")
-                    .document(conversationId)
-                    .collection("messages")
-                    .add(message)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
-
-                        hideKeyboard()
-
-                        //adapter.notifyItemInserted(chatMessages.size - 1)
-                        //recyclerView.scrollToPosition(chatMessages.size - 1)
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w("!!!", "Fel vid sparande av meddelande", e)
-                    }
-                messageInput.text.clear()
-            }
-        }
         return view
     }
 
-    private fun getConversation(conversationId: String, conversationProfileImageUrl: String, conversationUserName: String){
+    private fun setUpNewConversation(
+        conversationUserId: String,
+        currentUser: String,
+        callback: (String) -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        val conversationsCollection = db.collection("conversations")
+        val newConversationDocument = conversationsCollection.document()
+        val newConversationId = newConversationDocument.id
+        newConversationDocument.collection("messages")
+
+        val userIds = listOf(conversationUserId, currentUser)
+        newConversationDocument.set(
+            mapOf(
+                "userID1" to currentUser,
+                "userID2" to conversationUserId
+            )
+        )
+
+        for (userId in userIds) {
+            val userDocument = db.collection("users").document(userId)
+            userDocument.get().addOnSuccessListener { snapshot ->
+                if (snapshot.exists()) {
+                    // Kontrollera om användardokumentet har fältet "userConversations"
+                    val userConversations = snapshot.get("userConversations") as? List<String>
+                    val updatedConversations =
+                        userConversations?.plus(newConversationId) ?: listOf(newConversationId)
+                    userDocument.update("userConversations", updatedConversations)
+                } else {
+                    // Om användardokumentet inte finns, skapa det och lägg till fältet "userConversations" med det nya konversations-ID:et
+                    userDocument.set(mapOf("userConversations" to listOf(newConversationId)))
+                }
+            }
+        }
+
+        callback(newConversationId)
+    }
+
+    private fun findConversationId(user1: String, user2: String, callback: (String?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+        val conversationsCollection = db.collection("conversations")
+
+        // Skapa en kombinerad sökning där vi söker efter konversationer där antingen
+        // userID1 är user1 och userID2 är user2, eller userID1 är user2 och userID2 är user1
+        val search1 =
+            conversationsCollection.whereEqualTo("userID1", user1).whereEqualTo("userID2", user2)
+        val search2 =
+            conversationsCollection.whereEqualTo("userID1", user2).whereEqualTo("userID2", user1)
+
+        // Kör den första sökningen
+        search1.get().addOnSuccessListener { snapshot ->
+            if (!snapshot.isEmpty) {
+                // Vi hittade en konversation
+                callback(snapshot.documents[0].id)
+            } else {
+                // Kör den andra sökningen
+                search2.get().addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        // Vi hittade en konversation
+                        callback(snapshot.documents[0].id)
+                    } else {
+                        // Vi hittade ingen konversation
+                        callback(null)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun saveAndSendMessage(conversationId: String) {
+        val messageText = messageInput.text.toString()
+        if (messageText.isNotEmpty()) {
+            val timestamp = FieldValue.serverTimestamp()
+            val message = hashMapOf(
+                "messageBody" to messageText,
+                "messageTime" to timestamp,
+                "userName" to currentUser,
+            )
+
+            val db = FirebaseFirestore.getInstance()
+
+            db.collection("conversations")
+                .document(conversationId)
+                .collection("messages")
+                .add(message)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
+
+                    hideKeyboard()
+
+                    //TODO("Make automatic scroll down work")
+                    //adapter.notifyItemInserted(chatMessages.size - 1)
+                    //recyclerView.scrollToPosition(chatMessages.size - 1)
+                }
+                .addOnFailureListener { e ->
+                    Log.w("!!!", "Fel vid sparande av meddelande", e)
+                }
+            messageInput.text.clear()
+        }
+    }
+
+    private fun getConversation(
+        conversationUserId: String,
+        conversationId: String,
+        conversationProfileImageUrl: String,
+        conversationUserName: String
+    ) {
         val db = FirebaseFirestore.getInstance()
 
         db.collection("conversations").document(conversationId).collection("messages")
@@ -109,10 +210,12 @@ class ChatConversationFragment : Fragment() {
                         val senderUser = document.getString("userName")
 
                         if (senderUser != currentUser) {
+                            userId = conversationUserId
                             userName = conversationUserName
                             profileImageUrl = conversationProfileImageUrl
                             isUserMessage = false
                         } else {
+                            userId = currentUser
                             userName = currentUserName
                             profileImageUrl = currentUserProfileImage
                             isUserMessage = true
@@ -123,6 +226,7 @@ class ChatConversationFragment : Fragment() {
 
                         if (messageText != null && messageTime != null) {
                             val chatMessage = ChatMessage(
+                                userId,
                                 userName,
                                 messageText,
                                 messageTime,
@@ -143,7 +247,8 @@ class ChatConversationFragment : Fragment() {
     }
 
     private fun hideKeyboard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm =
+            requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
