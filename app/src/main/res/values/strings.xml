@@ -63,5 +63,10 @@
     <string name="garden">Trädgård</string>
     <string name="photography">Fotografering</string>
     <string name="technology">Teknologi</string>
+    <string name="matches_details_description_default_text">Användaren har inte fyllt i ytterligare info om sig själv ännu. Fråga istället?</string>
+    <string name="matches_details_interest_header">Mina intressen</string>
+    <string name="matches_details_about_header">Om mig</string>
+    <string name="matches_interest_myInterest_textVIew">Här kan användaren utveckla lite kring vad den gillar att göra eller liknande.</string>
+    <string name="matches_details_send_message_text">Skicka meddelande</string>
 
 </resources>
