@@ -74,6 +74,12 @@ class ChatConversationFragment : Fragment() {
                         sendButton.setOnClickListener {
                                 setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
                                     saveAndSendMessage(newConversationId)
+                                    getConversation(
+                                        conversationUserId,
+                                        newConversationId,
+                                        conversationProfileImageUrl,
+                                        conversationUserName
+                                    )
                                 }
                         }
                     }
