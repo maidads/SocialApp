@@ -34,7 +34,7 @@ class MyMatchesFragment : Fragment() {
             if (userIds != null) {
                 UserSharedPreferences.saveUserIds(requireContext(), userIds.toSet())
             }
-            // Logga användar-ID:n
+
             Log.d("MyMatchesFragment", "Mottagna användar-ID:n: $userIds")
 
         }
@@ -47,6 +47,7 @@ class MyMatchesFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         matchesAdapter = MyMatchesAdapter(emptyList()) { userId ->
+            openUserDetailFragment(userId)
         }
         recyclerView.adapter = matchesAdapter
 
@@ -89,6 +90,14 @@ class MyMatchesFragment : Fragment() {
                 Log.d("MyMatchesFragment", "Error getting documents: ", exception)
             }
         }
+    }
+
+    private fun openUserDetailFragment(userId: String) {
+        val fragment = MyMatchesDetailFragment.newInstance(userId)
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentHolder, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
 }

@@ -1,6 +1,5 @@
 package com.example.androidprojectma23
 
-import android.widget.ViewFlipper
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 
@@ -28,6 +27,6 @@ class ItemMoveCallback(private val mAdapter: ItemTouchHelperAdapter) : ItemTouch
         fun onItemMove(fromPosition: Int, toPosition: Int)
         fun onItemDismiss(position: Int)
         fun onLeftSwipe(position: Int)
-        fun onRightSwipe(position: Int) // Lägg till denna rad
+        fun onRightSwipe(position: Int)
     }
 }
