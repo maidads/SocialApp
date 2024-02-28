@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.ViewFlipper
@@ -23,9 +24,15 @@ import java.util.Collections
 
 class ProfileCardAdapter (
     private var user: MutableList<User>,
-    private val onLeftSwipe: (String) -> Unit
-) : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+    private val onLeftSwipe: (String) -> Unit, 
+    private val newMessageButtonClickListener: NewMessageButtonClickListener)
+ : RecyclerView.Adapter<ProfileCardAdapter.ProfileViewHolder>(),
+
     ItemMoveCallback.ItemTouchHelperAdapter {
+
+    interface NewMessageButtonClickListener {
+        fun onNewMessageButtonClicked(otherUser: User)
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -37,7 +44,7 @@ class ProfileCardAdapter (
 
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
         val user = this.user[position]
-        holder.bind(user)
+        holder.bind(user, newMessageButtonClickListener)
     }
 
     override fun getItemCount(): Int {
@@ -45,7 +52,13 @@ class ProfileCardAdapter (
     }
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(user: User) {
+
+        fun bind(user: User, newMessageButtonClickListener: NewMessageButtonClickListener) {
+
+            view.findViewById<Button>(R.id.newMessagebutton).setOnClickListener {
+                newMessageButtonClickListener.onNewMessageButtonClicked(user)
+            }
+
             val viewFlipper = itemView.findViewById<ViewFlipper>(R.id.profileCardBack)
             val cardContainer = view.findViewById<View>(R.id.profile_card_viewflipper)
             val frontImage = view.findViewById<ImageView>(R.id.profileImageView)

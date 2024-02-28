@@ -17,30 +17,3 @@
             app:showAsAction="ifRoom" />
 
     </menu>
-
-    <!-- Top bar presses in code:
-
-    topAppBar.setNavigationOnClickListener {
-    // Handle navigation icon press
-}
-
-topAppBar.setOnMenuItemClickListener { menuItem ->
-    when (menuItem.itemId) {
-        R.id.edit -> {
-            // Handle edit text press
-            true
-        }
-        R.id.favorite -> {
-            // Handle favorite icon press
-            true
-        }
-        R.id.more -> {
-            // Handle more item (inside overflow menu) press
-            true
-        }
-        else -> false
-    }
-}
-
-
-    -->
