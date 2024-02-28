@@ -69,7 +69,7 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
 
         activity?.supportFragmentManager?.beginTransaction()?.apply {
             replace(R.id.fragmentHolder, eventDetailFragment)
-            addToBackStack(null)
+            addToBackStack(EventDetailFragment::class.java.simpleName)
             commit()
         }
     }

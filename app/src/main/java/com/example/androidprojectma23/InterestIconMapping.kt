@@ -55,6 +55,30 @@ object IconMapping {
         "GTPROJYniNOrFBivL7wE" to R.drawable.icon_technology
     )
 
+    val docIdToInterestNameMap = mapOf(
+        "qWAkLQAUlXIuJCn45ChZ" to R.string.music,
+        "9NPO76LYaq9hl5KOCtC4" to R.string.sports,
+        "AYpDbrWtQOUOt7rBDXDH" to R.string.movies,
+        "iglkcuMPG8egGg4scETR" to R.string.art,
+        "YmMikFDeggctuiqSYrmw" to R.string.books,
+        "YvVGXixVaQSsMhAZaCy2" to R.string.wine,
+        "HPQHhJeFC7wQaHyAFSnU" to R.string.cooking,
+        "M9RqxG3Caa0JNT9h6ZTX" to R.string.travel,
+        "EymGn10U227Gf5xmducS" to R.string.festival,
+        "vs5sifFqzkrCyVILxya6" to R.string.fashion,
+        "zcz594bv81UYIWjhWgTy" to R.string.dance,
+        "SM8Oh6Hnba6Gzjpn77RJ" to R.string.games,
+        "6O7GXIC0DWKz6T8wXCJa" to R.string.yoga,
+        "HvJnJ1QKuS2l9IAzYkGa" to R.string.camping,
+        "0YB3cpO2ducwVQeuCmHC" to R.string.fika,
+        "xZ4sv4Th1Rx3xmUWPr7C" to R.string.training,
+        "YeByZ6w5see5N6GfBPYI" to R.string.animals,
+        "zBgJksLJY1Fa0s3oUSvg" to R.string.garden,
+        "ftWLcl8ag7pabyuSSJih" to R.string.photography,
+        "GTPROJYniNOrFBivL7wE" to R.string.technology
+
+    )
+
     val imageViewIdProfileCard = listOf(
         R.id.interestImageView, R.id.interestImageView2,
         R.id.interestImageView3, R.id.interestImageView4,

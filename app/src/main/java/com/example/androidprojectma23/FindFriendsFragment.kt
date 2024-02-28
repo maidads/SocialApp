@@ -2,7 +2,6 @@ package com.example.androidprojectma23
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.ContentValues.TAG
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -11,20 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.hsr.geohash.GeoHash
 import ch.hsr.geohash.WGS84Point
-import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.launch
@@ -43,7 +37,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 
-class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener {
+class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener, ProfileCardAdapter.NewMessageButtonClickListener {
 
     override fun onSelectionChanged(selectedCount: Int) {
         // Använda lifecycleScope för att starta en korutin
@@ -114,7 +108,9 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter(matchingFriendsList)
+        adapter = ProfileCardAdapter(matchingFriendsList) { userId ->
+            Log.d("SwipeLeft", "Vänster swipe på användare med ID: $userId")
+        }
 
         val recyclerView = setUpRecyclerView(view)
         val touchHelper = setUpItemTouchHelper(adapter)
@@ -148,6 +144,21 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         val callback = ItemMoveCallback(adapter)
         val touchHelper = ItemTouchHelper(callback)
         return touchHelper
+    }
+
+    override fun onNewMessageButtonClicked(otherUser: User) {
+        val chatConversationFragment = ChatConversationFragment().apply {
+            arguments = Bundle().apply {
+                putString("conversationUserId", otherUser.userId)
+                putString("conversationProfileImageUrl", otherUser.profileImage)
+                putString("conversationUserName", otherUser.displayName)
+            }
+        }
+
+        val transaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fragmentHolder, chatConversationFragment)
+        transaction.addToBackStack(ChatConversationFragment::class.java.simpleName)
+        transaction.commit()
     }
 
     private fun getCurrentUserInterests(): Flow<List<String>> = flow {
