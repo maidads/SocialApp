@@ -76,6 +76,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     }
     override fun onProfileIconClicked() {
         // Open MyProfileFragment
+        replaceFragment(MyProfilePageFragment())
     }
 
     override fun onBackIconClicked() {
@@ -89,6 +90,13 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
     override fun onSavedProfileMenuItemClicked() {
         // Open SavedProfilesFragment
+        val userIds = SwipeDataManager.getAndClearUsers()
+        val fragment = MyMatchesFragment.newInstance(ArrayList(userIds))
+        replaceFragment(fragment)
+    }
+
+    override fun setTitle(title: String) {
+        topBarManager.showPageTitle(true, title)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
