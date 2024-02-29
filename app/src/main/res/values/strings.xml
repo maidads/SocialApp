@@ -69,5 +69,7 @@
     <string name="matches_details_about_header">Om mig</string>
     <string name="matches_interest_myInterest_textVIew">Här kan användaren utveckla lite kring vad den gillar att göra eller liknande.</string>
     <string name="matches_details_send_message_text">Skicka meddelande</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

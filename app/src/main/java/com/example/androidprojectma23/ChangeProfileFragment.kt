@@ -50,11 +50,30 @@ class ChangeProfileFragment : Fragment() {
         interestImageView4Back = view.findViewById(R.id.interestImageView4Back)
         interestImageView5Back = view.findViewById(R.id.interestImageView5Back)
         val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
+        val interestImageViews = listOf(
+            interestImageViewBack, interestImageView2Back,
+            interestImageView3Back, interestImageView4Back,
+            interestImageView5Back
+        )
 
         loadUserProfile()
 
         saveProfileButton.setOnClickListener {
             saveProfileToFirestore()
+        }
+
+        interestImageViews.forEach { imageView ->
+            imageView.setOnClickListener {
+                val currentUser = FirebaseAuth.getInstance().currentUser
+                val userId = currentUser?.uid
+                if (userId != null) {
+                    val profileCreationStep2Fragment = ProfileCreationStep2Fragment.newInstance(userId)
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentHolder, profileCreationStep2Fragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
+            }
         }
     }
 
@@ -118,6 +137,8 @@ class ChangeProfileFragment : Fragment() {
                 }
             }
         }
+
+
     }
 
     /*
