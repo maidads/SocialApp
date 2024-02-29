@@ -56,28 +56,37 @@ class ChatConversationFragment : Fragment() {
 
         myInfo(object : UserInfoCallback {
             override fun onUserInfoReceived(userName: String, profileImageUrl: String) {
-                findConversationId(currentUser, conversationUserId) { existingConversationId ->
+                var existingConversationId: String? = null
+
+                findConversationId(currentUser, conversationUserId) { foundConversationId ->
+                    existingConversationId = foundConversationId
+
                     if (existingConversationId != null) {
+
                         getConversation(
                             conversationUserId,
-                            existingConversationId,
+                            existingConversationId!!,
                             conversationProfileImageUrl,
                             conversationUserName
                         )
                         sendButton.setOnClickListener {
-                                saveAndSendMessage(existingConversationId)
+                            saveAndSendMessage(existingConversationId!!)
                         }
                     } else {
-                        sendButton.setOnClickListener {
-                                setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
-                                    saveAndSendMessage(newConversationId)
-                                    getConversation(
-                                        conversationUserId,
-                                        newConversationId,
-                                        conversationProfileImageUrl,
-                                        conversationUserName
-                                    )
-                                }
+
+                        setUpNewConversation(conversationUserId, currentUser) { newConversationId ->
+                            saveAndSendMessage(newConversationId)
+                            getConversation(
+                                conversationUserId,
+                                newConversationId,
+                                conversationProfileImageUrl,
+                                conversationUserName
+                            )
+
+                            existingConversationId = newConversationId
+                            sendButton.setOnClickListener {
+                                saveAndSendMessage(newConversationId)
+                            }
                         }
                     }
                 }
@@ -257,8 +266,9 @@ class ChatConversationFragment : Fragment() {
         db.collection("users").document(currentUser)
             .get()
             .addOnSuccessListener {
-                currentUserName = it.getString("displayName")!!
-                currentUserProfileImage = it.getString("profileImageUrl")!!
+                val defaultProfileImageUrl = "https://firebasestorage.googleapis.com/v0/b/androidprojectma23-c28c0.appspot.com/o/userImages%2Fchat_image_placeholder.png?alt=media&token=e5c0b2ed-6518-4607-a1af-ce5b8e2e8e81" // Ange URL till din standardprofilbild här
+                currentUserName = it.getString("displayName") ?: "Unknown User"
+                currentUserProfileImage = it.getString("profileImageUrl") ?: defaultProfileImageUrl
                 callback.onUserInfoReceived(currentUserName, currentUserProfileImage)
             }
     }
