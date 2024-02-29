@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -20,9 +21,10 @@ class MyMatchesDetailFragment : Fragment() {
     private lateinit var aboutInterestsTextView: TextView
     private lateinit var userProfileImage: ImageView
     private lateinit var interestImageViews: List<ImageView>
+    private var recipientUserId: String? = null
+    private var recipientDisplayName: String? = null
+    private var recipientProfileImageUrl: String? = null
 
-
-    // Initialisera UserProfileManager med Firestore-instansen
     private val userProfileManager by lazy {
         UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
     }
@@ -61,12 +63,17 @@ class MyMatchesDetailFragment : Fragment() {
             view.findViewById(R.id.matches_details_interest_imageView5)
         )
 
+        view.findViewById<Button>(R.id.newMessagebutton).setOnClickListener {
+            startConversationWithUser()
+        }
+
         displayNameTextView.visibility = View.INVISIBLE
         ageTextView.visibility = View.INVISIBLE
         aboutUserTextView.visibility = View.INVISIBLE
         aboutInterestsTextView.visibility = View.INVISIBLE
         userProfileImage.visibility = View.INVISIBLE
         interestImageViews.forEach { it.visibility = View.INVISIBLE }
+
 
         arguments?.getString(ARG_USER_ID)?.let { userId ->
             updateUserProfileUI(userId)
@@ -94,6 +101,10 @@ class MyMatchesDetailFragment : Fragment() {
                             .into(userProfileImage)
                     }
 
+                    recipientUserId = userId
+                    recipientDisplayName = user.displayName
+                    recipientProfileImageUrl = user.profileImageUrl
+
                     displayNameTextView.visibility = View.VISIBLE
                     ageTextView.visibility = View.VISIBLE
                     aboutUserTextView.visibility = View.VISIBLE
@@ -119,5 +130,26 @@ class MyMatchesDetailFragment : Fragment() {
             Log.e("MyMatchesDetailFragment", "Fel vid hämtning av användarintressen: ${exception.message}")
         })
     }
+
+    private fun startConversationWithUser() {
+
+        val userId = recipientUserId ?: return
+        val userName = recipientDisplayName ?: "Okänd Användare"
+        val userProfileImageUrl = recipientProfileImageUrl ?: ""
+
+        val chatConversationFragment = ChatConversationFragment().apply {
+            arguments = Bundle().apply {
+                putString("conversationUserId", userId)
+                putString("conversationProfileImageUrl", userProfileImageUrl)
+                putString("conversationUserName", userName)
+            }
+        }
+
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragmentHolder, chatConversationFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 
 }
