@@ -51,7 +51,7 @@ class ChangeProfileFragment : Fragment() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
         userId?.let { uid ->
-            val userMap = hashMapOf(
+            val userMap: Map<String, Any> = hashMapOf(
                 "displayName" to nameEditText.text.toString(),
                 "age" to ageEditText.text.toString(),
                 "about" to aboutEditText.text.toString(),
@@ -59,7 +59,7 @@ class ChangeProfileFragment : Fragment() {
             )
 
             firestore.collection("users").document(uid)
-                .update(userMap as Map<String, Any>)
+                .update(userMap)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
                 }
