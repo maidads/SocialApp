@@ -62,6 +62,7 @@ class ChangeProfileFragment : Fragment() {
                 .update(userMap)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Profile Updated", Toast.LENGTH_SHORT).show()
+                    fragmentManager?.popBackStack()
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Error updating profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
