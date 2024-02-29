@@ -36,6 +36,7 @@ class SignUpNewAccountActivity : AppCompatActivity() {
         //newUsernameEditText = findViewById(R.id.usernameEditText)
         //newPasswordEditText = findViewById(R.id.passwordEditText)
         signUpButton = findViewById(R.id.signUpButton)
+        val backButton = findViewById<Button>(R.id.backButton)
 
         usernameTextInputLayout = findViewById(R.id.outlinedTextField)
         passwordTextInputLayout = findViewById(R.id.outlinedTextField2)
@@ -44,6 +45,12 @@ class SignUpNewAccountActivity : AppCompatActivity() {
 
         signUpButton.setOnClickListener {
             signUp()
+        }
+
+        backButton.setOnClickListener {
+            val intent = Intent(this, LogInToAppActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 
