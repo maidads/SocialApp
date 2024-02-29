@@ -6,6 +6,7 @@
     <string name="profile_creation_display_text_forOtherUsers">Visas för andra användare</string>
     <string name="button_text_profile_creation_nextStep">Gå Vidare</string>
     <string name="profile_creation_select_interest_text">Vad har du för intressen?</string>
+    <string name="profile_change_interest_text">Välj nya intressen</string>
     <string name="profile_creation_image_dialog_gallery_icon">Välj bild från galleriet</string>
     <string name="profile_creation_image_dialog_camera_icon">Använd kameran för att ta bild</string>
     <string name="profile_creation_image_dialog_choose_option_text">Välj åtgärd</string>
