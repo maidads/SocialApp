@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,6 +29,7 @@ class ChangeProfileFragment : Fragment() {
     private lateinit var interestImageView3Back: ImageView
     private lateinit var interestImageView4Back: ImageView
     private lateinit var interestImageView5Back: ImageView
+    private lateinit var profileImageView: ImageView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
@@ -49,6 +51,7 @@ class ChangeProfileFragment : Fragment() {
         interestImageView3Back = view.findViewById(R.id.interestImageView3Back)
         interestImageView4Back = view.findViewById(R.id.interestImageView4Back)
         interestImageView5Back = view.findViewById(R.id.interestImageView5Back)
+        profileImageView = view.findViewById(R.id.profileImageViewBack)
         val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
         val interestImageViews = listOf(
             interestImageViewBack, interestImageView2Back,
@@ -113,6 +116,16 @@ class ChangeProfileFragment : Fragment() {
 
                         val interestDocIds = user?.get("interests") as? List<String> ?: emptyList()
                         updateInterestIcons(interestDocIds)
+
+                        val profileImageUrl = user?.get("profileImageUrl")?.toString()
+                        context?.let { context ->
+                            Glide.with(context)
+                                .load(profileImageUrl)
+                                .placeholder(R.drawable.profile_image_placeholder)  // Standardbild medan den riktiga bilden laddas
+                                .error(R.drawable.profile_image_placeholder)        // Om det inte går att ladda den riktiga bilden
+                                .circleCrop()                                       // Cirkulär form
+                                .into(profileImageView)
+                        }
                     }
                 }
                 .addOnFailureListener { e ->
