@@ -522,21 +522,21 @@
         android:id="@+id/button_profile_creation_done"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginTop="20dp"
         android:text="@string/button_profile_creation_done"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iconContainer"
         app:layout_constraintWidth_percent="0.6" />
 
     <TextView
         android:id="@+id/go_back_textView"
+        style="@style/onBackgroundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/profile_creation_step2_go_back_textView"
+        android:layout_marginTop="15dp"
         android:fontFamily="@font/roboto_light"
-        style="@style/onBackgroundText"
+        android:text="@string/profile_creation_step2_go_back_textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_profile_creation_done" />
