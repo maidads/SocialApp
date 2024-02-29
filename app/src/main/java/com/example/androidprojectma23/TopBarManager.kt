@@ -39,27 +39,35 @@ class TopBarManager(
                 setTopBarNavigationIcon("profile")
             }
 
-            "ChatConversationFragment" -> {
+            "ChatConversationFragment", "EventDetailFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
+                //Set top bar title in fragment
                 setTopBarNavigationIcon("back")
             }
 
-            "MyProfileFragment" -> {
+            "MyProfilePageFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
                 showPageTitle(true, "Min Profil")
                 setTopBarNavigationIcon("back")
             }
-
-            "EventDetailFragment" -> {
+            "ChangeProfileFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(true, "Redigera Profil")
                 setTopBarNavigationIcon("back")
             }
 
-            "SavedProfilesFragment" -> {
+            "MyMatchesFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
-                showPageTitle(true, "Sparade profiler")
+                showPageTitle(true, "Matchningar")
                 setTopBarNavigationIcon("back")
             }
+
+            "MyMatchesDetailFragment" -> {
+                setMenuItemVisibility(upperRightIcons, false)
+                showPageTitle(true, "Mer info")
+                setTopBarNavigationIcon("back")
+            }
+
         }
     }
 
