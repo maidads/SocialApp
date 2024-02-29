@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -22,6 +23,11 @@ class ChangeProfileFragment : Fragment() {
     private lateinit var aboutEditText: EditText
     private lateinit var interestsEditText: EditText
     lateinit var changeImageButton : FloatingActionButton
+    private lateinit var interestImageViewBack: ImageView
+    private lateinit var interestImageView2Back: ImageView
+    private lateinit var interestImageView3Back: ImageView
+    private lateinit var interestImageView4Back: ImageView
+    private lateinit var interestImageView5Back: ImageView
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
@@ -38,6 +44,11 @@ class ChangeProfileFragment : Fragment() {
         ageEditText = view.findViewById(R.id.ageEditText)
         aboutEditText = view.findViewById(R.id.aboutEditText)
         interestsEditText = view.findViewById(R.id.interestsEditText)
+        interestImageViewBack = view.findViewById(R.id.interestImageViewBack)
+        interestImageView2Back = view.findViewById(R.id.interestImageView2Back)
+        interestImageView3Back = view.findViewById(R.id.interestImageView3Back)
+        interestImageView4Back = view.findViewById(R.id.interestImageView4Back)
+        interestImageView5Back = view.findViewById(R.id.interestImageView5Back)
         val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
 
         loadUserProfile()
@@ -80,11 +91,32 @@ class ChangeProfileFragment : Fragment() {
                         ageEditText.setText(user?.get("age")?.toString())
                         aboutEditText.setText(user?.get("about")?.toString())
                         interestsEditText.setText(user?.get("myInterests")?.toString())
+
+                        val interestDocIds = user?.get("interests") as? List<String> ?: emptyList()
+                        updateInterestIcons(interestDocIds)
                     }
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Failed to load profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
+        }
+    }
+
+    private fun updateInterestIcons(interestDocIds: List<String>) {
+        val interestImageViews = listOf(
+            interestImageViewBack, interestImageView2Back,
+            interestImageView3Back, interestImageView4Back,
+            interestImageView5Back
+        )
+
+        interestImageViews.forEach { it.setImageResource(R.drawable.icon_empty) }
+
+        interestDocIds.forEachIndexed { index, docId ->
+            if (index < interestImageViews.size) {
+                IconMapping.docIdToIconResMap[docId]?.let { iconResId ->
+                    interestImageViews[index].setImageResource(iconResId)
+                }
+            }
         }
     }
 
