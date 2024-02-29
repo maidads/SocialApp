@@ -109,22 +109,16 @@ class ChangeInterestsFragment : Fragment() {
         userDocRef.update("interests", selectedDocIdsList)
             .addOnSuccessListener {
                 Log.d("!!!", "Användarens intressen har uppdaterats.")
-                navigateToLandingPage()
+                fragmentManager?.popBackStack()
             }
             .addOnFailureListener { e ->
                 Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
             }
     }
 
-    private fun navigateToLandingPage() {
-        val intent = Intent(activity, LandingPageActivity::class.java)
-        startActivity(intent)
-        activity?.finish()
-    }
-
     companion object {
-        fun newInstance(userId: String): ProfileCreationStep2Fragment {
-            val fragment = ProfileCreationStep2Fragment()
+        fun newInstance(userId: String): ChangeInterestsFragment {
+            val fragment = ChangeInterestsFragment()
             val args = Bundle().apply {
                 putString("USER_ID", userId)
             }

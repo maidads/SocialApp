@@ -67,9 +67,9 @@ class ChangeProfileFragment : Fragment() {
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 val userId = currentUser?.uid
                 if (userId != null) {
-                    val profileCreationStep2Fragment = ProfileCreationStep2Fragment.newInstance(userId)
+                    val changeInterestsFragment = ChangeInterestsFragment.newInstance(userId)
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragmentHolder, profileCreationStep2Fragment)
+                        .replace(R.id.fragmentHolder, changeInterestsFragment)
                         .addToBackStack(null)
                         .commit()
                 }
@@ -137,71 +137,6 @@ class ChangeProfileFragment : Fragment() {
                 }
             }
         }
-
-
     }
-
-    /*
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-
-            firestore = FirebaseFirestore.getInstance()
-            userId = FirebaseAuth.getInstance().currentUser?.uid
-
-            nameEditText = view.findViewById(R.id.nameEditText)
-            ageEditText = view.findViewById(R.id.ageEditText)
-            aboutEditText = view.findViewById(R.id.aboutEditText)
-            interestsEditText = view.findViewById(R.id.interestsEditText)
-            val saveProfileButton = view.findViewById<FloatingActionButton>(R.id.saveProfileButton)
-
-
-     */
-        //loadExistingUserInfo()
-/*
-        saveProfileButton.setOnClickListener {
-            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
-            val updatedName = nameEditText.text.toString()
-            //val updatedAge = ageEditText.text.toString().toIntOrNull() ?: 0
-            val updatedAbout = if (aboutEditText.text.toString().isBlank()) "Ingen information tillgänglig" else aboutEditText.text.toString()
-            // val updatedInterests = interestsEditText.text.toString()
-
-            val userUpdates = mapOf(
-                "displayName" to updatedName,
-               // "age" to updatedAge,
-                "about" to updatedAbout,
-                //"interests" to updatedInterests
-            )
-            FirebaseFirestore.getInstance().collection("users").document(userId)
-                .update(userUpdates)
-                .addOnSuccessListener {
-                    Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(context, "Failed to update profile: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-        }
-
- */
-    //}
-/*
-    private fun loadExistingUserInfo() {
-        userId?.let { uid ->
-            firestore.collection("users").document(uid).get()
-                .addOnSuccessListener { documentSnapshot ->
-                    val user = documentSnapshot.toObject(User::class.java)
-                    user?.let {
-                        nameEditText.setText(it.displayName)
-                        ageEditText.setText(it.age.toString())
-                        aboutEditText.setText(it.about ?: "Ingen information tillgänglig")
-                    }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(context, "Failed to load existing data: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-        }
-    }
-
- */
-
 }
 
