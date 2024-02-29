@@ -76,6 +76,10 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
     }
     override fun onProfileIconClicked() {
         // Open MyProfileFragment
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder)
+        if (currentFragment is MyProfilePageFragment) {
+            return                                              // Already in MyProfilePageFragment, do nothing
+        }
         replaceFragment(MyProfilePageFragment())
     }
 
