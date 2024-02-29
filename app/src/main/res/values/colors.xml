@@ -13,7 +13,7 @@
     <color name="onSurface">#442B2D</color>
 
     <color name="md_theme_primary">#D0EDA0</color>
-    <color name="md_theme_onPrimary">#FFFFFF</color>
+    <color name="md_theme_onPrimary">#121F00</color>
     <color name="md_theme_primaryContainer">#D0EDA0</color>
     <color name="md_theme_onPrimaryContainer">#121F00</color>
     <color name="md_theme_secondary">#596248</color>
