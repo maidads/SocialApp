@@ -40,6 +40,7 @@ class ChangeProfileFragment : Fragment() {
         interestsEditText = view.findViewById(R.id.interestsEditText)
         val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
 
+        loadUserProfile()
 
         saveProfileButton.setOnClickListener {
             saveProfileToFirestore()
@@ -64,6 +65,24 @@ class ChangeProfileFragment : Fragment() {
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(context, "Error updating profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                }
+        }
+    }
+    private fun loadUserProfile() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let { uid ->
+            firestore.collection("users").document(uid).get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (documentSnapshot.exists()) {
+                        val user = documentSnapshot.data
+                        nameEditText.setText(user?.get("displayName")?.toString())
+                        ageEditText.setText(user?.get("age")?.toString())
+                        aboutEditText.setText(user?.get("about")?.toString())
+                        interestsEditText.setText(user?.get("myInterests")?.toString())
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(context, "Failed to load profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
         }
     }
