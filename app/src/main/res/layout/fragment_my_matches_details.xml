@@ -20,7 +20,7 @@
                 android:layout_margin="16dp"
                 app:cardCornerRadius="65dp">
                 <ImageView
-                    android:id="@+id/profileImageViewBack"
+                    android:id="@+id/matches_details_profile_image"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:scaleType="centerCrop"
@@ -74,7 +74,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/matches_details_description_default_text"
                 android:textSize="16sp" />
 
             <TextView
@@ -91,7 +90,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/matches_interest_myInterest_textVIew"
                 android:textSize="16sp" />
 
             <LinearLayout
