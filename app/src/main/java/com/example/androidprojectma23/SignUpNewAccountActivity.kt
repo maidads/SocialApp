@@ -101,7 +101,7 @@ class SignUpNewAccountActivity : AppCompatActivity() {
                 "Username" to newUsernameEditText.text.toString(),
                 "about" to "Ingen information tillgänglig",
                 "myInterests" to "Ingen information tillgänglig",
-                "age" to "0 år"
+                "age" to "0"
             )
 
             val db = Firebase.firestore
