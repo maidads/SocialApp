@@ -18,7 +18,7 @@
             android:id="@+id/outlinedTextField"
             android:layout_width="296dp"
             android:layout_height="70dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="7dp"
             android:hint="Användarnamn"
             app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,21 +51,15 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <TextView
+        <ImageView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="76dp"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Kompis Kompassen"
-            android:textAlignment="center"
-            android:textColor="@color/md_theme_primaryContainer_mediumContrast"
-            android:textSize="60sp"
-            android:textStyle="bold"
+            android:layout_marginTop="70dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/logo" />
 
         <Button
             android:id="@+id/signUpButton"
