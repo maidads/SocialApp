@@ -226,7 +226,7 @@
                 style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/trave_interest_textView"
+                android:text="@string/travel_interest_textView"
                 app:layout_constraintEnd_toEndOf="@+id/icon_travel"
                 app:layout_constraintStart_toStartOf="@+id/icon_travel"
                 app:layout_constraintTop_toBottomOf="@+id/icon_travel" />
