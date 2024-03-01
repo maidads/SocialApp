@@ -37,6 +37,7 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
 
     private fun fetchEvents() {
         firestore.collection("Events")
+            .orderBy("date")
             .get()
             .addOnSuccessListener { documents ->
                 val eventsList = mutableListOf<Event>()
