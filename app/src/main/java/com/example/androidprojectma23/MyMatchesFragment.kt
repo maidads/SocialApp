@@ -96,7 +96,7 @@ class MyMatchesFragment : Fragment() {
         val fragment = MyMatchesDetailFragment.newInstance(userId)
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentHolder, fragment)
-            .addToBackStack(null)
+            .addToBackStack(MyMatchesDetailFragment::class.java.simpleName)
             .commit()
     }
 

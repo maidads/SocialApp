@@ -61,15 +61,14 @@ class LogInToAppActivity : AppCompatActivity() {
             signInWithGoogle()
         }
 
+//        Remembers user to log in directly when opening the app
+//                if (auth.currentUser != null) {
+//                    val intent = Intent(this, LandingPageActivity::class.java)
+//                    startActivity(intent)
+//                    finish()
+//                }
 
-        /*
-                if (auth.currentUser != null) {         // kommer ihåg användaren, slipper logga in igen
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
 
-         */
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()

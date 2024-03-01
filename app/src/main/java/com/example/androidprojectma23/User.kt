@@ -12,6 +12,6 @@ data class User(
     var about: String = "Ingen information tillgänglig",
     var myInterests: String = "Ingen information tillgänglig",
     val profileImageUrl: String? = null,
-    var age: Int? = 0
+    var age: String = ""
 )
 

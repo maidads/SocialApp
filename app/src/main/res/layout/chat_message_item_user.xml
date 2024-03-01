@@ -19,6 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@drawable/chat_bubble_background"
+            android:backgroundTint="@color/md_theme_primaryFixed"
             android:padding="10dp"
             android:textColor="#000000"
             app:layout_constraintBottom_toBottomOf="parent"

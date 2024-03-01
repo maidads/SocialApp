@@ -3,6 +3,7 @@ package com.example.androidprojectma23
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -138,9 +139,9 @@ class ProfileCardAdapter (
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
             view.findViewById<TextView>(R.id.displayNameTextViewBack).text = user.displayName
-
-//          Set user age here:
-//          view.findViewById<TextView>(R.id.ageTextViewBack).text = view.context.getString(R.string.age_placeholder, age)
+            view.findViewById<TextView>(R.id.ageTextViewBack).text = view.context.getString(R.string.age_placeholder_back, user.age)
+            view.findViewById<TextView>(R.id.aboutInfoTextView).text = user.about
+            view.findViewById<TextView>(R.id.interestsInfoTextView).text = user.myInterests
         }
 
     }
