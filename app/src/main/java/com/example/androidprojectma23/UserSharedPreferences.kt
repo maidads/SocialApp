@@ -26,4 +26,12 @@ object UserSharedPreferences {
         return userIds
     }
 
+    // Call this from onCreate in a activity/fragment to clear all data.
+    fun clearAllData(context: Context) {
+        val editor = getPreferences(context).edit()
+        editor.clear()
+        editor.apply()
+        Log.d("UserSharedPreferences", "All användardata har rensats.")
+    }
+
 }
