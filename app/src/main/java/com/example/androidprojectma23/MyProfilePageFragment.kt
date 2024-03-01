@@ -69,19 +69,18 @@ class MyProfilePageFragment : Fragment() {
                     val user = document.toObject<User>()
                     if (user != null) {
                         displayNameTextView.text = user.displayName
-                        ageTextView.text = user.age.toString() + " år"
+                        ageTextView.text = user.age + " år"
                         aboutInfoTextView.text = user.about.ifEmpty { "Ingen information tillgänglig" }
                         interestsInfoTextView.text = user.myInterests.ifEmpty { "Ingen information tillgänglig" }
 
                         context?.let { context ->
                             Glide.with(context)
                                 .load(user.profileImageUrl)
-                                .placeholder(R.drawable.user_image_icon)            // Standardbild medan den riktiga bilden laddas
-                                .error(R.drawable.user_image_icon)                  // Om det inte går att ladda den riktiga bilden
-                                .circleCrop()                                       // Cirkulär form
+                                .placeholder(R.drawable.profile_image_placeholder)            // Standardbild medan den riktiga bilden laddas
+                                .error(R.drawable.profile_image_placeholder)                  // Om det inte går att ladda den riktiga bilden
+                                .circleCrop()                                                 // Cirkulär form
                                 .into(profileImageView)
                         }
-
                         updateInterestIcons(user.interests)
 
                     } else {

@@ -68,4 +68,17 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
             onFailure(exception)
         }
     }
+
+    fun getUserData(userId: String, callback: (User?) -> Unit) {
+        firestore.collection("users").document(userId).get().addOnSuccessListener { document ->
+            if (document != null && document.exists()) {
+                val user = document.toObject(User::class.java)
+                callback(user)
+            } else {
+                callback(null)
+            }
+        }.addOnFailureListener {
+            callback(null)
+        }
+    }
 }
