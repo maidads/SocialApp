@@ -4,11 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/md_theme_background">
 
     <TextView
         android:id="@+id/profile_creation_select_interest_textView"
-        style="@style/onBackgroundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -23,7 +22,6 @@
 
     <TextView
         android:id="@+id/pick_atleast_one_interest_textView"
-        style="@style/onBackgroundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -99,7 +97,6 @@
 
             <TextView
                 android:id="@+id/music_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/music_interest_textView"
@@ -109,7 +106,6 @@
 
             <TextView
                 android:id="@+id/sports_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sports_interest_textView"
@@ -119,7 +115,6 @@
 
             <TextView
                 android:id="@+id/movies_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/movies_interest_textView"
@@ -129,7 +124,6 @@
 
             <TextView
                 android:id="@+id/arts_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/arts_interest_textViews"
@@ -193,7 +187,6 @@
 
             <TextView
                 android:id="@+id/books_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/books_interest_textView"
@@ -203,7 +196,6 @@
 
             <TextView
                 android:id="@+id/wine_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/wine_interest_textView"
@@ -213,7 +205,6 @@
 
             <TextView
                 android:id="@+id/cooking_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/cooking_interest_textView"
@@ -223,7 +214,6 @@
 
             <TextView
                 android:id="@+id/travel_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/travel_interest_textView"
@@ -287,7 +277,6 @@
 
             <TextView
                 android:id="@+id/festival_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/festival_interest_textView"
@@ -297,7 +286,6 @@
 
             <TextView
                 android:id="@+id/fashion_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/fashion_interest_textView"
@@ -307,7 +295,6 @@
 
             <TextView
                 android:id="@+id/dance_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/dance_interest_textView"
@@ -317,7 +304,6 @@
 
             <TextView
                 android:id="@+id/games_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/games_interest_textView"
@@ -381,7 +367,6 @@
 
             <TextView
                 android:id="@+id/yoga_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/yoga_interest_textView"
@@ -391,7 +376,6 @@
 
             <TextView
                 android:id="@+id/camping_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/camping_interest_textView"
@@ -401,7 +385,6 @@
 
             <TextView
                 android:id="@+id/fika_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/fika_interest_textView"
@@ -411,7 +394,6 @@
 
             <TextView
                 android:id="@+id/training_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/training_interest_textView"
@@ -475,7 +457,6 @@
 
             <TextView
                 android:id="@+id/animal_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/animal_interest_textView"
@@ -485,7 +466,6 @@
 
             <TextView
                 android:id="@+id/garden_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/garden_interest_textView"
@@ -495,7 +475,6 @@
 
             <TextView
                 android:id="@+id/photograph_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/photograph_interest_textView"
@@ -505,7 +484,6 @@
 
             <TextView
                 android:id="@+id/technology_interest_textView"
-                style="@style/userInterestsText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/technology_interest_textView"
@@ -531,7 +509,6 @@
 
     <TextView
         android:id="@+id/go_back_textView"
-        style="@style/onBackgroundText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
