@@ -49,14 +49,12 @@ class ChangeInterestsFragment : Fragment() {
 
         backButton = view.findViewById(R.id.go_back_textView)
 
-        // List of all imageViews for the interest icons
         val userInterests = userInterests
 
         val interestClickListener = View.OnClickListener { view ->
             val imageView = view as ImageView
             val isSelected = selectedInterest.contains(imageView.id)
 
-            // Get document-ID based on ImageView ID
             val documentId = iconIdToDocIdMap[imageView.id]
 
             if (isSelected) {
@@ -69,7 +67,6 @@ class ChangeInterestsFragment : Fragment() {
             Log.d("!!!", "Valt intresse: $documentId")
         }
 
-        // Put OnClickListener on each ImageView
         userInterests.forEach { imageViewId ->
             view.findViewById<ImageView>(imageViewId).apply {
                 setOnClickListener(interestClickListener)
@@ -85,7 +82,6 @@ class ChangeInterestsFragment : Fragment() {
             parentFragmentManager.popBackStack()
 
         }
-
     }
 
     private fun handleProfileCompletion() {

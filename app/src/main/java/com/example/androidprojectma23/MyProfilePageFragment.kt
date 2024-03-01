@@ -78,7 +78,7 @@ class MyProfilePageFragment : Fragment() {
                                 .load(user.profileImageUrl)
                                 .placeholder(R.drawable.profile_image_placeholder)            // Standardbild medan den riktiga bilden laddas
                                 .error(R.drawable.profile_image_placeholder)                  // Om det inte går att ladda den riktiga bilden
-                                .circleCrop()                                       // Cirkulär form
+                                .circleCrop()                                                 // Cirkulär form
                                 .into(profileImageView)
                         }
                         updateInterestIcons(user.interests)
