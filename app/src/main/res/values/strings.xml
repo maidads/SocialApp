@@ -69,5 +69,6 @@
     <string name="matches_details_about_header">Om mig</string>
     <string name="matches_interest_myInterest_textVIew">Här kan användaren utveckla lite kring vad den gillar att göra eller liknande.</string>
     <string name="matches_details_send_message_text">Skicka meddelande</string>
+    <string name="unknown_interest">Okänt intresse</string>
 
 </resources>

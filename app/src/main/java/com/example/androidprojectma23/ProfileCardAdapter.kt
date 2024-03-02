@@ -101,7 +101,7 @@ class ProfileCardAdapter (
                         val textView = view.findViewById<TextView>(textViewIds[i])
                         val interestId = interests[i]
                         val textResId = docIdToInterestNameMap[interestId]
-                        textView.text = textResId?.let { view.context.getString(it) } ?: "Okänt intresse"
+                        textView.text = textResId?.let { view.context.getString(it) } ?: view.context.getString(R.string.unknown_interest)
 
 
                         textView.alpha = if (user.commonInterests.contains(interestId)) 1.0f else 0.5f
