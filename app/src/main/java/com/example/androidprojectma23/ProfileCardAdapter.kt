@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.health.connect.ReadRecordsRequestUsingIds
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -46,9 +47,11 @@ class ProfileCardAdapter (
         return ProfileViewHolder(view)
     }
 
+    private var currentHolder: ProfileViewHolder? = null
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
         val user = this.user[position]
         holder.bind(user, newMessageButtonClickListener)
+        currentHolder = holder
     }
 
     override fun getItemCount(): Int {
@@ -56,6 +59,27 @@ class ProfileCardAdapter (
     }
 
     inner class ProfileViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val cardContainer = view.findViewById<View>(R.id.profile_card_viewflipper)
+        val viewFlipper = itemView.findViewById<ViewFlipper>(R.id.profileCardBack)
+
+        fun flipCard(){
+            val scale = view.resources.displayMetrics.density
+            cardContainer.cameraDistance = 10000 * scale
+            val firstHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, 100f)
+            firstHalfFlip.duration = 250
+            firstHalfFlip.interpolator = AccelerateInterpolator()
+            firstHalfFlip.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    viewFlipper.showNext()
+
+                    val secondHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", -100f, 0f)
+                    secondHalfFlip.duration = 250
+                    secondHalfFlip.interpolator = DecelerateInterpolator()
+                    secondHalfFlip.start()
+                }
+            })
+            firstHalfFlip.start()
+        }
 
         fun bind(user: User, newMessageButtonClickListener: NewMessageButtonClickListener) {
 
@@ -63,29 +87,8 @@ class ProfileCardAdapter (
                 newMessageButtonClickListener.onNewMessageButtonClicked(user)
             }
 
-            val viewFlipper = itemView.findViewById<ViewFlipper>(R.id.profileCardBack)
-            val cardContainer = view.findViewById<View>(R.id.profile_card_viewflipper)
             val frontImage = view.findViewById<ImageView>(R.id.profileImageView)
             val backImage = view.findViewById<ImageView>(R.id.profileImageViewBack)
-
-            fun flipCard(){
-                val scale = view.resources.displayMetrics.density
-                cardContainer.cameraDistance = 10000 * scale
-                val firstHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", 0f, 100f)
-                firstHalfFlip.duration = 250
-                firstHalfFlip.interpolator = AccelerateInterpolator()
-                firstHalfFlip.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator) {
-                        viewFlipper.showNext()
-
-                        val secondHalfFlip = ObjectAnimator.ofFloat(cardContainer, "rotationY", -100f, 0f)
-                        secondHalfFlip.duration = 250
-                        secondHalfFlip.interpolator = DecelerateInterpolator()
-                        secondHalfFlip.start()
-                    }
-                })
-                firstHalfFlip.start()
-            }
 
             fun loadProfileImage(imageView: ImageView) {
                 Glide.with(view.context)
@@ -94,6 +97,7 @@ class ProfileCardAdapter (
                     .error(R.drawable.profile_image_placeholder) //
                     .into(imageView)
             }
+
 
             fun loadInterestsText(textViewIds: List<Int>) {
                 user.interests.let { interests ->
@@ -117,12 +121,6 @@ class ProfileCardAdapter (
 
 
             fun loadInterests(imageViewIds: List<Int>){
-
-//                Difference from last code:
-//                val sortedInterests = interestsID.map { interest ->
-//                    val alpha = if (user.commonInterests.contains(interest)) 1.0f else 0.5f
-//                    interest to alpha
-//                }.sortedByDescending { it.second }
 
                 user.interests.let { interests ->
                     for (i in 0 until minOf(interests.size, imageViewIds.size)) {
@@ -164,9 +162,9 @@ class ProfileCardAdapter (
 
             view.findViewById<TextView>(R.id.displayNameTextView).text = user.displayName
             view.findViewById<TextView>(R.id.displayNameTextViewBack).text = user.displayName
-
-//          Set user age here:
-//          view.findViewById<TextView>(R.id.ageTextViewBack).text = view.context.getString(R.string.age_placeholder, age)
+            view.findViewById<TextView>(R.id.ageTextViewBack).text = view.context.getString(R.string.age_placeholder_back, user.age)
+            view.findViewById<TextView>(R.id.aboutInfoTextView).text = user.about
+            view.findViewById<TextView>(R.id.interestsInfoTextView).text = user.myInterests
         }
 
     }
@@ -185,11 +183,13 @@ class ProfileCardAdapter (
         SwipeDataManager.addUser(userId) // Add user-id in the list
         user.removeAt(position)
         notifyItemRemoved(position)
+        currentHolder?.flipCard()
     }
 
     override fun onRightSwipe(position: Int) {
         this.user.removeAt(position)
         notifyItemRemoved(position)
+        currentHolder?.flipCard()
     }
 
     fun updateData(newUsers: List<User>) {

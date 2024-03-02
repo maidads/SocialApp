@@ -16,7 +16,7 @@ import com.example.androidprojectma23.IconMapping.userInterests
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Locale
 
-class ProfileCreationStep2Fragment : Fragment() {
+class ChangeInterestsFragment : Fragment() {
 
     private val database by lazy { FirebaseFirestore.getInstance() }
     private lateinit var backButton: TextView
@@ -36,7 +36,7 @@ class ProfileCreationStep2Fragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        return inflater.inflate(R.layout.fragment_profile_creation_step2, container, false)
+        return inflater.inflate(R.layout.fragment_change_interests, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,27 +49,24 @@ class ProfileCreationStep2Fragment : Fragment() {
 
         backButton = view.findViewById(R.id.go_back_textView)
 
-        // List of all imageViews for the interest icons
         val userInterests = userInterests
 
         val interestClickListener = View.OnClickListener { view ->
             val imageView = view as ImageView
             val isSelected = selectedInterest.contains(imageView.id)
 
+            val documentId = iconIdToDocIdMap[imageView.id]
 
             if (isSelected) {
                 imageView.alpha = 1f
                 selectedInterest.remove(imageView.id)
-            } else if (selectedInterest.size < 5) {
+            } else {
                 imageView.alpha = 0.5f
                 selectedInterest.add(imageView.id)
-            } else {
-                Toast.makeText(context, getString(R.string.profile_creation_step2_max_interest_message), Toast.LENGTH_SHORT).show()
             }
-            Log.d("!!!", "Valt intresse: ${iconIdToDocIdMap[imageView.id]}")
+            Log.d("!!!", "Valt intresse: $documentId")
         }
 
-        // Put OnClickListener on each ImageView
         userInterests.forEach { imageViewId ->
             view.findViewById<ImageView>(imageViewId).apply {
                 setOnClickListener(interestClickListener)
@@ -85,12 +82,11 @@ class ProfileCreationStep2Fragment : Fragment() {
             parentFragmentManager.popBackStack()
 
         }
-
     }
 
     private fun handleProfileCompletion() {
         if (selectedInterest.isEmpty()) {
-            Toast.makeText(context, getString(R.string.profile_creation_step2_minimum_interest_message), Toast.LENGTH_LONG).show()
+            Toast.makeText(context, "Välj minst ett intresse för att fortsätta.", Toast.LENGTH_LONG).show()
         } else {
             saveSelectedInterestsAndNavigate()
         }
@@ -109,22 +105,16 @@ class ProfileCreationStep2Fragment : Fragment() {
         userDocRef.update("interests", selectedDocIdsList)
             .addOnSuccessListener {
                 Log.d("!!!", "Användarens intressen har uppdaterats.")
-                navigateToLandingPage()
+                fragmentManager?.popBackStack()
             }
             .addOnFailureListener { e ->
                 Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
             }
     }
 
-    private fun navigateToLandingPage() {
-        val intent = Intent(activity, LandingPageActivity::class.java)
-        startActivity(intent)
-        activity?.finish()
-    }
-
     companion object {
-        fun newInstance(userId: String): ProfileCreationStep2Fragment {
-            val fragment = ProfileCreationStep2Fragment()
+        fun newInstance(userId: String): ChangeInterestsFragment {
+            val fragment = ChangeInterestsFragment()
             val args = Bundle().apply {
                 putString("USER_ID", userId)
             }

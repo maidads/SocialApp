@@ -118,13 +118,11 @@ class ChatConversationFragment : Fragment() {
             val userDocument = db.collection("users").document(userId)
             userDocument.get().addOnSuccessListener { snapshot ->
                 if (snapshot.exists()) {
-                    // Kontrollera om användardokumentet har fältet "userConversations"
                     val userConversations = snapshot.get("userConversations") as? List<String>
                     val updatedConversations =
                         userConversations?.plus(newConversationId) ?: listOf(newConversationId)
                     userDocument.update("userConversations", updatedConversations)
                 } else {
-                    // Om användardokumentet inte finns, skapa det och lägg till fältet "userConversations" med det nya konversations-ID:et
                     userDocument.set(mapOf("userConversations" to listOf(newConversationId)))
                 }
             }
@@ -137,26 +135,19 @@ class ChatConversationFragment : Fragment() {
         val db = FirebaseFirestore.getInstance()
         val conversationsCollection = db.collection("conversations")
 
-        // Skapa en kombinerad sökning där vi söker efter konversationer där antingen
-        // userID1 är user1 och userID2 är user2, eller userID1 är user2 och userID2 är user1
         val search1 =
             conversationsCollection.whereEqualTo("userID1", user1).whereEqualTo("userID2", user2)
         val search2 =
             conversationsCollection.whereEqualTo("userID1", user2).whereEqualTo("userID2", user1)
 
-        // Kör den första sökningen
         search1.get().addOnSuccessListener { snapshot ->
             if (!snapshot.isEmpty) {
-                // Vi hittade en konversation
                 callback(snapshot.documents[0].id)
             } else {
-                // Kör den andra sökningen
                 search2.get().addOnSuccessListener { snapshot ->
                     if (!snapshot.isEmpty) {
-                        // Vi hittade en konversation
                         callback(snapshot.documents[0].id)
                     } else {
-                        // Vi hittade ingen konversation
                         callback(null)
                     }
                 }
@@ -184,10 +175,6 @@ class ChatConversationFragment : Fragment() {
                     Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
 
                     hideKeyboard()
-
-                    //TODO("Make automatic scroll down work")
-                    //adapter.notifyItemInserted(chatMessages.size - 1)
-                    //recyclerView.scrollToPosition(chatMessages.size - 1)
                 }
                 .addOnFailureListener { e ->
                     Log.w("!!!", "Fel vid sparande av meddelande", e)
@@ -276,7 +263,8 @@ class ChatConversationFragment : Fragment() {
     private fun updateRecyclerView(messages: MutableList<ChatMessage>) {
         chatMessages.clear()
         chatMessages.addAll(messages)
-        recyclerView.adapter?.notifyDataSetChanged()
+        recyclerView.adapter?.notifyItemInserted(chatMessages.size - 1)
+        recyclerView.scrollToPosition(chatMessages.size - 1)
     }
 }
 

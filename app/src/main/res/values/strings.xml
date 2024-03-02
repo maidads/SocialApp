@@ -6,6 +6,7 @@
     <string name="profile_creation_display_text_forOtherUsers">Visas för andra användare</string>
     <string name="button_text_profile_creation_nextStep">Gå Vidare</string>
     <string name="profile_creation_select_interest_text">Vad har du för intressen?</string>
+    <string name="profile_change_interest_text">Välj nya intressen</string>
     <string name="profile_creation_image_dialog_gallery_icon">Välj bild från galleriet</string>
     <string name="profile_creation_image_dialog_camera_icon">Använd kameran för att ta bild</string>
     <string name="profile_creation_image_dialog_choose_option_text">Välj åtgärd</string>
@@ -18,7 +19,7 @@
     <string name="books_interest_textView">Böcker</string>
     <string name="wine_interest_textView">Vin</string>
     <string name="cooking_interest_textView">Matlagning</string>
-    <string name="trave_interest_textView">Resa</string>
+    <string name="travel_interest_textView">Resa</string>
     <string name="festival_interest_textView">Festival</string>
     <string name="fashion_interest_textView">Mode</string>
     <string name="dance_interest_textView">Dans</string>
@@ -32,18 +33,14 @@
     <string name="photograph_interest_textView">Fotografering</string>
     <string name="technology_interest_textView">Teknik</string>
     <string name="pick_atleast_one_interest_textView">Välj minst 1 alternativ</string>
-
+    <string name="user_data_no_information_available">Ingen information tillgänglig</string>
     <string name="default_web_client_id">34100932509-6mpmhkped3p205pumov8n1g48b7nb3on.apps.googleusercontent.com</string>
-
     <string name="display_name">Display name</string>
-
     <string name="popup_filter_save_button">Spara</string>
-
     <string name="write_a_message">Skriv meddelande</string>
     <string name="send_button_text">Skicka</string>
     <string name="send_message_button_contentDescription">Send message button</string>
     <string name="age_placeholder_back">Ålder: %1$s</string>
-
     <string name="music">Musik</string>
     <string name="sports">Sport</string>
     <string name="movies">Film</string>
@@ -70,5 +67,6 @@
     <string name="matches_interest_myInterest_textVIew">Här kan användaren utveckla lite kring vad den gillar att göra eller liknande.</string>
     <string name="matches_details_send_message_text">Skicka meddelande</string>
     <string name="unknown_interest">Okänt intresse</string>
-
+    <string name="profile_creation_step2_max_interest_message">Du kan välja max 5 intressen.</string>
+    <string name="profile_creation_step2_minimum_interest_message">Välj minst ett intresse för att fortsätta.</string>
 </resources>
