@@ -85,10 +85,22 @@ object IconMapping {
         R.id.interestImageView5
     )
 
+    val textViewIdProfileCard = listOf(
+        R.id.interestIcon1TextView, R.id.interestIcon2TextView,
+        R.id.interestIcon3TextView, R.id.interestIcon4TextView,
+        R.id.interestIcon5TextView
+    )
+
     val imageViewIdProfileCardBack = listOf(
         R.id.interestImageViewBack, R.id.interestImageView2Back,
         R.id.interestImageView3Back, R.id.interestImageView4Back,
         R.id.interestImageView5Back
+    )
+
+    val textViewIdProfileCardBack = listOf(
+        R.id.interestIcon1TextViewBack, R.id.interestIcon2TextViewBack,
+        R.id.interestIcon3TextViewBack, R.id.interestIcon4TextViewBack,
+        R.id.interestIcon5TextViewBack
     )
 
 }
