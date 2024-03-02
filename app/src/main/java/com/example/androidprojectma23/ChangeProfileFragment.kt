@@ -1,5 +1,8 @@
 package com.example.androidprojectma23
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +17,8 @@ import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 class ChangeProfileFragment : Fragment() {
 
@@ -31,6 +36,9 @@ class ChangeProfileFragment : Fragment() {
     private lateinit var interestImageView5Back: ImageView
     private lateinit var profileImageView: ImageView
 
+    companion object {
+        private const val REQUEST_CODE_PICK_IMAGE = 1001
+    }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
         Log.d("MyFragment", "onCreateView called for ChangeProfilePageFragment")
@@ -77,6 +85,12 @@ class ChangeProfileFragment : Fragment() {
                         .commit()
                 }
             }
+        }
+
+        profileImageView.setOnClickListener {
+            val photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            startActivityForResult(photoPickerIntent, REQUEST_CODE_PICK_IMAGE)
         }
     }
 
@@ -149,6 +163,47 @@ class ChangeProfileFragment : Fragment() {
                     interestImageViews[index].setImageResource(iconResId)
                 }
             }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
+            data?.data?.let { uri ->
+                uploadImageToFirebaseStorage(uri)
+            }
+        }
+    }
+
+    // Steg 3: Funktion för att ladda upp bild till Firebase Storage
+    private fun uploadImageToFirebaseStorage(imageUri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference.child("profileImages/${UUID.randomUUID()}")
+        storageRef.putFile(imageUri).addOnSuccessListener { taskSnapshot ->
+            taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUri ->
+                saveProfileImageUrlToFirestore(downloadUri.toString())
+            }
+        }.addOnFailureListener {
+            Toast.makeText(context, "Failed to upload image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    // Steg 4: Spara bild-URL i Firestore
+    private fun saveProfileImageUrlToFirestore(imageUrl: String) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        userId?.let { uid ->
+            firestore.collection("users").document(uid)
+                .update("profileImageUrl", imageUrl)
+                .addOnSuccessListener {
+                    Toast.makeText(context, "Profile image updated", Toast.LENGTH_SHORT).show()
+                    // Steg 5: Uppdatera UI med den nya bilden
+                    Glide.with(this)
+                        .load(imageUrl)
+                        .into(profileImageView)
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Failed to update profile image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
+                }
         }
     }
 }
