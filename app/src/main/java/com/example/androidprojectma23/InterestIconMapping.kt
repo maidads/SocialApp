@@ -103,4 +103,17 @@ object IconMapping {
         R.id.interestIcon5TextViewBack
     )
 
+    val fragmentInterestIconImage = listOf(
+        R.id.interestIconImage1, R.id.interestIconImage2,
+        R.id.interestIconImage3, R.id.interestIconImage4,
+        R.id.interestIconImage5
+    )
+
+    val fragmentInterestIconText = listOf(
+        R.id.interestIconText1, R.id.interestIconText2,
+        R.id.interestIconText3, R.id.interestIconText4,
+        R.id.interestIconText5
+    )
+
+
 }
