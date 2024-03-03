@@ -46,27 +46,35 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
         }
     }
 
-    fun getUserInterestsIcons(userId: String, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
+    private fun getUserInterests(userId: String, mapFunc: (String) -> Int?, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
         val userDocumentRef = firestore.collection("users").document(userId)
 
         userDocumentRef.get().addOnSuccessListener { documentSnapshot ->
             val user = documentSnapshot.toObject(User::class.java)
             Log.d("UPM", "User interests: ${user?.interests}")
-            val interestsIcons = user?.interests?.mapNotNull { interestDocId ->
-                IconMapping.docIdToIconResMap[interestDocId]?.also {
-                    Log.d("UPM", "Mapped icon: $it for interest: $interestDocId")
+            val interestsResIds = user?.interests?.mapNotNull { interestDocId ->
+                mapFunc(interestDocId)?.also {
+                    Log.d("UPM", "Mapped resource: $it for interest: $interestDocId")
                 }
             } ?: emptyList()
 
-            if (interestsIcons.isEmpty()) {
-                Log.d("UPM", "No icons found for user interests")
+            if (interestsResIds.isEmpty()) {
+                Log.d("UPM", "No resources found for user interests")
             }
 
-            onSuccess(interestsIcons)
+            onSuccess(interestsResIds)
         }.addOnFailureListener { exception ->
             Log.e("UPM", "Error fetching user interests", exception)
             onFailure(exception)
         }
+    }
+
+    fun getUserInterestsIcons(userId: String, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
+        getUserInterests(userId, { interestDocId -> IconMapping.docIdToIconResMap[interestDocId] }, onSuccess, onFailure)
+    }
+
+    fun getUserInterestsTexts(userId: String, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
+        getUserInterests(userId, { interestDocId -> IconMapping.docIdToInterestNameMap[interestDocId] }, onSuccess, onFailure)
     }
 
     fun getUserData(userId: String, callback: (User?) -> Unit) {
