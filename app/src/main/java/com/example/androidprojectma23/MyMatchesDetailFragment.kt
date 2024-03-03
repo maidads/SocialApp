@@ -93,7 +93,7 @@ class MyMatchesDetailFragment : Fragment() {
                 if (user != null) {
 
                     displayNameTextView.text = user.displayName
-                    ageTextView.text = user.age?.toString() ?: ""
+                    ageTextView.text = user.age
                     aboutUserTextView.text = user.about
                     aboutInterestsTextView.text = user.myInterests
 
