@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.example.androidprojectma23.IconMapping.fragmentInterestIconImage
+import com.example.androidprojectma23.IconMapping.fragmentInterestIconText
 
 class MyMatchesDetailFragment : Fragment() {
 
@@ -21,6 +23,7 @@ class MyMatchesDetailFragment : Fragment() {
     private lateinit var aboutInterestsTextView: TextView
     private lateinit var userProfileImage: ImageView
     private lateinit var interestImageViews: List<ImageView>
+    private lateinit var interestTextViews: List<TextView>
     private var recipientUserId: String? = null
     private var recipientDisplayName: String? = null
     private var recipientProfileImageUrl: String? = null
@@ -55,13 +58,13 @@ class MyMatchesDetailFragment : Fragment() {
         aboutInterestsTextView = view.findViewById(R.id.matches_details_interest_textView)
         userProfileImage = view.findViewById(R.id.matches_details_profile_image)
 
-        interestImageViews = listOf(
-            view.findViewById(R.id.matches_details_interest_imageView1),
-            view.findViewById(R.id.matches_details_interest_imageView2),
-            view.findViewById(R.id.matches_details_interest_imageView3),
-            view.findViewById(R.id.matches_details_interest_imageView4),
-            view.findViewById(R.id.matches_details_interest_imageView5)
-        )
+        interestImageViews = fragmentInterestIconImage.map { id ->
+            view.findViewById(id)
+        }
+
+        interestTextViews = fragmentInterestIconText.map { id ->
+            view.findViewById(id)
+        }
 
         view.findViewById<Button>(R.id.newMessagebutton).setOnClickListener {
             startConversationWithUser()
@@ -73,11 +76,13 @@ class MyMatchesDetailFragment : Fragment() {
         aboutInterestsTextView.visibility = View.INVISIBLE
         userProfileImage.visibility = View.INVISIBLE
         interestImageViews.forEach { it.visibility = View.INVISIBLE }
+        interestTextViews.forEach { it.visibility = View.INVISIBLE }
 
 
         arguments?.getString(ARG_USER_ID)?.let { userId ->
             updateUserProfileUI(userId)
             updateUserInterestIcons(userId)
+            updateInterestText(userId)
         }
 
     }
@@ -123,13 +128,35 @@ class MyMatchesDetailFragment : Fragment() {
                     imageView.setImageResource(iconsResIds[index])
                     imageView.visibility = View.VISIBLE
                 } else {
-                    imageView.visibility = View.GONE
+                    imageView.visibility = View.INVISIBLE
                 }
             }
         }, onFailure = { exception ->
             Log.e("MyMatchesDetailFragment", "Fel vid hämtning av användarintressen: ${exception.message}")
         })
     }
+
+    private fun updateInterestText(userId: String) {
+        userProfileManager.getUserInterestsTexts(userId, onSuccess = { interestsTextResIds ->
+
+            val interestsTexts = interestsTextResIds.map { resId ->
+                getString(resId)
+            }
+
+            interestTextViews.forEachIndexed { index, textView ->
+                if (index < interestsTexts.size) {
+                    textView.text = interestsTexts[index]
+                    textView.visibility = View.VISIBLE
+                } else {
+                    textView.visibility = View.INVISIBLE
+                }
+            }
+        }, onFailure = { exception ->
+            Log.e("MyFragment", "Error fetching user interest texts", exception)
+        })
+    }
+
+
 
     private fun startConversationWithUser() {
 
