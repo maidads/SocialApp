@@ -122,7 +122,6 @@ class ChangeProfileFragment : Fragment() {
         }
     }
 
-
     private fun saveProfileToFirestore() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -212,41 +211,17 @@ class ChangeProfileFragment : Fragment() {
         }
         builder.show()
     }
-/*
-    private fun captureImage() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
-                val photoFile: File? = try {
-                    createImageFile()
-                } catch (ex: IOException) {
-                    Toast.makeText(requireContext(), "Failed to create image file.", Toast.LENGTH_SHORT).show()
-                    null
-                }
-                photoFile?.also {
-                    imageUri = FileProvider.getUriForFile(requireContext(), "com.example.android.fileprovider", it)
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                    startActivityForResult(takePictureIntent, REQUEST_CODE_CAPTURE_IMAGE)
-                }
-            }
-        }
-    }
-
- */
 
     private fun openCameraForImage() {
-        // Check for the camera permission
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-            // Permission is granted, open the camera
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             try {
                 startActivityForResult(takePictureIntent,
                     ChangeProfileFragment.REQUEST_CODE_CAPTURE_IMAGE
                 )
             } catch (e: ActivityNotFoundException) {
-                // Handle the error
             }
         } else {
-            // Permission is not granted, request the permission
             requestCameraPermission()
         }
     }
@@ -292,24 +267,16 @@ class ChangeProfileFragment : Fragment() {
                 .update("profileImageUrl", imageUrl)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Profile image updated", Toast.LENGTH_SHORT).show()
-                    Glide.with(this)
+                    Glide.with(this@ChangeProfileFragment)
                         .load(imageUrl)
+                        .placeholder(R.drawable.profile_image_placeholder)
+                        .error(R.drawable.profile_image_placeholder)
+                        .circleCrop()
                         .into(profileImageView)
                 }
                 .addOnFailureListener {
                     Toast.makeText(context, "Failed to update profile image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
-        }
-    }
-
-    private fun createImageFile(): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
-        return File.createTempFile(
-            "JPEG_${timeStamp}_",
-            ".jpg",
-            storageDir
-        ).apply {
         }
     }
 
