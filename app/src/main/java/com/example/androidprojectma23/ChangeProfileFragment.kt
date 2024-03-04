@@ -3,6 +3,7 @@ package com.example.androidprojectma23
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -104,6 +105,20 @@ class ChangeProfileFragment : Fragment() {
             showImagePickerOptions()
         }
     }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            CAMERA_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    captureImage()
+                } else {
+                    Toast.makeText(context, "Kameratillstånd nekades", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
 
     private fun saveProfileToFirestore() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
