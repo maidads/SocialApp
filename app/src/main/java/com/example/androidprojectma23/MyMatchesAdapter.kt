@@ -1,5 +1,6 @@
 package com.example.androidprojectma23
 
+import android.graphics.drawable.Icon
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,20 +18,6 @@ class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (
         private val cardView: CardView = view.findViewById(R.id.myMatchesCard)
         private val displayNameTextView: TextView = view.findViewById(R.id.myMatches_userDisplayName)
         private val userProfileImage: ImageView = view.findViewById(R.id.myMatches_userProfileImage)
-        private val iconImages = listOf<ImageView>(
-            view.findViewById(R.id.iconImage1),
-            view.findViewById(R.id.iconImage2),
-            view.findViewById(R.id.iconImage3),
-            view.findViewById(R.id.iconImage4),
-            view.findViewById(R.id.iconImage5)
-        )
-        private val iconTexts = listOf<TextView>(
-            view.findViewById(R.id.icon1text),
-            view.findViewById(R.id.icon2text),
-            view.findViewById(R.id.icon3text),
-            view.findViewById(R.id.icon4text),
-            view.findViewById(R.id.icon5text)
-        )
 
         fun bind(user: User) {
             Log.d("MyMatchesAdapter", "Binding user with userId: ${user.userId}")
@@ -43,19 +30,24 @@ class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (
                 .into(userProfileImage)
 
             // Clear previous icons and texts
-            iconImages.forEach { it.setImageDrawable(null) }
-            iconTexts.forEach { it.text = "" }
+            IconMapping.fragmentInterestIconImage.forEach { iconId ->
+                itemView.findViewById<ImageView>(iconId).setImageDrawable(null)
+            }
+
+            IconMapping.fragmentInterestIconText.forEach { textId ->
+                itemView.findViewById<TextView>(textId).text = ""
+            }
 
 
-            user.interests.take(iconImages.size).forEachIndexed { index, interestDocId ->
+            user.interests.take(IconMapping.fragmentInterestIconImage.size).forEachIndexed { index, interestDocId ->
                 IconMapping.docIdToIconResMap[interestDocId]?.let { iconResId ->
                     Glide.with(itemView.context)
                         .load(iconResId)
-                        .into(iconImages[index])
+                        .into(itemView.findViewById(IconMapping.fragmentInterestIconImage[index]))
                 }
 
                 IconMapping.docIdToInterestNameMap[interestDocId]?.let { interestNameResId ->
-                    iconTexts[index].text = itemView.context.getString(interestNameResId)
+                    itemView.findViewById<TextView>(IconMapping.fragmentInterestIconText[index]).text = itemView.context.getString(interestNameResId)
                 }
             }
 

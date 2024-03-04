@@ -20,21 +20,27 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/myMarchesCardContainer"
+            android:id="@+id/matchesProfileImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/myMatches_userProfileImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginBottom="5dp"
-                android:adjustViewBounds="true"
-                android:src="@drawable/profile_image_placeholder"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="65dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/myMatches_userDisplayName" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/myMatches_userProfileImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile_image_placeholder" />
+            </androidx.cardview.widget.CardView>
 
             <TextView
                 android:id="@+id/myMatches_userDisplayName"
@@ -48,97 +54,129 @@
                 tools:ignore="UnusedAttribute" />
 
             <ImageView
-                android:id="@+id/iconImage1"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintStart_toEndOf="@+id/myMatches_userDisplayName"
+                android:id="@+id/interestIconImage1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
-                android:id="@+id/iconImage2"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintEnd_toStartOf="@+id/iconImage3"
-                app:layout_constraintStart_toEndOf="@+id/iconImage1"
+                android:id="@+id/interestIconImage2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/interestIconImage1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
-                android:id="@+id/iconImage3"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:id="@+id/interestIconImage3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/interestIconImage2"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
-                android:id="@+id/iconImage4"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:layout_constraintEnd_toStartOf="@+id/iconImage2"
-                app:layout_constraintStart_toEndOf="@+id/iconImage1"
-                app:layout_constraintTop_toBottomOf="@+id/icon2text"
+                android:id="@+id/interestIconImage4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/interestIconImage3"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <ImageView
-                android:id="@+id/iconImage5"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:layout_constraintEnd_toStartOf="@+id/iconImage3"
-                app:layout_constraintStart_toEndOf="@+id/iconImage2"
-                app:layout_constraintTop_toBottomOf="@+id/icon3text"
+                android:id="@+id/interestIconImage5"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/interestIconImage4"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/icon_empty" />
 
             <TextView
-                android:id="@+id/icon1text"
-                android:layout_width="wrap_content"
+                android:id="@+id/interestIconText1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="icon"
-                app:layout_constraintEnd_toEndOf="@+id/iconImage1"
-                app:layout_constraintStart_toStartOf="@+id/iconImage1"
-                app:layout_constraintTop_toBottomOf="@+id/iconImage1" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Intresse 1"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@+id/interestIconImage1"
+                app:layout_constraintStart_toStartOf="@+id/interestIconImage1"
+                app:layout_constraintTop_toBottomOf="@+id/interestIconImage1" />
 
             <TextView
-                android:id="@+id/icon2text"
-                android:layout_width="wrap_content"
+                android:id="@+id/interestIconText2"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="icon"
-                app:layout_constraintEnd_toEndOf="@+id/iconImage2"
-                app:layout_constraintStart_toStartOf="@+id/iconImage2"
-                app:layout_constraintTop_toBottomOf="@+id/iconImage2" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Intresse 2"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@+id/interestIconImage2"
+                app:layout_constraintStart_toStartOf="@+id/interestIconImage2"
+                app:layout_constraintTop_toBottomOf="@+id/interestIconImage2" />
 
             <TextView
-                android:id="@+id/icon3text"
-                android:layout_width="wrap_content"
+                android:id="@+id/interestIconText3"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="icon"
-                app:layout_constraintEnd_toEndOf="@+id/iconImage3"
-                app:layout_constraintStart_toStartOf="@+id/iconImage3"
-                app:layout_constraintTop_toBottomOf="@+id/iconImage3" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Intresse 3"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@+id/interestIconImage3"
+                app:layout_constraintStart_toStartOf="@+id/interestIconImage3"
+                app:layout_constraintTop_toBottomOf="@+id/interestIconImage3" />
 
             <TextView
-                android:id="@+id/icon4text"
-                android:layout_width="wrap_content"
+                android:id="@+id/interestIconText4"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="icon"
-                app:layout_constraintEnd_toEndOf="@+id/iconImage4"
-                app:layout_constraintStart_toStartOf="@+id/iconImage4"
-                app:layout_constraintTop_toBottomOf="@+id/iconImage4" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Intresse 4"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@+id/interestIconImage4"
+                app:layout_constraintStart_toStartOf="@+id/interestIconImage4"
+                app:layout_constraintTop_toBottomOf="@+id/interestIconImage4" />
 
             <TextView
-                android:id="@+id/icon5text"
-                android:layout_width="wrap_content"
+                android:id="@+id/interestIconText5"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="icon"
-                app:layout_constraintEnd_toEndOf="@+id/iconImage5"
-                app:layout_constraintStart_toStartOf="@+id/iconImage5"
-                app:layout_constraintTop_toBottomOf="@+id/iconImage5" />
+                android:gravity="center"
+                android:maxLines="1"
+                android:text="Intresse 5"
+                app:autoSizeMaxTextSize="12sp"
+                app:autoSizeMinTextSize="8sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@+id/interestIconImage5"
+                app:layout_constraintStart_toStartOf="@+id/interestIconImage5"
+                app:layout_constraintTop_toBottomOf="@+id/interestIconImage5" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

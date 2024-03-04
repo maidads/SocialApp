@@ -23,11 +23,6 @@ class MyProfilePageFragment : Fragment() {
     private lateinit var aboutInfoTextView: TextView
     private lateinit var interestsInfoTextView: TextView
     private lateinit var editProfileButton: ExtendedFloatingActionButton
-    private lateinit var interestImageViewBack: ImageView
-    private lateinit var interestImageView2Back: ImageView
-    private lateinit var interestImageView3Back: ImageView
-    private lateinit var interestImageView4Back: ImageView
-    private lateinit var interestImageView5Back: ImageView
 
     private lateinit var firestore: FirebaseFirestore
 
@@ -40,11 +35,6 @@ class MyProfilePageFragment : Fragment() {
         aboutInfoTextView = view.findViewById(R.id.aboutInfoTextView)
         interestsInfoTextView = view.findViewById(R.id.interestsInfoTextView)
         editProfileButton = view.findViewById(R.id.editProfileButton)
-        interestImageViewBack = view.findViewById(R.id.interestImageViewBack)
-        interestImageView2Back = view.findViewById(R.id.interestImageView2Back)
-        interestImageView3Back = view.findViewById(R.id.interestImageView3Back)
-        interestImageView4Back = view.findViewById(R.id.interestImageView4Back)
-        interestImageView5Back = view.findViewById(R.id.interestImageView5Back)
 
         editProfileButton.setOnClickListener {
             val changeProfileFragment = ChangeProfileFragment()
@@ -94,19 +84,28 @@ class MyProfilePageFragment : Fragment() {
         }
     }
     private fun updateInterestIcons(interestDocIds: List<String>) {
-        val interestImageViews = listOf(
-            interestImageViewBack, interestImageView2Back,
-            interestImageView3Back, interestImageView4Back,
-            interestImageView5Back
-        )
+
+        val interestImageViews = IconMapping.fragmentInterestIconImage.mapNotNull { id ->
+            view?.findViewById<ImageView>(id)
+        }
+
+        val interestTextViews = IconMapping.fragmentInterestIconText.mapNotNull { id ->
+            view?.findViewById<TextView>(id)
+        }
 
         interestImageViews.forEach { it.setImageResource(R.drawable.icon_empty) }
 
+        interestTextViews.forEach { it.text = "" }
+
         interestDocIds.forEachIndexed { index, docId ->
             if (index < interestImageViews.size) {
-                val iconResId = IconMapping.docIdToIconResMap[docId]
-                iconResId?.let {
-                    interestImageViews[index].setImageResource(it)
+                IconMapping.docIdToIconResMap[docId]?.let { iconResId ->
+                    interestImageViews[index].setImageResource(iconResId)
+                }
+            }
+            if (index < interestTextViews.size) {
+                IconMapping.docIdToInterestNameMap[docId]?.let { interestNameResId ->
+                    interestTextViews[index].text = getString(interestNameResId)
                 }
             }
         }
