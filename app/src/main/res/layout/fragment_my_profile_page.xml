@@ -94,13 +94,12 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="10dp"
-                android:layout_marginBottom="16dp"
+                android:layout_height="80dp"
                 android:orientation="horizontal">
 
+
                 <ImageView
-                    android:id="@+id/interestImageViewBack"
+                    android:id="@+id/interestIconImage1"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="2dp"
@@ -108,7 +107,7 @@
                     app:srcCompat="@drawable/icon_empty" />
 
                 <ImageView
-                    android:id="@+id/interestImageView2Back"
+                    android:id="@+id/interestIconImage2"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="2dp"
@@ -116,7 +115,7 @@
                     app:srcCompat="@drawable/icon_empty" />
 
                 <ImageView
-                    android:id="@+id/interestImageView3Back"
+                    android:id="@+id/interestIconImage3"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="2dp"
@@ -125,7 +124,7 @@
 
 
                 <ImageView
-                    android:id="@+id/interestImageView4Back"
+                    android:id="@+id/interestIconImage4"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="2dp"
@@ -133,12 +132,84 @@
                     app:srcCompat="@drawable/icon_empty" />
 
                 <ImageView
-                    android:id="@+id/interestImageView5Back"
+                    android:id="@+id/interestIconImage5"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="2dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/icon_empty" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/interestIconText1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Intresse 1"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeStepGranularity="1sp"/>
+
+                <TextView
+                    android:id="@+id/interestIconText2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Intresse 2"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeStepGranularity="1sp"/>
+
+                <TextView
+                    android:id="@+id/interestIconText3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Intresse 3"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeStepGranularity="1sp"/>
+
+                <TextView
+                    android:id="@+id/interestIconText4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Intresse 4"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeStepGranularity="1sp"/>
+
+                <TextView
+                    android:id="@+id/interestIconText5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Intresse 5"
+                    android:gravity="center"
+                    android:maxLines="1"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="100sp"
+                    app:autoSizeStepGranularity="1sp"/>
 
             </LinearLayout>
         </LinearLayout>
