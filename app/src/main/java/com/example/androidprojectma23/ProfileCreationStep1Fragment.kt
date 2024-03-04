@@ -151,10 +151,14 @@ class ProfileCreationStep1Fragment : Fragment() {
 
     private fun uploadImageIfSelected(userId: String) {
         if (selectedImageUri != null) {
-            userProfileManager.uploadProfileImage(userId, selectedImageUri!!, onSuccess = {
-              navigateToProfileCreationStep2(userId)
+            userProfileManager.deleteExistingProfileImage(userId, onSuccess = {
+                userProfileManager.uploadProfileImage(userId, selectedImageUri!!, onSuccess = {
+                    navigateToProfileCreationStep2(userId)
+                }, onFailure = { exception ->
+                    Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_SHORT).show()
+                })
             }, onFailure = { exception ->
-                Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Kunde inte ta bort befintlig bild: ${exception.message}", Toast.LENGTH_SHORT).show()
             })
         } else {
             navigateToProfileCreationStep2(userId)
