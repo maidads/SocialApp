@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -33,6 +34,20 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
             onSuccess()
         }.addOnFailureListener { e ->
             onFailure(e)
+        }
+    }
+
+    fun deleteExistingProfileImage(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        val userImageRef = storageRef.child("userImages/$userId/profileImage.jpg")
+
+        userImageRef.delete().addOnSuccessListener {
+            onSuccess()
+        }.addOnFailureListener { exception ->
+            if (exception is StorageException && exception.errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                onSuccess()
+            } else {
+                onFailure(exception)
+            }
         }
     }
 
