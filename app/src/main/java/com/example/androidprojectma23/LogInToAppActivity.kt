@@ -45,6 +45,8 @@ class LogInToAppActivity : AppCompatActivity() {
         loginButton = findViewById(R.id.signUpButton)
         registerTextView = findViewById(R.id.registerButton)
 
+        KeyboardUtils.hideKeyboardOnAction(usernameEditText, this)
+        KeyboardUtils.hideKeyboardOnAction(passwordEditText, this)
 
         loginButton.setOnClickListener {
             logIn()

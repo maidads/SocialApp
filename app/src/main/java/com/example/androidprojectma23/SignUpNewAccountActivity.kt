@@ -43,6 +43,9 @@ class SignUpNewAccountActivity : AppCompatActivity() {
         newUsernameEditText = usernameTextInputLayout.editText as TextInputEditText
         newPasswordEditText = passwordTextInputLayout.editText as TextInputEditText
 
+        KeyboardUtils.hideKeyboardOnAction(newUsernameEditText, this)
+        KeyboardUtils.hideKeyboardOnAction(newPasswordEditText, this)
+
         signUpButton.setOnClickListener {
             signUp()
         }
