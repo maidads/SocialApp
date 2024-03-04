@@ -1,9 +1,12 @@
 package com.example.androidprojectma23
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,12 +15,18 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class ChangeProfileFragment : Fragment() {
@@ -35,9 +44,12 @@ class ChangeProfileFragment : Fragment() {
     private lateinit var interestImageView4Back: ImageView
     private lateinit var interestImageView5Back: ImageView
     private lateinit var profileImageView: ImageView
+    private var imageUri: Uri? = null
+
 
     companion object {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
+        private const val REQUEST_CODE_CAPTURE_IMAGE = 1002
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
@@ -88,9 +100,7 @@ class ChangeProfileFragment : Fragment() {
         }
 
         profileImageView.setOnClickListener {
-            val photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            startActivityForResult(photoPickerIntent, REQUEST_CODE_PICK_IMAGE)
+            showImagePickerOptions()
         }
     }
 
@@ -166,17 +176,61 @@ class ChangeProfileFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun showImagePickerOptions() {
+        val options = arrayOf<CharSequence>("Ta en bild", "Välj från galleri", "Avbryt")
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Lägg till foto!")
+        builder.setItems(options) { dialog, item ->
+            when (options[item]) {
+                "Ta en bild" -> captureImage()
+                "Välj från galleri" -> pickImageFromGallery()
+                "Avbryt" -> dialog.dismiss()
+            }
+        }
+        builder.show()
+    }
 
-        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == Activity.RESULT_OK) {
-            data?.data?.let { uri ->
-                uploadImageToFirebaseStorage(uri)
+    private fun captureImage() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    Toast.makeText(requireContext(), "Failed to create image file.", Toast.LENGTH_SHORT).show()
+                    null
+                }
+                photoFile?.also {
+                    imageUri = FileProvider.getUriForFile(requireContext(), "com.example.android.fileprovider", it)
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                    startActivityForResult(takePictureIntent, REQUEST_CODE_CAPTURE_IMAGE)
+                }
             }
         }
     }
 
-    // Steg 3: Funktion för att ladda upp bild till Firebase Storage
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CODE_PICK_IMAGE -> {
+                    data?.data?.let { uri ->
+                        uploadImageToFirebaseStorage(uri)
+                    }
+                }
+                REQUEST_CODE_CAPTURE_IMAGE -> {
+                    imageUri?.let { uploadImageToFirebaseStorage(it) }
+                }
+            }
+        }
+    }
+
     private fun uploadImageToFirebaseStorage(imageUri: Uri) {
         val storageRef = FirebaseStorage.getInstance().reference.child("profileImages/${UUID.randomUUID()}")
         storageRef.putFile(imageUri).addOnSuccessListener { taskSnapshot ->
@@ -188,7 +242,6 @@ class ChangeProfileFragment : Fragment() {
         }
     }
 
-    // Steg 4: Spara bild-URL i Firestore
     private fun saveProfileImageUrlToFirestore(imageUrl: String) {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         userId?.let { uid ->
@@ -196,7 +249,6 @@ class ChangeProfileFragment : Fragment() {
                 .update("profileImageUrl", imageUrl)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Profile image updated", Toast.LENGTH_SHORT).show()
-                    // Steg 5: Uppdatera UI med den nya bilden
                     Glide.with(this)
                         .load(imageUrl)
                         .into(profileImageView)
@@ -204,6 +256,17 @@ class ChangeProfileFragment : Fragment() {
                 .addOnFailureListener {
                     Toast.makeText(context, "Failed to update profile image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
                 }
+        }
+    }
+
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir: File = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+        return File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        ).apply {
         }
     }
 }
