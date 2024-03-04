@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class MyMatchesFragment : Fragment() {
 
@@ -31,12 +33,18 @@ class MyMatchesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             val userIds = it.getStringArrayList(ARG_USER_IDS)
+            val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
+
             if (userIds != null) {
-                UserSharedPreferences.saveUserIds(requireContext(), userIds.toSet())
+                userProfileManager.getCurrentUserId { userId ->
+                    if (userId != null) {
+                        UserSharedPreferences.saveUserIds(requireContext(), userId, userIds.toSet())
+                    } else {
+                        Log.d("MyMatchesFragment", "ingen inloggad användare hittades")
+                    }
+                }
             }
-
-            Log.d("MyMatchesFragment", "Mottagna användar-ID:n: $userIds")
-
+            Log.d("MyMatchesFragment", "mottagna användar id $userIds")
         }
     }
 
@@ -59,35 +67,57 @@ class MyMatchesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val savedUserIds = UserSharedPreferences.getUserIds(requireContext())
-        if (!savedUserIds.isNullOrEmpty()) {
-            Log.d("MyMatchesFragment", "Återhämtade sparade användar-ID:n: $savedUserIds")
-        } else {
-            Log.d("MyMatchesFragment", "Inga sparade användar-ID:n att återhämta.")
+        val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
+
+        userProfileManager.getCurrentUserId { userId ->
+            if (userId != null) {
+
+                val savedUserIds = UserSharedPreferences.getUserIds(requireContext(), userId)
+                if (!savedUserIds.isNullOrEmpty()) {
+                    Log.d("MyMatchesFragment", "Återhämtade sparade användar IDn för användare $userId: $savedUserIds")
+                } else {
+                    Log.d("MyMatchesFragment", "Inga sparade användar IDn att återhämta för användare $userId")
+                }
+            } else {
+                Log.d("MyMatchesFragment", "Ingen inloggad användare hittades")
+            }
         }
     }
 
+
     private fun fetchUsersAndDisplay() {
-        val userIds = UserSharedPreferences.getUserIds(requireContext()) ?: return
-        val db = FirebaseFirestore.getInstance()
-        val usersList = mutableListOf<User>()
 
-        userIds.forEach { userId ->
-            db.collection("users").document(userId).get().addOnSuccessListener { document ->
-                if (document != null && document.exists()) {
+        val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
 
-                    val user = document.toObject(User::class.java)?.copy(userId = document.id)
-                    user?.profileImage = document.getString("profileImageUrl") ?: "" // TODO Fix so that profile images saves as profileImage instead of profileImageUrl (change in UserProfileManager)
-                    user?.let { usersList.add(it) }
+        userProfileManager.getCurrentUserId { userId ->
+            if (userId != null) {
 
-                    if (usersList.size == userIds.size) {
-                        activity?.runOnUiThread {
-                            matchesAdapter.updateUsers(usersList)
+                val userIds = UserSharedPreferences.getUserIds(requireContext(), userId) ?: return@getCurrentUserId
+                val db = FirebaseFirestore.getInstance()
+                val usersList = mutableListOf<User>()
+
+                userIds.forEach { userId ->
+                    db.collection("users").document(userId).get().addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            val user = document.toObject(User::class.java)?.apply {
+                                this.userId = document.id
+                                this.profileImage = document.getString("profileImageUrl") ?: ""
+                            }
+                            user?.let { usersList.add(it) }
+
+                            // Update UI after getting users
+                            if (usersList.size == userIds.size) {
+                                activity?.runOnUiThread {
+                                    matchesAdapter.updateUsers(usersList)
+                                }
+                            }
                         }
+                    }.addOnFailureListener { exception ->
+                        Log.d("MyMatchesFragment", "Error getting documents: ", exception)
                     }
                 }
-            }.addOnFailureListener { exception ->
-                Log.d("MyMatchesFragment", "Error getting documents: ", exception)
+            } else {
+                Log.d("MyMatchesFragment", "Ingen inloggad användare hittades.")
             }
         }
     }

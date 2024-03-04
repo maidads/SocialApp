@@ -2,6 +2,7 @@ package com.example.androidprojectma23
 
 import android.net.Uri
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -87,6 +88,16 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
             }
         }.addOnFailureListener {
             callback(null)
+        }
+    }
+
+    fun getCurrentUserId(completion: (String?) -> Unit) {
+
+        val user = FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            completion(user.uid)
+        } else {
+            completion(null)
         }
     }
 }
