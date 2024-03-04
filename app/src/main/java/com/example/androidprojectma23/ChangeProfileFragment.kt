@@ -50,6 +50,7 @@ class ChangeProfileFragment : Fragment() {
     companion object {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
         private const val REQUEST_CODE_CAPTURE_IMAGE = 1002
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 1003
     }
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_change_profile, container, false)
