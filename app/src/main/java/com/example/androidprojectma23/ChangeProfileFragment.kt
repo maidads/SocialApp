@@ -1,7 +1,9 @@
 package com.example.androidprojectma23
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -16,6 +18,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -111,7 +114,7 @@ class ChangeProfileFragment : Fragment() {
         when (requestCode) {
             CAMERA_PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    captureImage()
+                    openCameraForImage()
                 } else {
                     Toast.makeText(context, "Kameratillstånd nekades", Toast.LENGTH_SHORT).show()
                 }
@@ -198,14 +201,18 @@ class ChangeProfileFragment : Fragment() {
         builder.setTitle("Lägg till foto!")
         builder.setItems(options) { dialog, item ->
             when (options[item]) {
-                "Ta en bild" -> captureImage()
+                "Ta en bild" -> if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                                    openCameraForImage()
+                                } else {
+                                    requestCameraPermission()
+                                }
                 "Välj från galleri" -> pickImageFromGallery()
                 "Avbryt" -> dialog.dismiss()
             }
         }
         builder.show()
     }
-
+/*
     private fun captureImage() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(requireContext().packageManager)?.also {
@@ -221,6 +228,26 @@ class ChangeProfileFragment : Fragment() {
                     startActivityForResult(takePictureIntent, REQUEST_CODE_CAPTURE_IMAGE)
                 }
             }
+        }
+    }
+
+ */
+
+    private fun openCameraForImage() {
+        // Check for the camera permission
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // Permission is granted, open the camera
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            try {
+                startActivityForResult(takePictureIntent,
+                    ChangeProfileFragment.REQUEST_CODE_CAPTURE_IMAGE
+                )
+            } catch (e: ActivityNotFoundException) {
+                // Handle the error
+            }
+        } else {
+            // Permission is not granted, request the permission
+            requestCameraPermission()
         }
     }
 
