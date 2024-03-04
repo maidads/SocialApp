@@ -270,5 +270,21 @@ class ChangeProfileFragment : Fragment() {
         ).apply {
         }
     }
+
+    private fun requestCameraPermission() {
+        if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Kräver kameratillstånd")
+                .setMessage("Denna app behöver tillgång till din kamera för att kunna ta bilder.")
+                .setPositiveButton("OK") { _, _ ->
+                    requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+                }
+                .create()
+                .show()
+        } else {
+            requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        }
+    }
+
 }
 
