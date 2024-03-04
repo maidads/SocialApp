@@ -66,6 +66,8 @@ class ProfileCreationStep1Fragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initUI(view)
+
+        context?.let { KeyboardUtils.hideKeyboardOnAction(displayNameEditText, it)}
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
