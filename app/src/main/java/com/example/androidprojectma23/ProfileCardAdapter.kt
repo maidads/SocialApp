@@ -47,11 +47,10 @@ class ProfileCardAdapter (
         return ProfileViewHolder(view)
     }
 
-    private var currentHolder: ProfileViewHolder? = null
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
         val user = this.user[position]
         holder.bind(user, newMessageButtonClickListener)
-        currentHolder = holder
+
     }
 
     override fun getItemCount(): Int {
@@ -183,13 +182,11 @@ class ProfileCardAdapter (
         SwipeDataManager.addUser(userId) // Add user-id in the list
         user.removeAt(position)
         notifyItemRemoved(position)
-        currentHolder?.flipCard()
     }
 
     override fun onRightSwipe(position: Int) {
         this.user.removeAt(position)
         notifyItemRemoved(position)
-        currentHolder?.flipCard()
     }
 
     fun updateData(newUsers: List<User>) {
