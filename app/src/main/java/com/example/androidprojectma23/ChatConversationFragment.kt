@@ -263,7 +263,7 @@ class ChatConversationFragment : Fragment() {
     private fun updateRecyclerView(messages: MutableList<ChatMessage>) {
         chatMessages.clear()
         chatMessages.addAll(messages)
-        recyclerView.adapter?.notifyItemInserted(chatMessages.size - 1)
+        recyclerView.adapter?.notifyDataSetChanged()
         recyclerView.scrollToPosition(chatMessages.size - 1)
     }
 }

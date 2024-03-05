@@ -61,11 +61,6 @@
                 android:layout_height="59dp"
                 android:inputType="textPassword" />
 
-            <FrameLayout
-                android:id="@+id/fragment_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -109,5 +104,10 @@
             app:srcCompat="@drawable/logo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
