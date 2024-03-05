@@ -50,6 +50,7 @@ class ProfileCardAdapter (
     override fun onBindViewHolder(holder: ProfileCardAdapter.ProfileViewHolder, position: Int) {
         val user = this.user[position]
         holder.bind(user, newMessageButtonClickListener)
+        holder.flipCardToFront()
 
     }
 
@@ -78,6 +79,12 @@ class ProfileCardAdapter (
                 }
             })
             firstHalfFlip.start()
+        }
+
+        fun flipCardToFront(){
+            if (viewFlipper.displayedChild == 1) {
+                viewFlipper.showPrevious()
+            }
         }
 
         fun bind(user: User, newMessageButtonClickListener: NewMessageButtonClickListener) {
