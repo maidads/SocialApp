@@ -190,7 +190,7 @@ class ChangeProfileFragment : Fragment() {
     private fun showImagePickerOptions() {
         val options = arrayOf<CharSequence>("Ta en bild", "Välj från galleri", "Avbryt")
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Lägg till foto!")
+        builder.setTitle("Ändra bild")
         builder.setItems(options) { dialog, item ->
             when (options[item]) {
                 "Ta en bild" -> if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
