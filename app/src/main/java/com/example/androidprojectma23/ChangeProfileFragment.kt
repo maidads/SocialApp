@@ -28,12 +28,10 @@ import java.util.UUID
 class ChangeProfileFragment : Fragment() {
 
     private lateinit var firestore: FirebaseFirestore
-    private var userId: String? = null
     private lateinit var nameEditText: EditText
     private lateinit var ageEditText: EditText
     private lateinit var aboutEditText: EditText
     private lateinit var interestsEditText: EditText
-    lateinit var changeImageButton : FloatingActionButton
     private lateinit var interestImageViewBack: ImageView
     private lateinit var interestImageView2Back: ImageView
     private lateinit var interestImageView3Back: ImageView
@@ -192,7 +190,7 @@ class ChangeProfileFragment : Fragment() {
     private fun showImagePickerOptions() {
         val options = arrayOf<CharSequence>("Ta en bild", "Välj från galleri", "Avbryt")
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Lägg till foto!")
+        builder.setTitle("Ändra bild")
         builder.setItems(options) { dialog, item ->
             when (options[item]) {
                 "Ta en bild" -> if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
