@@ -28,12 +28,10 @@ import java.util.UUID
 class ChangeProfileFragment : Fragment() {
 
     private lateinit var firestore: FirebaseFirestore
-    private var userId: String? = null
     private lateinit var nameEditText: EditText
     private lateinit var ageEditText: EditText
     private lateinit var aboutEditText: EditText
     private lateinit var interestsEditText: EditText
-    lateinit var changeImageButton : FloatingActionButton
     private lateinit var interestImageViewBack: ImageView
     private lateinit var interestImageView2Back: ImageView
     private lateinit var interestImageView3Back: ImageView
