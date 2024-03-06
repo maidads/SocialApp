@@ -12,6 +12,7 @@ class FilterMenuAdapter(
 ) : RecyclerView.Adapter<FilterMenuAdapter.ViewHolder>() {
 
     private var selectedCount = 1
+    private var highestSelectedIndex = 0
 
     init {
         onSelectionChange(selectedCount)
@@ -27,31 +28,26 @@ class FilterMenuAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = interests[position]
-        holder.iconView.setImageResource(item)
+        val context = holder.iconView.context
+        val resourceName = "icon_${position + 1}" // Dynamiskt namn baserat på position vid bindning
+        val resourceId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
+        holder.iconView.setImageResource(resourceId)
 
-
-        if (position == 0) {
-            holder.iconView.alpha = 1f
-        } else {
-            holder.iconView.alpha = 0.5f
-        }
+        // Initialt sätt opaciteten baserat på det högsta valda indexet
+        holder.iconView.alpha = if (position <= highestSelectedIndex) 1f else 0.5f
 
         holder.iconView.setOnClickListener {
-
-            if (holder.iconView.alpha < 1f) {
-                holder.iconView.alpha = 1f
-                selectedCount++
-            } else {
-                holder.iconView.alpha = 0.5f
-                selectedCount--
+            val currentPosition = holder.adapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                highestSelectedIndex = currentPosition // Använd den aktuella positionen
+                notifyDataSetChanged() // Uppdatera alla ikoner för att reflektera det nya valet
+                onSelectionChange(highestSelectedIndex + 1) // Callback för uppdaterad logik
             }
-
-            onSelectionChange(selectedCount)
         }
     }
 
     override fun getItemCount(): Int = interests.size
+
 }
 
 
