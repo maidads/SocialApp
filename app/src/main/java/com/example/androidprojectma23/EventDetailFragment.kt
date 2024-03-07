@@ -15,7 +15,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 class EventDetailFragment : Fragment() {
     private lateinit var firestore: FirebaseFirestore
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_event_detail, container, false)
     }
 
@@ -43,7 +47,8 @@ class EventDetailFragment : Fragment() {
 
     private fun displayEventDetails(event: Event) {
         view?.findViewById<TextView>(R.id.detailEventNameTextView)?.text = event.name
-        view?.findViewById<TextView>(R.id.detailEventLongDescriptionTextView)?.text = event.longDescription
+        view?.findViewById<TextView>(R.id.detailEventLongDescriptionTextView)?.text =
+            event.longDescription
         view?.findViewById<TextView>(R.id.detailEventDateTextView)?.text = event.date
         view?.findViewById<TextView>(R.id.detailEventLocationTextView)?.text = event.location
 

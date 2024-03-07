@@ -27,7 +27,8 @@ class ChangeInterestsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            userId = it.getString("USER_ID") ?: throw IllegalArgumentException("User ID is required")
+            userId =
+                it.getString("USER_ID") ?: throw IllegalArgumentException("User ID is required")
         }
     }
 
@@ -55,8 +56,6 @@ class ChangeInterestsFragment : Fragment() {
             val imageView = view as ImageView
             val isSelected = selectedInterest.contains(imageView.id)
 
-            val documentId = iconIdToDocIdMap[imageView.id]
-
             if (isSelected) {
                 imageView.alpha = 1f
                 selectedInterest.remove(imageView.id)
@@ -64,7 +63,6 @@ class ChangeInterestsFragment : Fragment() {
                 imageView.alpha = 0.5f
                 selectedInterest.add(imageView.id)
             }
-            Log.d("!!!", "Valt intresse: $documentId")
         }
 
         userInterests.forEach { imageViewId ->
@@ -86,7 +84,12 @@ class ChangeInterestsFragment : Fragment() {
 
     private fun handleProfileCompletion() {
         if (selectedInterest.isEmpty()) {
-            Toast.makeText(context, "Välj minst ett intresse för att fortsätta.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                getString(R.string.changeInterestFragment_handleProfileCompletion_interest_amount),
+                Toast.LENGTH_LONG
+            )
+                .show()
         } else {
             saveSelectedInterestsAndNavigate()
         }
@@ -104,11 +107,9 @@ class ChangeInterestsFragment : Fragment() {
         val userDocRef = database.collection("users").document(userId)
         userDocRef.update("interests", selectedDocIdsList)
             .addOnSuccessListener {
-                Log.d("!!!", "Användarens intressen har uppdaterats.")
                 fragmentManager?.popBackStack()
             }
-            .addOnFailureListener { e ->
-                Log.e("!!!", "Fel vid uppdatering av användarens intressen", e)
+            .addOnFailureListener {
             }
     }
 

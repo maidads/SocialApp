@@ -20,8 +20,6 @@ import com.google.firebase.firestore.ktx.firestore
 class SignUpNewAccountActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    //private lateinit var newUsernameEditText: EditText
-    //private lateinit var newPasswordEditText: EditText
     private lateinit var signUpButton: Button
     private lateinit var usernameTextInputLayout: TextInputLayout
     private lateinit var passwordTextInputLayout: TextInputLayout
@@ -33,8 +31,6 @@ class SignUpNewAccountActivity : AppCompatActivity() {
         setContentView(R.layout.activity_signup)
 
         auth = Firebase.auth
-        //newUsernameEditText = findViewById(R.id.usernameEditText)
-        //newPasswordEditText = findViewById(R.id.passwordEditText)
         signUpButton = findViewById(R.id.signUpButton)
         val backButton = findViewById<Button>(R.id.backButton)
 
@@ -61,24 +57,20 @@ class SignUpNewAccountActivity : AppCompatActivity() {
         val username = newUsernameEditText.text.toString()
         val password = newPasswordEditText.text.toString()
 
-        /*
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Snälla välj både användarnamn och lösenord.", Toast.LENGTH_SHORT).show()
-            return
-        }
-         */
 
         var isFormValid = true
 
         if (username.isEmpty()) {
-            usernameTextInputLayout.error = "Användarnamn krävs."
+            usernameTextInputLayout.error =
+                getString(R.string.signUpNewAccountActivity_signUp_username_required)
             isFormValid = false
         } else {
             usernameTextInputLayout.error = null
         }
 
         if (password.isEmpty()) {
-            passwordTextInputLayout.error = "Lösenord krävs."
+            passwordTextInputLayout.error =
+                getString(R.string.signUpNewAccountActivity_signUp_password_required)
             isFormValid = false
         } else {
             passwordTextInputLayout.error = null
@@ -86,19 +78,37 @@ class SignUpNewAccountActivity : AppCompatActivity() {
 
         if (!isFormValid) return
 
-        auth.createUserWithEmailAndPassword(username,password)
+        auth.createUserWithEmailAndPassword(username, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     saveUserData()
                 } else {
-                    Toast.makeText(this, "Registrering misslyckades.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.signUpNewAccountActivity_signUp_registration_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
             .addOnFailureListener { exception ->
                 when (exception) {
-                    is FirebaseAuthWeakPasswordException -> Toast.makeText(this, "Lösenordet är för svagt.", Toast.LENGTH_SHORT).show()
-                    is FirebaseAuthUserCollisionException -> Toast.makeText(this, "Ett konto med denna email finns redan.", Toast.LENGTH_SHORT).show()
-                    else -> Toast.makeText(this, "Ett oväntat fel inträffade: ${exception.localizedMessage}", Toast.LENGTH_SHORT).show()
+                    is FirebaseAuthWeakPasswordException -> Toast.makeText(
+                        this,
+                        getString(R.string.signUpNewAccountActivity_signUp_registration_failed_weak_password),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    is FirebaseAuthUserCollisionException -> Toast.makeText(
+                        this,
+                        getString(R.string.signUpNewAccountActivity_signUp_registration_failed_email_taken),
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    else -> Toast.makeText(
+                        this,
+                        getString(R.string.signUpNewAccountActivity_signUp_registration_failed_unkown_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
@@ -109,8 +119,8 @@ class SignUpNewAccountActivity : AppCompatActivity() {
             val userData = hashMapOf(
                 "userID" to user.uid,
                 "Username" to newUsernameEditText.text.toString(),
-                "about" to "Ingen information tillgänglig",
-                "myInterests" to "Ingen information tillgänglig",
+                "about" to getString(R.string.signUpNewAccountActivity_saveUserData_about),
+                "myInterests" to getString(R.string.signUpNewAccountActivity_saveUserData_myInterests),
                 "age" to "0"
             )
 

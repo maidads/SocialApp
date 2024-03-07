@@ -50,6 +50,7 @@ class TopBarManager(
                 showPageTitle(true, "Min Profil")
                 setTopBarNavigationIcon("back")
             }
+
             "ChangeProfileFragment" -> {
                 setMenuItemVisibility(upperRightIcons, false)
                 showPageTitle(true, "Redigera Profil")

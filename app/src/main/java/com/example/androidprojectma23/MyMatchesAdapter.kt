@@ -11,16 +11,18 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (String) -> Unit) : RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
+class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (String) -> Unit) :
+    RecyclerView.Adapter<MyMatchesAdapter.UserViewHolder>() {
 
-    class UserViewHolder(view: View, private val onClick: (String) -> Unit) : RecyclerView.ViewHolder(view) {
+    class UserViewHolder(view: View, private val onClick: (String) -> Unit) :
+        RecyclerView.ViewHolder(view) {
 
         private val cardView: CardView = view.findViewById(R.id.myMatchesCard)
-        private val displayNameTextView: TextView = view.findViewById(R.id.myMatches_userDisplayName)
+        private val displayNameTextView: TextView =
+            view.findViewById(R.id.myMatches_userDisplayName)
         private val userProfileImage: ImageView = view.findViewById(R.id.myMatches_userProfileImage)
 
         fun bind(user: User) {
-            Log.d("MyMatchesAdapter", "Binding user with userId: ${user.userId}")
             displayNameTextView.text = user.displayName
 
             Glide.with(itemView.context)
@@ -39,27 +41,29 @@ class MyMatchesAdapter(private var users: List<User>, private val onUserClick: (
             }
 
 
-            user.interests.take(IconMapping.fragmentInterestIconImage.size).forEachIndexed { index, interestDocId ->
-                IconMapping.docIdToIconResMap[interestDocId]?.let { iconResId ->
-                    Glide.with(itemView.context)
-                        .load(iconResId)
-                        .into(itemView.findViewById(IconMapping.fragmentInterestIconImage[index]))
-                }
+            user.interests.take(IconMapping.fragmentInterestIconImage.size)
+                .forEachIndexed { index, interestDocId ->
+                    IconMapping.docIdToIconResMap[interestDocId]?.let { iconResId ->
+                        Glide.with(itemView.context)
+                            .load(iconResId)
+                            .into(itemView.findViewById(IconMapping.fragmentInterestIconImage[index]))
+                    }
 
-                IconMapping.docIdToInterestNameMap[interestDocId]?.let { interestNameResId ->
-                    itemView.findViewById<TextView>(IconMapping.fragmentInterestIconText[index]).text = itemView.context.getString(interestNameResId)
+                    IconMapping.docIdToInterestNameMap[interestDocId]?.let { interestNameResId ->
+                        itemView.findViewById<TextView>(IconMapping.fragmentInterestIconText[index]).text =
+                            itemView.context.getString(interestNameResId)
+                    }
                 }
-            }
 
             cardView.setOnClickListener {
-                Log.d("MyMatchesAdapter", "Kort klickat med userId: ${user.userId}")
                 onClick(user.userId)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.my_matches_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.my_matches_item, parent, false)
         return UserViewHolder(view, onUserClick)
     }
 

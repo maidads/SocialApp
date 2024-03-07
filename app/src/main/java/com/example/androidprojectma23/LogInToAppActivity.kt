@@ -30,8 +30,8 @@ class LogInToAppActivity : AppCompatActivity() {
     private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
-    private lateinit var registerTextView : TextView
-    private lateinit var googleSignInButton : ImageView
+    private lateinit var registerTextView: TextView
+    private lateinit var googleSignInButton: ImageView
     private lateinit var googleSignInClient: GoogleSignInClient
 
 
@@ -63,13 +63,6 @@ class LogInToAppActivity : AppCompatActivity() {
             signInWithGoogle()
         }
 
-//        Remembers user to log in directly when opening the app
-//                if (auth.currentUser != null) {
-//                    val intent = Intent(this, LandingPageActivity::class.java)
-//                    startActivity(intent)
-//                    finish()
-//                }
-
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -84,7 +77,11 @@ class LogInToAppActivity : AppCompatActivity() {
         val password = passwordEditText.text.toString()
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Snälla skriv både användarnamn och lösenord.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.loginToAppActivity_logIn_empty_userName),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -104,6 +101,7 @@ class LogInToAppActivity : AppCompatActivity() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(signInIntent, 1000)
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -118,10 +116,14 @@ class LogInToAppActivity : AppCompatActivity() {
             val account = completedTask.getResult(ApiException::class.java)
             firebaseAuthWithGoogle(account.idToken!!)
         } catch (e: ApiException) {
-            Log.e("!!!", "signInResult:failed code=" + e.statusCode)
-            Toast.makeText(this, "Inloggningen misslyckades, försök igen. Felkod: ${e.statusCode}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                getString(R.string.loginToAppActivity_handleSignInResult_failed_to_logIn),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -139,7 +141,11 @@ class LogInToAppActivity : AppCompatActivity() {
                         navigateToLandingPage()
                     }
                 } else {
-                    Toast.makeText(this, "Autentisering misslyckades.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.loginToAppActivity_firebaseAuthWithGoogle_authentication_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
     }
@@ -170,10 +176,18 @@ class LogInToAppActivity : AppCompatActivity() {
             db.collection("users").document(currentUser.uid)
                 .set(userBasicInfo)
                 .addOnSuccessListener {
-                    Toast.makeText(this, "Grundläggande användarinformation har sparats.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.loginToAppActivity_saveNewUserInfo_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Det gick inte att spara grundläggande användarinformation.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.loginToAppActivity_saveNewUserInfo_failure),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }
@@ -181,15 +195,30 @@ class LogInToAppActivity : AppCompatActivity() {
     private fun handleLoginFailure(exception: Exception?) {
         when (exception) {
             is FirebaseAuthInvalidCredentialsException -> {
-                Toast.makeText(this, "Fel email eller lösenord.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.loginToAppActivity_handleLoginFailure_wrong_mail_password),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+
             is FirebaseAuthInvalidUserException -> {
                 val errorCode = exception.errorCode
                 if (errorCode == "ERROR_USER_NOT_FOUND") {
-                    Toast.makeText(this, "Email är inte registrerad.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.loginToAppActivity_handleLoginFailure_email_notRegistered),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            } else -> {
-            Toast.makeText(this, "Login failed. Please try again later.", Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+                Toast.makeText(
+                    this,
+                    getString(R.string.loginToAppActivity_handleLoginFailure_failed_to_logIn),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

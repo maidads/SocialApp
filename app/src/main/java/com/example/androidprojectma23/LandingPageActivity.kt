@@ -59,7 +59,8 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
         // FragmentTransactionListener for TopBarManager
         listener = FragmentManager.OnBackStackChangedListener {
-            val fragmentTag = supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
+            val fragmentTag =
+                supportFragmentManager.getBackStackEntryAt(supportFragmentManager.backStackEntryCount - 1).name
             fragmentTag?.let { topBarManager.updateTopBar(it) }
         }
         supportFragmentManager.addOnBackStackChangedListener(listener)
@@ -75,6 +76,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
         }
 
     }
+
     override fun onProfileIconClicked() {
         // Open MyProfileFragment
         val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder)
@@ -155,21 +157,34 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
             val saveButton: Button = popupView.findViewById(R.id.filter_save_button)
             saveButton.setOnClickListener {
 
-                val fragment = supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
+                val fragment =
+                    supportFragmentManager.findFragmentById(R.id.fragmentHolder) as? FindFriendsFragment
 
                 fragment?.let { frag ->
                     lifecycleScope.launch {
                         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
-                            Toast.makeText(this@LandingPageActivity, "Användar-ID inte tillgängligt.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LandingPageActivity,
+                                getString(R.string.landingPageActivity_showFilterPopup_no_userId_available),
+                                Toast.LENGTH_SHORT
+                            ).show()
                             return@launch
                         }
 
                         val currentLocation = geoLocationManager.getCurrentLocation(userId)
                         if (currentLocation != null) {
 
-                            frag.fetchAndDisplayMatchingUsers(selectedCount, currentLocation.latitude, currentLocation.longitude)
+                            frag.fetchAndDisplayMatchingUsers(
+                                selectedCount,
+                                currentLocation.latitude,
+                                currentLocation.longitude
+                            )
                         } else {
-                            Toast.makeText(this@LandingPageActivity, "Kunde inte hämta nuvarande plats.", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                this@LandingPageActivity,
+                                getString(R.string.landingPageActivity_showFilterPopup_no_location_available),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
 
                         popupWindow.dismiss()
@@ -185,7 +200,7 @@ class LandingPageActivity : AppCompatActivity(), TopBarManager.TopBarClickListen
 
             popupWindow.showAsDropDown(anchorView, xOff, yOff)
 
-        }, onFailure = { exception ->
+        }, onFailure = {
 
         })
     }
