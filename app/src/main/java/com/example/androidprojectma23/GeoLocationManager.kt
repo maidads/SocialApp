@@ -29,16 +29,31 @@ class GeoLocationManager(private val context: Context, private val activity: Act
     }
 
     fun checkLocationPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
             return false
         }
         return true
     }
 
     suspend fun getCurrentLocation(userId: String): User? {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("!!!", "Location permissions not granted")
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
             return null
         }
 
@@ -57,9 +72,7 @@ class GeoLocationManager(private val context: Context, private val activity: Act
                 geohash = geohash,
                 latitude = it.latitude,
                 longitude = it.longitude
-            ).also { user ->
-                Log.d("!!!", "Location obtained: Lat=${it.latitude}, Lng=${it.longitude}, Geohash=$geohash")
-            }
+            )
         }
     }
 

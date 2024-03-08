@@ -26,7 +26,11 @@ class MyProfilePageFragment : Fragment() {
 
     private lateinit var firestore: FirebaseFirestore
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_my_profile_page, container, false)
 
         profileImageView = view.findViewById(R.id.profileImageViewBack)
@@ -50,6 +54,7 @@ class MyProfilePageFragment : Fragment() {
 
         return view
     }
+
     private fun loadUserProfile() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -60,15 +65,17 @@ class MyProfilePageFragment : Fragment() {
                     if (user != null) {
                         displayNameTextView.text = user.displayName
                         ageTextView.text = user.age + " år"
-                        aboutInfoTextView.text = user.about.ifEmpty { "Ingen information tillgänglig" }
-                        interestsInfoTextView.text = user.myInterests.ifEmpty { "Ingen information tillgänglig" }
+                        aboutInfoTextView.text =
+                            user.about.ifEmpty { getString(R.string.myProfilePageFragment_loadUserProfile_no_about_info) }
+                        interestsInfoTextView.text =
+                            user.myInterests.ifEmpty { getString(R.string.myProfilePageFragment_loadUserProfile_no_interest_info) }
 
                         context?.let { context ->
                             Glide.with(context)
                                 .load(user.profileImageUrl)
-                                .placeholder(R.drawable.profile_image_placeholder)            // Standardbild medan den riktiga bilden laddas
-                                .error(R.drawable.profile_image_placeholder)                  // Om det inte går att ladda den riktiga bilden
-                                .circleCrop()                                                 // Cirkulär form
+                                .placeholder(R.drawable.profile_image_placeholder)
+                                .error(R.drawable.profile_image_placeholder)
+                                .circleCrop()
                                 .into(profileImageView)
                         }
                         updateInterestIcons(user.interests)
@@ -77,12 +84,16 @@ class MyProfilePageFragment : Fragment() {
                         displayNameTextView.text = "Användare hittades inte"
                     }
                 }
-                .addOnFailureListener { exception ->
-                    Log.e("MyProfilePageFragment", "Error loading user profile", exception)
-                    Toast.makeText(context, "Error loading user profile", Toast.LENGTH_SHORT).show()
+                .addOnFailureListener {
+                    Toast.makeText(
+                        context,
+                        getString(R.string.myProfilePageFragment_loadUserProfile_failed_loading_user),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }
+
     private fun updateInterestIcons(interestDocIds: List<String>) {
 
         val interestImageViews = IconMapping.fragmentInterestIconImage.mapNotNull { id ->

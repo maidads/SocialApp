@@ -37,30 +37,39 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 
 
-class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener, ProfileCardAdapter.NewMessageButtonClickListener {
+class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionChangedListener,
+    ProfileCardAdapter.NewMessageButtonClickListener {
 
     override fun onSelectionChanged(selectedCount: Int) {
-        // Använda lifecycleScope för att starta en korutin
+        // Use lifecycleScope to start a coroutine
         viewLifecycleOwner.lifecycleScope.launch {
             if (geoLocationManager.checkLocationPermission()) {
-                // Hämta användarens ID här
+                // Get the current userId
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
-                    Toast.makeText(requireContext(), "Användar-ID är inte tillgängligt", Toast.LENGTH_LONG).show()
-                    return@launch // Avsluta korutinen om userId inte finns
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.findFriendsFragment_onSelectionChanged_no_user_found),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@launch // End the coroutine if userId is null
                 }
 
-                // Anta att getCurrentLocation nu är en suspend funktion eller anpassad för att använda CompletableDeferred
                 val userLocation = geoLocationManager.getCurrentLocation(userId)
                 userLocation?.let {
-                    // Anropa din suspend funktion med den nuvarande platsen och användar-ID
                     fetchAndDisplayMatchingUsers(selectedCount, it.latitude, it.longitude)
                 } ?: run {
-                    // Hantera fallet då platsen inte kunde hämtas
-                    Toast.makeText(requireContext(), "Kunde inte få aktuell plats", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.findFriendsFragment_onSelectionChanged_no_current_location),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } else {
-                // Behörighet är inte beviljad; hanteringen bör redan vara på plats via checkLocationPermission
-                Toast.makeText(requireContext(), "Platsbehörighet krävs", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.findFriendsFragment_onSelectionChanged_no_location_permission),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -89,14 +98,26 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 val userLocation = geoLocationManager.getCurrentLocation(userId)
                 userLocation?.let {
 
-                    fetchAndDisplayMatchingUsers(minimumNumberOfInterestRequired, it.latitude, it.longitude)
+                    fetchAndDisplayMatchingUsers(
+                        minimumNumberOfInterestRequired,
+                        it.latitude,
+                        it.longitude
+                    )
                 } ?: run {
 
-                    Toast.makeText(requireContext(), "Kunde inte få aktuell plats", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.findFriendsFragment_onViewCreated_coroutine_could_not_get_current_location),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             } else {
 
-                Toast.makeText(requireContext(), "Användar-ID är inte tillgängligt", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.findFriendsFragment_onViewCreated_coroutine_userId_not_available),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -108,8 +129,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     ): View? {
         val view = inflater.inflate(R.layout.fragment_find_friends, container, false)
 
-        adapter = ProfileCardAdapter(matchingFriendsList, this) { userId ->
-            Log.d("SwipeLeft", "Vänster swipe på användare med ID: $userId")
+        adapter = ProfileCardAdapter(matchingFriendsList, this) {
         }
 
         val recyclerView = setUpRecyclerView(view)
@@ -119,9 +139,12 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         return view
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.d("!!!", "onRequestPermissionsResult received.")
         if (requestCode == GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 fetchCurrentUserLocation()
@@ -166,12 +189,10 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         if (userId != null) {
             val db = FirebaseFirestore.getInstance()
             val document = db.collection("users").document(userId).get().await()
-            Log.d("!!!", "Hämtade intressen för användare $userId: ${document.get("interests")}")
             val interests = document.get("interests") as? List<String> ?: emptyList()
             emit(interests)
         }
-    }.catch { e ->
-        Log.e("!!!", "Error fetching user interests", e)
+    }.catch {
         emit(emptyList())
     }.flowOn(Dispatchers.IO)
 
@@ -189,8 +210,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         }
 
         emit(usersInterestsMap)
-    }.catch { e ->
-        Log.e("!!!", "Error fetching users interests", e)
+    }.catch {
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
 
@@ -204,25 +224,32 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         for (document in snapshot.documents) {
             val userId = document.id
             val displayName = document.getString("displayName") ?: "Anonym"
-            val profileImageUrl = document.getString("profileImageUrl") ?: "URL_to_profile_image_placeholder"
+            val profileImageUrl =
+                document.getString("profileImageUrl") ?: "URL_to_profile_image_placeholder"
             usersData[userId] = Pair(displayName, profileImageUrl)
         }
 
         emit(usersData)
-    }.catch { e ->
-        Log.e("!!!", "Error fetching users data", e)
+    }.catch {
         emit(mutableMapOf())
     }.flowOn(Dispatchers.IO)
 
-    suspend fun fetchAndDisplayMatchingUsers(minimumNumberOfInterestsRequired: Int, currentLat: Double, currentLng: Double) {
-        Log.d("displayMatch", "fetchAndDisplayMatchingUsers start")
+    suspend fun fetchAndDisplayMatchingUsers(
+        minimumNumberOfInterestsRequired: Int,
+        currentLat: Double,
+        currentLng: Double
+    ) {
         val currentUserUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val allUsersInterests = getAllUsersInterests().first()
                 val usersData = getUsersData().first()
-                val nearbyUsers = fetchUsersWithinRadius(currentLat, currentLng, 5.0).filter { it.userId != currentUserUid }
+                val nearbyUsers = fetchUsersWithinRadius(
+                    currentLat,
+                    currentLng,
+                    5.0
+                ).filter { it.userId != currentUserUid }
                 val currentUserInterests = getCurrentUserInterests().first()
 
                 val tempMatchingUsers = nearbyUsers.filter { user ->
@@ -239,41 +266,49 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 }.sortedByDescending { it.commonInterests.size }
 
                 adapter.updateData(tempMatchingUsers)
-                Log.d("displayMatch", "Matching users updated: $tempMatchingUsers")
             } catch (e: Exception) {
-                Log.e("displayMatch", "Error fetching and displaying matching users", e)
+                // TODO Implement exception handling
             }
         }
     }
 
 
     private fun fetchCurrentUserLocation() {
-        Log.d("!!!", "Attempting to fetch current user location")
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        if (userId == null) {
-            Log.d("!!!", "User ID not available, cannot fetch location")
-            return
-        }
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 val user = geoLocationManager.getCurrentLocation(userId)
                 user?.let {
-                    Log.d("!!!", "Current user location: Lat=${it.latitude}, Lng=${it.longitude}, Geohash=${it.geohash}")
 
-                    saveCurrentUserLocationToFirestore(userId, it.geohash, it.latitude, it.longitude)
+                    saveCurrentUserLocationToFirestore(
+                        userId,
+                        it.geohash,
+                        it.latitude,
+                        it.longitude
+                    )
                 } ?: run {
-                    Log.d("!!!", "Could not fetch user location")
-                    // Hantera fallet då platsen inte kunde hämtas
                 }
             }
         } else {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
-    private fun saveCurrentUserLocationToFirestore(userId: String, geohash: String, latitude: Double, longitude: Double) {
+    private fun saveCurrentUserLocationToFirestore(
+        userId: String,
+        geohash: String,
+        latitude: Double,
+        longitude: Double
+    ) {
 
         val locationUpdateMap = hashMapOf<String, Any>(
             "geohash" to geohash,
@@ -287,15 +322,16 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
         db.collection("users").document(userId)
             .update(locationUpdateMap)
             .addOnSuccessListener {
-                Log.d("!!!", "User location updated successfully")
             }
-            .addOnFailureListener { e ->
-                Log.e("!!!", "Error updating user location", e)
+            .addOnFailureListener {
             }
     }
 
-    private suspend fun fetchUsersWithinRadius(currentLat: Double, currentLng: Double, radiusInKm: Double): List<User> {
-        Log.d("!!!", "fetchUsersWithinRadius start")
+    private suspend fun fetchUsersWithinRadius(
+        currentLat: Double,
+        currentLng: Double,
+        radiusInKm: Double
+    ): List<User> {
 
         val currentUserGeohash = calculateGeohash(currentLat, currentLng)
 
@@ -305,7 +341,6 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
         withContext(Dispatchers.IO) {
             try {
-                Log.d("!!!", "Fetching users within geohash range: ${geohashRange.first} to ${geohashRange.second}")
 
                 val snapshot = Tasks.await(
                     db.collection("users")
@@ -318,7 +353,8 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                     val user = document.toObject(User::class.java)
                     if (user != null) {
                         user.userId = document.id
-                        val distance = calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
+                        val distance =
+                            calculateDistance(currentLat, currentLng, user.latitude, user.longitude)
                         Log.d("!!!", "Distance to user ${user.userId}: $distance km")
                         if (distance <= radiusInKm) {
                             usersWithinRadius.add(user)
@@ -326,18 +362,16 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                     }
                 }
             } catch (e: Exception) {
-
-                Log.e("!!!", "Error fetching users within geohash range", e)
+                // TODO Implement exception handling
             }
         }
 
-        Log.d("!!!", "fetchUsersWithinRadius end. Found ${usersWithinRadius.size} users within radius.")
         if (usersWithinRadius.isNotEmpty()) {
             usersWithinRadius.forEach { user ->
-                Log.d("!!!", "User within radius: ${user.userId}")
+                // Log.d("!!!", "User within radius: ${user.userId}")
             }
         } else {
-            Log.d("!!!", "No users found within radius.")
+            // Log.d("!!!", "No users found within radius.")
         }
         return usersWithinRadius
     }
@@ -359,16 +393,15 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
     }
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val R = 6371 // Earth radius in km
+        val r = 6371 // Earth radius in km
         val latDistance = Math.toRadians(lat2 - lat1)
         val lonDistance = Math.toRadians(lon2 - lon1)
         val a = sin(latDistance / 2) * sin(latDistance / 2) +
                 (cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
                         sin(lonDistance / 2) * sin(lonDistance / 2))
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-        return R * c // Distance in km
+        return r * c // Distance in km
     }
-
 
 
     private fun checkLocationPermissionAndProceed() {
@@ -382,20 +415,18 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
     private fun showLocationPermissionDialog() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Platsbehörighet krävs")
-            .setMessage("För att ge dig den bästa möjliga upplevelsen och hjälpa dig att hitta nya vänner i närheten, behöver appen tillgång till din plats.")
-            .setPositiveButton("OK") { _, _ ->
-                // Begär platsbehörigheter när användaren accepterar
-                requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE)
+            .setTitle(getString(R.string.requestLocationPermission_title))
+            .setMessage(getString(R.string.requestLocationPermission_message))
+            .setPositiveButton(getString(R.string.requestLocationPermission_positiveButton)) { _, _ ->
+                requestPermissions(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                    GeoLocationManager.LOCATION_PERMISSION_REQUEST_CODE
+                )
             }
-            .setNegativeButton("Avbryt") { dialog, _ -> dialog.dismiss() }
+            .setNegativeButton(getString(R.string.requestLocationPermission_negativeButton)) { dialog, _ -> dialog.dismiss() }
             .create()
             .show()
     }
-
-
-
-
 
 
 }

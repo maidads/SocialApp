@@ -23,10 +23,12 @@ class ChatConversationAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == VIEW_TYPE_USER) {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_message_item_user, parent, false)
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.chat_message_item_user, parent, false)
             UserMessageViewHolder(view)
         } else {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.chat_message_item_other, parent, false)
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.chat_message_item_other, parent, false)
             OtherMessageViewHolder(view)
         }
     }

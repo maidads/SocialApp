@@ -67,28 +67,32 @@ class ProfileCreationStep1Fragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initUI(view)
 
-        context?.let { KeyboardUtils.hideKeyboardOnAction(displayNameEditText, it)}
+        context?.let { KeyboardUtils.hideKeyboardOnAction(displayNameEditText, it) }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             REQUEST_CAMERA_PERMISSION -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     // Access granted
                     openCameraForImage()
                 } else {
-                    // Access denied
+                    // TODO Access denied
                 }
                 return
             }
-            // handle other permission requests
+            // TODO handle other permission requests
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> {
                     val imageBitmap = data?.extras?.get("data") as? Bitmap
@@ -98,10 +102,15 @@ class ProfileCreationStep1Fragment : Fragment() {
                         if (imageUri != null) {
                             selectedImageUri = imageUri
                         } else {
-                            Toast.makeText(context, "Problem att spara bilden", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                getString(R.string.profileCreationStep1Fragment_onActivityResult),
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }
                 }
+
                 REQUEST_GALLERY_IMAGE -> {
                     val imageUri = data?.data
                     imageUri?.let {
@@ -112,9 +121,6 @@ class ProfileCreationStep1Fragment : Fragment() {
             }
         }
     }
-
-
-
 
 
     private fun initUI(view: View) {
@@ -134,7 +140,11 @@ class ProfileCreationStep1Fragment : Fragment() {
     private fun handleNextStep() {
         val displayName = displayNameEditText.text.toString().trim()
         if (displayName.isEmpty()) {
-            Toast.makeText(context, "Du måste ange ett visningsnamn för att fortsätta", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                getString(R.string.profileCreationStep1Fragment_handleNextStep),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -147,7 +157,11 @@ class ProfileCreationStep1Fragment : Fragment() {
         userProfileManager.saveDisplayName(userId, displayName, onSuccess = {
             uploadImageIfSelected(userId)
         }, onFailure = { exception ->
-            Toast.makeText(context, "Kunde inte spara visningsnamnet: ${exception.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                getString(R.string.profileCreationStep1Fragment_saveDisplayNameAndContinue),
+                Toast.LENGTH_LONG
+            ).show()
         })
     }
 
@@ -157,10 +171,18 @@ class ProfileCreationStep1Fragment : Fragment() {
                 userProfileManager.uploadProfileImage(userId, selectedImageUri!!, onSuccess = {
                     navigateToProfileCreationStep2(userId)
                 }, onFailure = { exception ->
-                    Toast.makeText(context, "Uppladdning misslyckades: ${exception.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.profileCreationStep1Fragment_uploadImageIfSelected_failed),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 })
             }, onFailure = { exception ->
-                Toast.makeText(context, "Kunde inte ta bort befintlig bild: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    getString(R.string.profileCreationStep1Fragment_uploadImageIfSelected_removal_failed),
+                    Toast.LENGTH_SHORT
+                ).show()
             })
         } else {
             navigateToProfileCreationStep2(userId)
@@ -182,7 +204,8 @@ class ProfileCreationStep1Fragment : Fragment() {
     private fun showImageSelectionDialog() {
         val context = requireContext()
         val builder = AlertDialog.Builder(context)
-        val view = LayoutInflater.from(context).inflate(R.layout.custom_dialog_appearance_profile_creation_image_selection, null)
+        val view = LayoutInflater.from(context)
+            .inflate(R.layout.custom_dialog_appearance_profile_creation_image_selection, null)
         builder.setView(view)
 
         val dialog = builder.create()
@@ -196,7 +219,11 @@ class ProfileCreationStep1Fragment : Fragment() {
 
         val cameraImageView = view.findViewById<ImageView>(R.id.cameraImageView)
         cameraImageView.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestCameraPermission()
             } else {
                 openCameraForImage()
@@ -209,7 +236,11 @@ class ProfileCreationStep1Fragment : Fragment() {
 
     private fun openCameraForImage() {
         // Check for the camera permission
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             // Permission is granted, open the camera
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             try {
@@ -228,14 +259,23 @@ class ProfileCreationStep1Fragment : Fragment() {
         intent.type = "image/*"
         startActivityForResult(intent, REQUEST_GALLERY_IMAGE)
     }
+
     private fun requestCameraPermission() {
         // Explanation of why the permission is needed
-        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                requireActivity(),
+                Manifest.permission.CAMERA
+            )
+        ) {
             // Show an explanation asynchronously
             // TODO: Show a dialog or a toast explaining why camera access is needed
         } else {
             // No explanation needed; request the permission
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.CAMERA),
+                REQUEST_CAMERA_PERMISSION
+            )
         }
     }
 

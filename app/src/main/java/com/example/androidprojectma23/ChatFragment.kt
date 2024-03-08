@@ -52,7 +52,9 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         // Get list of conversationIds from current user
-                        this.conversationIds = document.get("userConversations") as? MutableList<String> ?: mutableListOf()
+                        this.conversationIds =
+                            document.get("userConversations") as? MutableList<String>
+                                ?: mutableListOf()
                         Log.d("MyApp", "Document: $document")
                         // For every conversationId...
                         for (conversationId in conversationIds) {
@@ -62,31 +64,47 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
                                 .addOnSuccessListener {
                                     val userID1 = it.getString("userID1")
                                     val userID2 = it.getString("userID2")
-                                    val otherUserId = if (userID1 != currentUserId) userID1 else userID2
+                                    val otherUserId =
+                                        if (userID1 != currentUserId) userID1 else userID2
 
                                     if (otherUserId != null) {
                                         db.collection("users").document(otherUserId)
                                             .get()
                                             .addOnSuccessListener {
                                                 val otherUserName = it.get("displayName").toString()
-                                                val profileImageUrl = it.get("profileImageUrl").toString()
+                                                val profileImageUrl =
+                                                    it.get("profileImageUrl").toString()
 
                                                 getLastMessage(conversationId) { latestMessage ->
-                                                    var lastMessageText = latestMessage.getString("messageBody")
-                                                    val lastMessageTime = latestMessage.getTimestamp("messageTime")
+                                                    var lastMessageText =
+                                                        latestMessage.getString("messageBody")
+                                                    val lastMessageTime =
+                                                        latestMessage.getTimestamp("messageTime")
 
                                                     if (lastMessageTime != null && lastMessageText != null) {
                                                         val maxLength = 38
                                                         if (lastMessageText.length > maxLength) {
-                                                            lastMessageText = lastMessageText.substring(0, maxLength) + "..."
+                                                            lastMessageText =
+                                                                lastMessageText.substring(
+                                                                    0,
+                                                                    maxLength
+                                                                ) + "..."
                                                         }
 
-                                                        val chatMessage = ChatMessage(otherUserId, otherUserName, lastMessageText, lastMessageTime, profileImageUrl, true)
+                                                        val chatMessage = ChatMessage(
+                                                            otherUserId,
+                                                            otherUserName,
+                                                            lastMessageText,
+                                                            lastMessageTime,
+                                                            profileImageUrl,
+                                                            true
+                                                        )
                                                         tempChatMessages.add(chatMessage)
                                                     }
                                                     conversationsLoadedCount++
                                                     if (conversationsLoadedCount == conversationIds.size) {
-                                                        val sortedChatMessages = tempChatMessages.sortedByDescending { chatMessage ->  chatMessage.messageTime }
+                                                        val sortedChatMessages =
+                                                            tempChatMessages.sortedByDescending { chatMessage -> chatMessage.messageTime }
                                                         chatMessages.clear()
                                                         chatMessages.addAll(sortedChatMessages)
                                                         chatAdapter.notifyDataSetChanged()
@@ -103,9 +121,10 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
     }
 
-    private fun getLastMessage (conversationId: String, callback: (DocumentSnapshot) -> Unit) {
+    private fun getLastMessage(conversationId: String, callback: (DocumentSnapshot) -> Unit) {
         val db = FirebaseFirestore.getInstance()
-        db.collection("conversations").document(conversationId).collection("messages").orderBy("messageTime", Query.Direction.DESCENDING).limit(1).get()
+        db.collection("conversations").document(conversationId).collection("messages")
+            .orderBy("messageTime", Query.Direction.DESCENDING).limit(1).get()
             .addOnSuccessListener { latestMessageSnapshot ->
                 if (!latestMessageSnapshot.isEmpty) {
                     val latestMessage = latestMessageSnapshot.documents[0]
@@ -130,7 +149,7 @@ class ChatFragment : Fragment(), ChatAdapter.ChatCardListener {
 
         parentFragmentManager.beginTransaction()
             .replace(R.id.fragmentHolder, chatConversationFragment)
-            .addToBackStack(ChatConversationFragment::class.java.simpleName)  // Lägger till transaktionen till backstack för att möjliggöra navigering tillbaka
+            .addToBackStack(ChatConversationFragment::class.java.simpleName)  // Add transaction to the backstack to enable back navigation
             .commit()
     }
 }

@@ -12,6 +12,7 @@ class FilterMenuAdapter(
 ) : RecyclerView.Adapter<FilterMenuAdapter.ViewHolder>() {
 
     private var selectedCount = 1
+    private var highestSelectedIndex = 0
 
     init {
         onSelectionChange(selectedCount)
@@ -22,36 +23,33 @@ class FilterMenuAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.interest_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.interest_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = interests[position]
-        holder.iconView.setImageResource(item)
+        val context = holder.iconView.context
+        val resourceName = "icon_${position + 1}" // Dynamic resource name based on index
+        val resourceId =
+            context.resources.getIdentifier(resourceName, "drawable", context.packageName)
+        holder.iconView.setImageResource(resourceId)
 
-
-        if (position == 0) {
-            holder.iconView.alpha = 1f
-        } else {
-            holder.iconView.alpha = 0.5f
-        }
+        // Set alpha based on the highest picked index
+        holder.iconView.alpha = if (position <= highestSelectedIndex) 1f else 0.5f
 
         holder.iconView.setOnClickListener {
-
-            if (holder.iconView.alpha < 1f) {
-                holder.iconView.alpha = 1f
-                selectedCount++
-            } else {
-                holder.iconView.alpha = 0.5f
-                selectedCount--
+            val currentPosition = holder.adapterPosition
+            if (currentPosition != RecyclerView.NO_POSITION) {
+                highestSelectedIndex = currentPosition
+                notifyDataSetChanged()
+                onSelectionChange(highestSelectedIndex + 1)
             }
-
-            onSelectionChange(selectedCount)
         }
     }
 
     override fun getItemCount(): Int = interests.size
+
 }
 
 

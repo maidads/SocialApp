@@ -33,22 +33,28 @@ class MyMatchesFragment : Fragment() {
         super.onCreate(savedInstanceState)
         arguments?.let {
             val userIds = it.getStringArrayList(ARG_USER_IDS)
-            val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
+            val userProfileManager = UserProfileManager(
+                FirebaseStorage.getInstance().reference,
+                FirebaseFirestore.getInstance()
+            )
 
             if (userIds != null) {
                 userProfileManager.getCurrentUserId { userId ->
                     if (userId != null) {
                         UserSharedPreferences.saveUserIds(requireContext(), userId, userIds.toSet())
                     } else {
-                        Log.d("MyMatchesFragment", "ingen inloggad användare hittades")
+                        // TODO Handle exception
                     }
                 }
             }
-            Log.d("MyMatchesFragment", "mottagna användar id $userIds")
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_my_matches, container, false)
 
         recyclerView = view.findViewById(R.id.matchesRecyclerView)
@@ -67,19 +73,25 @@ class MyMatchesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
+        val userProfileManager = UserProfileManager(
+            FirebaseStorage.getInstance().reference,
+            FirebaseFirestore.getInstance()
+        )
 
         userProfileManager.getCurrentUserId { userId ->
             if (userId != null) {
 
                 val savedUserIds = UserSharedPreferences.getUserIds(requireContext(), userId)
                 if (!savedUserIds.isNullOrEmpty()) {
-                    Log.d("MyMatchesFragment", "Återhämtade sparade användar IDn för användare $userId: $savedUserIds")
+                    Log.d(
+                        "!!!",
+                        "Återhämtade sparade användar IDn för användare $userId: $savedUserIds"
+                    )
                 } else {
-                    Log.d("MyMatchesFragment", "Inga sparade användar IDn att återhämta för användare $userId")
+                    Log.d("!!!", "Inga sparade användar IDn att återhämta för användare $userId")
                 }
             } else {
-                Log.d("MyMatchesFragment", "Ingen inloggad användare hittades")
+                Log.d("!!!", "Ingen inloggad användare hittades")
             }
         }
     }
@@ -87,12 +99,16 @@ class MyMatchesFragment : Fragment() {
 
     private fun fetchUsersAndDisplay() {
 
-        val userProfileManager = UserProfileManager(FirebaseStorage.getInstance().reference, FirebaseFirestore.getInstance())
+        val userProfileManager = UserProfileManager(
+            FirebaseStorage.getInstance().reference,
+            FirebaseFirestore.getInstance()
+        )
 
         userProfileManager.getCurrentUserId { userId ->
             if (userId != null) {
 
-                val userIds = UserSharedPreferences.getUserIds(requireContext(), userId) ?: return@getCurrentUserId
+                val userIds = UserSharedPreferences.getUserIds(requireContext(), userId)
+                    ?: return@getCurrentUserId
                 val db = FirebaseFirestore.getInstance()
                 val usersList = mutableListOf<User>()
 
@@ -112,12 +128,9 @@ class MyMatchesFragment : Fragment() {
                                 }
                             }
                         }
-                    }.addOnFailureListener { exception ->
-                        Log.d("MyMatchesFragment", "Error getting documents: ", exception)
+                    }.addOnFailureListener {
                     }
                 }
-            } else {
-                Log.d("MyMatchesFragment", "Ingen inloggad användare hittades.")
             }
         }
     }
