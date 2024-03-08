@@ -15,7 +15,6 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EventAdapter
-    private lateinit var events: List<Event>
     private lateinit var firestore: FirebaseFirestore
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -74,5 +73,4 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
             commit()
         }
     }
-
 }
