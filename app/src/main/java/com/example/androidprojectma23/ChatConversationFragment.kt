@@ -171,13 +171,10 @@ class ChatConversationFragment : Fragment() {
                 .document(conversationId)
                 .collection("messages")
                 .add(message)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("!!!", "Meddelande sparades med ID: ${documentReference.id}")
-
+                .addOnSuccessListener {
                     hideKeyboard()
                 }
-                .addOnFailureListener { e ->
-                    Log.w("!!!", "Fel vid sparande av meddelande", e)
+                .addOnFailureListener {
                 }
             messageInput.text.clear()
         }
@@ -195,7 +192,6 @@ class ChatConversationFragment : Fragment() {
             .orderBy("messageTime")
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Log.e("!!!", "Error getting documents: ", e)
                     return@addSnapshotListener
                 }
 
@@ -237,6 +233,7 @@ class ChatConversationFragment : Fragment() {
                 }
             }
     }
+
     private fun setTopBarTitle(conversationUserName: String) {
         val topBarActivity = (activity as LandingPageActivity)
         topBarActivity.setTitle(conversationUserName)
@@ -253,7 +250,8 @@ class ChatConversationFragment : Fragment() {
         db.collection("users").document(currentUser)
             .get()
             .addOnSuccessListener {
-                val defaultProfileImageUrl = "https://firebasestorage.googleapis.com/v0/b/androidprojectma23-c28c0.appspot.com/o/userImages%2Fchat_image_placeholder.png?alt=media&token=e5c0b2ed-6518-4607-a1af-ce5b8e2e8e81" // Ange URL till din standardprofilbild här
+                val defaultProfileImageUrl =
+                    "https://firebasestorage.googleapis.com/v0/b/androidprojectma23-c28c0.appspot.com/o/userImages%2Fchat_image_placeholder.png?alt=media&token=e5c0b2ed-6518-4607-a1af-ce5b8e2e8e81" // Ange URL till din standardprofilbild här
                 currentUserName = it.getString("displayName") ?: "Unknown User"
                 currentUserProfileImage = it.getString("profileImageUrl") ?: defaultProfileImageUrl
                 callback.onUserInfoReceived(currentUserName, currentUserProfileImage)

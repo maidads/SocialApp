@@ -23,25 +23,27 @@ class FilterMenuAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.interest_item, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.interest_item, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val context = holder.iconView.context
-        val resourceName = "icon_${position + 1}" // Dynamiskt namn baserat på position vid bindning
-        val resourceId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
+        val resourceName = "icon_${position + 1}" // Dynamic resource name based on index
+        val resourceId =
+            context.resources.getIdentifier(resourceName, "drawable", context.packageName)
         holder.iconView.setImageResource(resourceId)
 
-        // Initialt sätt opaciteten baserat på det högsta valda indexet
+        // Set alpha based on the highest picked index
         holder.iconView.alpha = if (position <= highestSelectedIndex) 1f else 0.5f
 
         holder.iconView.setOnClickListener {
             val currentPosition = holder.adapterPosition
             if (currentPosition != RecyclerView.NO_POSITION) {
-                highestSelectedIndex = currentPosition // Använd den aktuella positionen
-                notifyDataSetChanged() // Uppdatera alla ikoner för att reflektera det nya valet
-                onSelectionChange(highestSelectedIndex + 1) // Callback för uppdaterad logik
+                highestSelectedIndex = currentPosition
+                notifyDataSetChanged()
+                onSelectionChange(highestSelectedIndex + 1)
             }
         }
     }

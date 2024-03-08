@@ -15,10 +15,13 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: EventAdapter
-    private lateinit var events: List<Event>
     private lateinit var firestore: FirebaseFirestore
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_event_page, container, false)
     }
 
@@ -52,8 +55,7 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
                 }
                 adapter.updateEvents(eventsList)
             }
-            .addOnFailureListener { exception ->
-                Log.d("!!!", "Error getting documents: ", exception)
+            .addOnFailureListener {
             }
     }
 

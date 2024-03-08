@@ -9,8 +9,8 @@ data class User(
     val geohash: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    var about: String = "Ingen information tillgänglig",
-    var myInterests: String = "Ingen information tillgänglig",
+    var about: String = "",
+    var myInterests: String = "",
     val profileImageUrl: String? = null,
     var age: String = ""
 )

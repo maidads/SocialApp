@@ -45,7 +45,11 @@ class MyMatchesDetailFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_my_matches_details, container, false)
     }
 
@@ -131,8 +135,7 @@ class MyMatchesDetailFragment : Fragment() {
                     imageView.visibility = View.INVISIBLE
                 }
             }
-        }, onFailure = { exception ->
-            Log.e("MyMatchesDetailFragment", "Fel vid hämtning av användarintressen: ${exception.message}")
+        }, onFailure = {
         })
     }
 
@@ -151,17 +154,16 @@ class MyMatchesDetailFragment : Fragment() {
                     textView.visibility = View.INVISIBLE
                 }
             }
-        }, onFailure = { exception ->
-            Log.e("MyFragment", "Error fetching user interest texts", exception)
+        }, onFailure = {
         })
     }
-
 
 
     private fun startConversationWithUser() {
 
         val userId = recipientUserId ?: return
-        val userName = recipientDisplayName ?: "Okänd Användare"
+        val userName = recipientDisplayName
+            ?: getString(R.string.MyMatchesDetailFragment_startConvesationWithUser_unkown_user)
         val userProfileImageUrl = recipientProfileImageUrl ?: ""
 
         val chatConversationFragment = ChatConversationFragment().apply {

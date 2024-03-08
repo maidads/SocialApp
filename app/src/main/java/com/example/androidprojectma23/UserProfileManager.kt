@@ -11,9 +11,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class UserProfileManager(private val storageRef: StorageReference, private val firestore: FirebaseFirestore) {
+class UserProfileManager(
+    private val storageRef: StorageReference,
+    private val firestore: FirebaseFirestore
+) {
 
-    fun uploadProfileImage(userId: String, imageUri: Uri, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun uploadProfileImage(
+        userId: String,
+        imageUri: Uri,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val userImageRef = storageRef.child("userImages/$userId/profileImage.jpg")
 
         userImageRef.putFile(imageUri).addOnSuccessListener {
@@ -27,7 +35,12 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
         }
     }
 
-    private fun saveUserProfileImage(userId: String, imageUrl: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    private fun saveUserProfileImage(
+        userId: String,
+        imageUrl: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val userDocumentRef = firestore.collection("users").document(userId)
 
         userDocumentRef.update("profileImageUrl", imageUrl).addOnSuccessListener {
@@ -37,7 +50,11 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
         }
     }
 
-    fun deleteExistingProfileImage(userId: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun deleteExistingProfileImage(
+        userId: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val userImageRef = storageRef.child("userImages/$userId/profileImage.jpg")
 
         userImageRef.delete().addOnSuccessListener {
@@ -51,7 +68,12 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
         }
     }
 
-    fun saveDisplayName(userId: String, displayName: String, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+    fun saveDisplayName(
+        userId: String,
+        displayName: String,
+        onSuccess: () -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val userDocumentRef = firestore.collection("users").document(userId)
 
         // Update displayName data field
@@ -62,7 +84,12 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
         }
     }
 
-    private fun getUserInterests(userId: String, mapFunc: (String) -> Int?, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
+    private fun getUserInterests(
+        userId: String,
+        mapFunc: (String) -> Int?,
+        onSuccess: (List<Int>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         val userDocumentRef = firestore.collection("users").document(userId)
 
         userDocumentRef.get().addOnSuccessListener { documentSnapshot ->
@@ -80,17 +107,34 @@ class UserProfileManager(private val storageRef: StorageReference, private val f
 
             onSuccess(interestsResIds)
         }.addOnFailureListener { exception ->
-            Log.e("UPM", "Error fetching user interests", exception)
             onFailure(exception)
         }
     }
 
-    fun getUserInterestsIcons(userId: String, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
-        getUserInterests(userId, { interestDocId -> IconMapping.docIdToIconResMap[interestDocId] }, onSuccess, onFailure)
+    fun getUserInterestsIcons(
+        userId: String,
+        onSuccess: (List<Int>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        getUserInterests(
+            userId,
+            { interestDocId -> IconMapping.docIdToIconResMap[interestDocId] },
+            onSuccess,
+            onFailure
+        )
     }
 
-    fun getUserInterestsTexts(userId: String, onSuccess: (List<Int>) -> Unit, onFailure: (Exception) -> Unit) {
-        getUserInterests(userId, { interestDocId -> IconMapping.docIdToInterestNameMap[interestDocId] }, onSuccess, onFailure)
+    fun getUserInterestsTexts(
+        userId: String,
+        onSuccess: (List<Int>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        getUserInterests(
+            userId,
+            { interestDocId -> IconMapping.docIdToInterestNameMap[interestDocId] },
+            onSuccess,
+            onFailure
+        )
     }
 
     fun getUserData(userId: String, callback: (User?) -> Unit) {

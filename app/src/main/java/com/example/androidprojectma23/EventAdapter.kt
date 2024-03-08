@@ -8,17 +8,22 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class EventAdapter(private var events: List<Event>, private val listener: OnEventClickListener) : RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
+class EventAdapter(private var events: List<Event>, private val listener: OnEventClickListener) :
+    RecyclerView.Adapter<EventAdapter.EventViewHolder>() {
 
     interface OnEventClickListener {
         fun onEventClick(event: Event)
     }
-    class EventViewHolder(itemView: View, private val listener: EventAdapter.OnEventClickListener) : RecyclerView.ViewHolder(itemView) {
+
+    class EventViewHolder(itemView: View, private val listener: EventAdapter.OnEventClickListener) :
+        RecyclerView.ViewHolder(itemView) {
         private val eventNameTextView: TextView = itemView.findViewById(R.id.eventNameTextView)
         private val eventImageView: ImageView = itemView.findViewById(R.id.eventImageView)
-        private val eventDescriptionTextView: TextView = itemView.findViewById(R.id.eventDescriptionTextView)
+        private val eventDescriptionTextView: TextView =
+            itemView.findViewById(R.id.eventDescriptionTextView)
         private val eventDateTextView: TextView = itemView.findViewById(R.id.eventDateTextView)
-        private val eventLocationTextView: TextView = itemView.findViewById(R.id.eventLocationTextView)
+        private val eventLocationTextView: TextView =
+            itemView.findViewById(R.id.eventLocationTextView)
 
         fun bind(event: Event) {
             eventNameTextView.text = event.name
@@ -31,13 +36,14 @@ class EventAdapter(private var events: List<Event>, private val listener: OnEven
                 .into(eventImageView)
 
             itemView.setOnClickListener {
-                    listener.onEventClick(event)
+                listener.onEventClick(event)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.event_more_info, parent, false)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.event_more_info, parent, false)
         return EventViewHolder(view, listener)
     }
 

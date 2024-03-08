@@ -19,7 +19,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -102,7 +101,11 @@ class ChangeProfileFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             CAMERA_PERMISSION_REQUEST_CODE -> {
@@ -133,10 +136,15 @@ class ChangeProfileFragment : Fragment() {
                     fragmentManager?.popBackStack()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(context, "Error updating profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "Error updating profile: ${e.localizedMessage}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
     }
+
     private fun loadUserProfile() {
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         userId?.let { uid ->
@@ -156,15 +164,19 @@ class ChangeProfileFragment : Fragment() {
                         context?.let { context ->
                             Glide.with(context)
                                 .load(profileImageUrl)
-                                .placeholder(R.drawable.profile_image_placeholder)  // Standardbild medan den riktiga bilden laddas
-                                .error(R.drawable.profile_image_placeholder)        // Om det inte går att ladda den riktiga bilden
-                                .circleCrop()                                       // Cirkulär form
+                                .placeholder(R.drawable.profile_image_placeholder)  // Default image
+                                .error(R.drawable.profile_image_placeholder)        // Image if the image fails to load
+                                .circleCrop()                                       // Cirkular form for the image
                                 .into(profileImageView)
                         }
                     }
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(context, "Failed to load profile: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        "Failed to load profile: ${e.localizedMessage}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
     }
@@ -188,28 +200,42 @@ class ChangeProfileFragment : Fragment() {
     }
 
     private fun showImagePickerOptions() {
-        val options = arrayOf<CharSequence>("Ta en bild", "Välj från galleri", "Avbryt")
+        val options = arrayOf<CharSequence>(
+            getString(R.string.changeProfileFragment_showImagePickerOptions_take_a_picture),
+            getString(R.string.changeProfileFragment_showImagePickerOptions_choose_from_gallery),
+            getString(R.string.changeProfileFragment_showImagePickerOptions_cancel)
+        )
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Ändra bild")
+        builder.setTitle(getString(R.string.changeProfileFragment_showImagePickerOptions_change_picture))
         builder.setItems(options) { dialog, item ->
             when (options[item]) {
-                "Ta en bild" -> if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                                    openCameraForImage()
-                                } else {
-                                    requestCameraPermission()
-                                }
-                "Välj från galleri" -> pickImageFromGallery()
-                "Avbryt" -> dialog.dismiss()
+                getString(R.string.changeProfileFragment_showImagePickerOptions_take_a_picture) -> if (ContextCompat.checkSelfPermission(
+                        requireContext(),
+                        android.Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
+                ) {
+                    openCameraForImage()
+                } else {
+                    requestCameraPermission()
+                }
+
+                getString(R.string.changeProfileFragment_showImagePickerOptions_choose_from_gallery) -> pickImageFromGallery()
+                getString(R.string.changeProfileFragment_showImagePickerOptions_cancel) -> dialog.dismiss()
             }
         }
         builder.show()
     }
 
     private fun openCameraForImage() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             try {
-                startActivityForResult(takePictureIntent,
+                startActivityForResult(
+                    takePictureIntent,
                     ChangeProfileFragment.REQUEST_CODE_CAPTURE_IMAGE
                 )
             } catch (e: ActivityNotFoundException) {
@@ -235,6 +261,7 @@ class ChangeProfileFragment : Fragment() {
                         uploadImageToFirebaseStorage(uri)
                     }
                 }
+
                 REQUEST_CODE_CAPTURE_IMAGE -> {
                     imageUri?.let { uploadImageToFirebaseStorage(it) }
                 }
@@ -243,13 +270,18 @@ class ChangeProfileFragment : Fragment() {
     }
 
     private fun uploadImageToFirebaseStorage(imageUri: Uri) {
-        val storageRef = FirebaseStorage.getInstance().reference.child("profileImages/${UUID.randomUUID()}")
+        val storageRef =
+            FirebaseStorage.getInstance().reference.child("profileImages/${UUID.randomUUID()}")
         storageRef.putFile(imageUri).addOnSuccessListener { taskSnapshot ->
             taskSnapshot.metadata?.reference?.downloadUrl?.addOnSuccessListener { downloadUri ->
                 saveProfileImageUrlToFirestore(downloadUri.toString())
             }
         }.addOnFailureListener {
-            Toast.makeText(context, "Failed to upload image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                "Failed to upload image: ${it.localizedMessage}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -268,7 +300,11 @@ class ChangeProfileFragment : Fragment() {
                         .into(profileImageView)
                 }
                 .addOnFailureListener {
-                    Toast.makeText(context, "Failed to update profile image: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        context,
+                        getString(R.string.changeProfileFragment_saveProfileImageUrlToFirestore_uploadFailed),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
         }
     }
@@ -276,15 +312,21 @@ class ChangeProfileFragment : Fragment() {
     private fun requestCameraPermission() {
         if (shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA)) {
             AlertDialog.Builder(requireContext())
-                .setTitle("Kräver kameratillstånd")
-                .setMessage("Denna app behöver tillgång till din kamera för att kunna ta bilder.")
-                .setPositiveButton("OK") { _, _ ->
-                    requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+                .setTitle(getString(R.string.requestCameraPermission_title))
+                .setMessage(getString(R.string.requestCameraPermission_message))
+                .setPositiveButton(getString(R.string.requestCameraPermission_positiveButton)) { _, _ ->
+                    requestPermissions(
+                        arrayOf(android.Manifest.permission.CAMERA),
+                        CAMERA_PERMISSION_REQUEST_CODE
+                    )
                 }
                 .create()
                 .show()
         } else {
-            requestPermissions(arrayOf(android.Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            requestPermissions(
+                arrayOf(android.Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST_CODE
+            )
         }
     }
 }

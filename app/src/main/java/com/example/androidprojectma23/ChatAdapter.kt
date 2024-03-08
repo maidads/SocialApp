@@ -9,15 +9,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 
-class ChatAdapter(private val chatMessages: List<ChatMessage>,
-                  private val clickListener: ChatCardListener) :
+class ChatAdapter(
+    private val chatMessages: List<ChatMessage>,
+    private val clickListener: ChatCardListener
+) :
     RecyclerView.Adapter<ChatAdapter.ChatCardViewHolder>() {
 
     interface ChatCardListener {
         fun onChatCardClicked(position: Int)
     }
 
-    class ChatCardViewHolder(view: View, private val clickListener: ChatCardListener) : RecyclerView.ViewHolder(view) {
+    class ChatCardViewHolder(view: View, private val clickListener: ChatCardListener) :
+        RecyclerView.ViewHolder(view) {
         init {
             view.setOnClickListener {
                 clickListener.onChatCardClicked(adapterPosition)
