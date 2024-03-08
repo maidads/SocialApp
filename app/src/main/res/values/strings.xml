@@ -110,4 +110,10 @@
     <string name="signUpNewAccountActivity_saveUserData_myInterests">Ingen information tillgänglig.</string>
     <string name="changeInterestFragment_handleProfileCompletion_interest_amount">Välj minst ett intresse för att fortsätta.</string>
     <string name="changeProfileFragment_saveProfileImageUrlToFirestore_uploadFailed">Uppdateringen av profilbild misslyckades.</string>
+    <string name="findFriendsFragment_onSelectionChanged_userID_not_available">Användar-ID är inte tillgängligt.</string>
+    <string name="findFriendsFragment_onSelectionChanged_no_user_found">Användar-ID är inte tillgängligt.</string>
+    <string name="findFriendsFragment_onSelectionChanged_no_current_location">Kunde inte få aktuell plats.</string>
+    <string name="findFriendsFragment_onSelectionChanged_no_location_permission">Platsbehörighet krävs.</string>
+    <string name="findFriendsFragment_onViewCreated_coroutine_could_not_get_current_location">Kunde inte få aktuell plats.</string>
+    <string name="findFriendsFragment_onViewCreated_coroutine_userId_not_available">Användar-ID är inte tillgängligt.</string>
 </resources>

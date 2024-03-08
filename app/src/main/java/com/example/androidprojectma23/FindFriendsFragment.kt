@@ -48,7 +48,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 val userId = FirebaseAuth.getInstance().currentUser?.uid ?: run {
                     Toast.makeText(
                         requireContext(),
-                        "Användar-ID är inte tillgängligt",
+                        getString(R.string.findFriendsFragment_onSelectionChanged_no_user_found),
                         Toast.LENGTH_LONG
                     ).show()
                     return@launch // End the coroutine if userId is null
@@ -60,12 +60,16 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
                 } ?: run {
                     Toast.makeText(
                         requireContext(),
-                        "Kunde inte få aktuell plats",
+                        getString(R.string.findFriendsFragment_onSelectionChanged_no_current_location),
                         Toast.LENGTH_LONG
                     ).show()
                 }
             } else {
-                Toast.makeText(requireContext(), "Platsbehörighet krävs", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.findFriendsFragment_onSelectionChanged_no_location_permission),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -103,7 +107,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
                     Toast.makeText(
                         requireContext(),
-                        "Kunde inte få aktuell plats",
+                        getString(R.string.findFriendsFragment_onViewCreated_coroutine_could_not_get_current_location),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -111,7 +115,7 @@ class FindFriendsFragment : Fragment(), LandingPageActivity.OnFilterSelectionCha
 
                 Toast.makeText(
                     requireContext(),
-                    "Användar-ID är inte tillgängligt",
+                    getString(R.string.findFriendsFragment_onViewCreated_coroutine_userId_not_available),
                     Toast.LENGTH_LONG
                 ).show()
             }
