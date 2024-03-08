@@ -1,6 +1,5 @@
 package com.example.androidprojectma23
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment
 import com.example.androidprojectma23.IconMapping.iconIdToDocIdMap
 import com.example.androidprojectma23.IconMapping.userInterests
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Locale
 
 class ChangeInterestsFragment : Fragment() {
 

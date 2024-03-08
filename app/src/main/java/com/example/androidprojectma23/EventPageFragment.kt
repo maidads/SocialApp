@@ -76,5 +76,4 @@ class EventPageFragment : Fragment(), EventAdapter.OnEventClickListener {
             commit()
         }
     }
-
 }
