@@ -69,6 +69,7 @@ class ChangeProfileFragment : Fragment() {
         interestImageView4Back = view.findViewById(R.id.interestImageView4Back)
         interestImageView5Back = view.findViewById(R.id.interestImageView5Back)
         profileImageView = view.findViewById(R.id.profileImageViewBack)
+        
         val saveProfileButton = view.findViewById<Button>(R.id.saveProfileButton)
         val interestImageViews = listOf(
             interestImageViewBack, interestImageView2Back,
