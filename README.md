@@ -1,0 +1,1 @@
+A social app designed to connect users with like-minded individuals, helping them discover and attend events together based on shared interests. It features personalized profiles and a smart matching algorithm for better compatibility. Additionally, users have the capability to chat with each other directly within the app.
